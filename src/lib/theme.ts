@@ -1,6 +1,6 @@
 export type Theme = "light" | "dark";
 
-export const THEME_STORAGE_KEY = "maba-theme";
+export const THEME_STORAGE_KEY = "alibacelonia-theme";
 
 /**
  * Runs in <head> before first paint: applies the stored theme or the system preference,

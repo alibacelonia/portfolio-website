@@ -83,3 +83,13 @@ Format: **ID — Feature.** Implementation · _Depends on_ · **Accepts when** �
 ## Phase 8 — Final validation
 
 - [x] **P8-1** Lint + typecheck · [x] **P8-2** Unit tests · [x] **P8-3** E2E tests · [x] **P8-4** Static export · [x] **P8-5** Local production preview · [x] **P8-6** Content accuracy · [x] **P8-7** External links · [x] **P8-8** Responsive screenshots · [x] **P8-9** Documentation · [x] **P8-10** Final report
+
+## Phase 9 — UI, branding and project refinement (second brief)
+
+- [x] **P9-0 — Git checkpoint.** Commit existing work before edits. · — · **Accepts when** HEAD recorded (`d204d12`). · _Tests:_ `git status` clean
+- [x] **P9-1 — Sticky top navigation.** Remove bottom dock; one sticky glass bar (logo · links · toggle + resume); `scroll-padding-top` offset; menu below `lg`. · P9-0 · **Accepts when** one nav per breakpoint, headings unobscured after anchor jumps. · _Tests:_ unit (Header, SectionNav, MobileMenu), E2E (nav visibility, heading clearance, indicator alignment)
+- [x] **P9-2 — A/B branding.** SVG stroke logo shared by header, favicon and OG image; remove MABA and `maba.dev`. · P9-0 · **Accepts when** no MABA/maba references outside history. · _Tests:_ unit (icon uses shared path), E2E (sitemap has no maba)
+- [x] **P9-3 — Domain config.** `NEXT_PUBLIC_SITE_URL` single source; site name `alibacelonia.dev`. · P9-2 · **Accepts when** canonical/OG/sitemap/JSON-LD use it. · _Tests:_ unit (default origin), E2E (exact canonical, og:site_name, sitemap)
+- [x] **P9-4 — Full-viewport hero + pattern.** `100svh` with `100vh` fallback, one dot grid. · P9-1 · **Accepts when** hero ≥ viewport, content unclipped, no overflow. · _Tests:_ E2E (hero height/clipping), screenshots 8 widths × 2 themes
+- [x] **P9-5 — Project details.** Structured data (A–F), compact cards, static `/projects/<id>/` pages, Website Portfolio rename with planned items. · P9-0 · **Accepts when** every claim sourced, planned infra flagged. · _Tests:_ unit (data structure, naming, ProjectDetail sections), E2E (navigation, 200/404, canonical), axe on detail page
+- [x] **P9-6 — Regression and docs.** Lint, types, unit, E2E, Lighthouse, docs. · P9-1..5 · **Accepts when** all green. · _Tests:_ full suite

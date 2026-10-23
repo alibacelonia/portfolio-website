@@ -49,24 +49,26 @@ test("has no horizontal overflow at supported widths", async ({ page }, testInfo
 
 test("shows exactly one section navigation per breakpoint", async ({ page }, testInfo) => {
   await page.goto("/");
-  const dock = page.locator("nav.glass");
+  const nav = page.getByRole("navigation", { name: "Sections" });
   const menuButton = page.getByRole("button", { name: "Open menu" });
+  await expect(page.getByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toBeVisible();
   if (testInfo.project.name === "desktop") {
-    await expect(dock).toBeVisible();
+    await expect(nav).toHaveCount(1);
+    await expect(nav).toBeVisible();
     await expect(menuButton).toBeHidden();
-    await dock.getByRole("link", { name: "Experience" }).click();
+    const link = nav.getByRole("link", { name: "Experience" });
+    await link.click();
     await expect(page).toHaveURL(/#experience$/);
-    const link = dock.getByRole("link", { name: "Experience" });
     await expect(link).toHaveAttribute("aria-current", "location");
     // The sliding indicator must sit under the active link.
     await expect(async () => {
       const box = (await link.boundingBox())!;
-      const pill = (await dock.locator("span[aria-hidden]").first().boundingBox())!;
+      const pill = (await nav.locator("span[aria-hidden]").first().boundingBox())!;
       expect(Math.abs(pill.x - box.x)).toBeLessThan(2);
       expect(Math.abs(pill.width - box.width)).toBeLessThan(2);
     }).toPass({ timeout: 2000 });
   } else {
-    await expect(dock).toBeHidden();
+    await expect(nav).toBeHidden();
     await menuButton.click();
     const menu = page.getByRole("navigation", { name: "Sections" });
     await menu.getByRole("link", { name: "Contact" }).click();
@@ -76,6 +78,77 @@ test("shows exactly one section navigation per breakpoint", async ({ page }, tes
       "false",
     );
   }
+});
+
+test("keeps the navigation visible and clear of section headings", async ({ page }, testInfo) => {
+  await page.goto("/");
+  const bar = page.getByRole("banner");
+  for (const id of ["projects", "skills", "contact"]) {
+    if (testInfo.project.name === "desktop") {
+      await page
+        .getByRole("navigation", { name: "Sections" })
+        .getByRole("link", {
+          name: id[0]!.toUpperCase() + id.slice(1),
+        })
+        .click();
+    } else {
+      await page.getByRole("button", { name: "Open menu" }).click();
+      await page
+        .getByRole("navigation", { name: "Sections" })
+        .getByRole("link", {
+          name: id[0]!.toUpperCase() + id.slice(1),
+        })
+        .click();
+    }
+    await expect(page).toHaveURL(new RegExp(`#${id}$`));
+    await expect(async () => {
+      const header = (await bar.locator("> div > div").boundingBox())!;
+      const heading = (await page.locator(`#${id}-title`).boundingBox())!;
+      expect(header.y).toBeGreaterThanOrEqual(0);
+      expect(header.y).toBeLessThan(16);
+      expect(heading.y).toBeGreaterThan(header.y + header.height);
+    }).toPass({ timeout: 3000 });
+  }
+});
+
+test("hero fills the first viewport without clipping its content", async ({ page }) => {
+  await page.goto("/");
+  const viewport = page.viewportSize()!;
+  const hero = (await page.locator("#home").boundingBox())!;
+  expect(hero.height).toBeGreaterThanOrEqual(viewport.height - 1);
+  for (const locator of [
+    page.locator("h1"),
+    page.getByRole("link", { name: "View My Work" }),
+    page.getByRole("figure"),
+  ]) {
+    const box = (await locator.boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(hero.y);
+    expect(box.y + box.height).toBeLessThanOrEqual(hero.y + hero.height);
+  }
+});
+
+test("project cards open static detail pages and lead back", async ({ page }) => {
+  await page.goto("/#projects");
+  await expect(page.getByRole("heading", { name: "Website Portfolio" })).toBeVisible();
+  await page.getByRole("link", { name: "View details about estoe" }).click();
+  await expect(page).toHaveURL(/\/projects\/estoe\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("estoe");
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Infrastructure & architecture" }),
+  ).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://alibacelonia.dev/projects/estoe/",
+  );
+  await page.getByRole("link", { name: "All projects" }).click();
+  await expect(page).toHaveURL(/\/#projects$/);
+});
+
+test("project detail pages exist for every project and unknown ones 404", async ({ request }) => {
+  for (const id of ["cloud-incident-service", "estoe", "ai-project-factory", "website-portfolio"]) {
+    expect((await request.get(`/projects/${id}/`)).status()).toBe(200);
+  }
+  expect((await request.get("/projects/does-not-exist/")).status()).toBe(404);
 });
 
 test("follows the system theme and persists a manual choice", async ({ browser }) => {
@@ -143,7 +216,10 @@ test("publishes SEO metadata, robots and sitemap", async ({ page, request }) => 
   const jsonLd = await page.locator('script[type="application/ld+json"]').textContent();
   expect(JSON.parse(jsonLd!).mainEntity.name).toBe("Mohammed Ali B. Abdullah");
   expect((await request.get("/robots.txt")).status()).toBe(200);
-  expect(await (await request.get("/sitemap.xml")).text()).toContain("<loc>");
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain("<loc>https://alibacelonia.dev/</loc>");
+  expect(sitemap).toContain("<loc>https://alibacelonia.dev/projects/website-portfolio/</loc>");
+  expect(sitemap).not.toMatch(/maba/i);
 });
 
 test("unknown paths render the 404 page", async ({ request }) => {

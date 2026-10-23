@@ -1,13 +1,7 @@
 import { skills } from "@/data/skills";
-import type { Discipline } from "@/types/content";
+import { disciplineDot } from "@/lib/disciplines";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
-
-export const disciplineDot: Record<Discipline, string> = {
-  "full-stack": "bg-blue",
-  devops: "bg-sage",
-  ai: "bg-lavender",
-};
 
 function Legend() {
   return (

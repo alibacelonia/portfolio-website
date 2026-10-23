@@ -14,7 +14,12 @@ export function Tag({ children, level = "hands-on" }: TagProps) {
       }`}
     >
       {children}
-      {working ? <span className="sr-only"> (working knowledge)</span> : null}
+      {working ? (
+        <>
+          {" "}
+          <span className="sr-only">(working knowledge)</span>
+        </>
+      ) : null}
     </li>
   );
 }

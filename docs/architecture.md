@@ -5,20 +5,22 @@
 ```text
 src/
 ├── app/            layout.tsx (fonts, metadata, theme bootstrap, JSON-LD), page.tsx (six sections),
+│                   projects/[slug]/page.tsx (static detail pages via generateStaticParams),
 │                   not-found.tsx, robots.ts, sitemap.ts, opengraph-image.tsx, icon.svg, globals.css
 ├── components/
-│   ├── layout/     Header, Dock, MobileMenu, SkipLink, Footer, Providers (MotionConfig)
-│   ├── sections/   Hero, Pipeline, Projects, Experience, Skills, Certifications, Contact(+Form)
-│   └── ui/         Section, SectionHeader, Tag, ButtonLink, ExternalLink, ThemeToggle, Reveal
+│   ├── layout/     Header (sticky glass bar), SectionNav, MobileMenu(+Panel), Footer, Providers
+│   ├── sections/   Hero, Pipeline, Projects, ProjectDetail, Experience, Skills, Certifications, Contact(+Form)
+│   └── ui/         Section, Tag, ButtonLink, ExternalLink, ThemeToggle, Logo, RevealObserver
 ├── data/           projects, experience, skills, certifications, navigation (typed, no JSX)
 ├── hooks/          useActiveSection, useTheme
-├── lib/            site config (env-driven URLs), contact (validation + submission), theme
+├── lib/            site config (env-driven URL), brand (logo path), disciplines, contact, theme
 └── types/          shared content types
 ```
 
-- Every page is pre-rendered at build time (`output: "export"`, `trailingSlash: true`, `images.unoptimized`). Client components are limited to interactive islands: header/menu, dock, theme toggle, pipeline, contact form, reveal observer.
+- Every page is pre-rendered at build time (`output: "export"`, `trailingSlash: true`, `images.unoptimized`). Client components are limited to interactive islands: header/navigation, mobile menu, theme toggle, pipeline, contact form, reveal observer. Project pages are server-rendered at build time.
 - Content is plain typed data; components never hard-code project, role or credential text.
-- `src/lib/site.ts` reads `NEXT_PUBLIC_SITE_URL` (default `https://alibacelonia.dev`). Migrating to `maba.dev` = change that variable, add the domain to Terraform `domain_names`, redeploy.
+- `src/lib/site.ts` reads `NEXT_PUBLIC_SITE_URL` (default `https://alibacelonia.dev`), the single source for canonical URLs, sitemap, robots, Open Graph and JSON-LD.
+- Section links are root-relative (`/#projects`) `next/link`s, so they work from project pages too; the header marks “Projects” active on `/projects/*`.
 - The contact form posts JSON to `https://formspree.io/f/<NEXT_PUBLIC_FORMSPREE_FORM_ID>`. The ID is public by design (it appears in any HTML form). Without it, the form opens a pre-filled `mailto:` link and says so.
 
 ## Delivery

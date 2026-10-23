@@ -25,11 +25,14 @@
 
   --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04);
   --shadow-md: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
-  --dock-bg: rgb(255 255 255 / 0.72);
-  --header-bg: rgb(250 251 252 / 0.82);
+  --glass-bg: rgb(255 255 255 / 0.72);
 
   --gutter: clamp(16px, 5vw, 80px);
-  --header-h: 56px;
+  /* Sticky glass navigation: bar height + gap above it. --nav-offset is the space it covers. */
+  --nav-h: 52px;
+  --nav-top: 8px;
+  --nav-offset: calc(var(--nav-h) + var(--nav-top));
+  --pattern-dot: rgb(15 23 42 / 0.13);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -54,8 +57,8 @@
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-  --dock-bg: rgb(22 27 34 / 0.72);
-  --header-bg: rgb(13 17 23 / 0.82);
+  --glass-bg: rgb(22 27 34 / 0.72);
+  --pattern-dot: rgb(243 244 246 / 0.12);
 }
 
 @theme inline {
@@ -90,7 +93,8 @@
     color: var(--fg);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
-    scroll-padding-top: calc(var(--header-h) + 16px);
+    /* Anchor targets land below the sticky navigation. */
+    scroll-padding-top: calc(var(--nav-offset) + 16px);
   }
 
   body {
@@ -133,6 +137,12 @@
   padding-inline: var(--gutter);
 }
 
+/* Full first viewport; svh avoids mobile browser-chrome jumps, vh is the fallback. */
+@utility min-h-viewport {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
 @utility measure {
   max-width: 64ch;
 }
@@ -165,7 +175,28 @@
   }
 }
 
-/* Glass dock surface (kept subtle; falls back to an opaque surface). */
+@media (min-width: 640px) {
+  :root {
+    --nav-top: 12px;
+  }
+}
+
+/* Hero background: one fine dot grid, faded toward the edges so it never competes with text. */
+.hero-pattern {
+  background-image: radial-gradient(var(--pattern-dot) 1px, transparent 1.25px);
+  background-size: 22px 22px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
+}
+
+@media (forced-colors: active) {
+  .hero-pattern {
+    display: none;
+  }
+}
+
+/* Glass navigation surface (kept subtle; falls back to an opaque surface). */
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -173,7 +204,7 @@
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass {
-    background: var(--dock-bg);
+    background: var(--glass-bg);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
     backdrop-filter: blur(14px) saturate(140%);
   }

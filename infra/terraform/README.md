@@ -1,4 +1,4 @@
-# Terraform: static hosting for the MABA portfolio
+# Terraform: static hosting for alibacelonia.dev
 
 Single root module. Step-by-step usage, DNS, rollback and cost: [`docs/deployment.md`](../../docs/deployment.md).
 

@@ -1,6 +1,6 @@
 # Design system
 
-Premium, minimalist, full-width, with restrained operating-system details (window chrome on the pipeline card, a glass dock, monospace status labels). Hierarchy comes from size, weight, spacing and contrast — never from colored or gradient text.
+Premium, minimalist, full-width, with restrained operating-system details (window chrome on the pipeline card, a sticky glass navigation bar, monospace status labels). Logo: a typographic **A/B** mark. Hierarchy comes from size, weight, spacing and contrast — never from colored or gradient text.
 
 ## Tokens
 
@@ -37,14 +37,24 @@ Defined as CSS variables in `src/app/globals.css` and exposed to Tailwind throug
 
 ## Components
 
-| Component    | Notes                                                                                                                                                                                      |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Header       | 56 px, translucent `--bg` with hairline border on scroll. Brand, Resume, theme toggle, menu button (`<md`).                                                                                |
-| Dock (`md+`) | Fixed bottom-center pill. `backdrop-filter: blur(14px) saturate(140%)`, 72 % surface, 1 px border, soft shadow. 13 px labels. Active pill slides with a measured CSS transform (see D-18). |
-| Mobile menu  | Disclosure panel under the header, Escape closes, focus returns to the button.                                                                                                             |
-| Card         | `--surface`, 1 px border, 12 px radius, shadow `0 1px 2px rgb(0 0 0 / 4%)`. Hover: border darkens, 2 px lift (no glow).                                                                    |
-| Tag          | 12 px, 6 px radius, `--surface-2`. Working-knowledge tags use a dashed border plus visually hidden text.                                                                                   |
-| Button       | Primary: solid `--fg` on `--bg`. Secondary: bordered. 40–44 px tall.                                                                                                                       |
+| Component  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Navigation | Single sticky glass bar (`position: sticky`, `z-50`), 52 px tall, 8–12 px below the viewport top, 16 px radius, `.glass` surface. Left: A/B logo. Center (`lg+`): six section links with a sliding CSS indicator. Right: theme toggle, Resume. Below `lg`: menu button opens a glass panel under the bar. Overlaps the page via a negative bottom margin; anchors offset with `scroll-padding-top: var(--nav-offset) + 16px`. |
+| Card       | `--surface`, 1 px border, 12 px radius, shadow `0 1px 2px rgb(0 0 0 / 4%)`. Hover: border darkens, 2 px lift (no glow).                                                                                                                                                                                                                                                                                                       |
+| Tag        | 12 px, 6 px radius, `--surface-2`. Working-knowledge tags use a dashed border plus visually hidden text.                                                                                                                                                                                                                                                                                                                      |
+| Button     | Primary: solid `--fg` on `--bg`. Secondary: bordered. 40–44 px tall.                                                                                                                                                                                                                                                                                                                                                          |
+
+## Logo
+
+`src/lib/brand.ts` holds one stroke path on a 32×32 grid (condensed A, light-lean slash, B with a slightly larger lower bowl). Used by the header (`Logo`, current text color), `src/app/icon.svg` (light strokes on `#111827`) and the Open Graph image. Paths, not text, so it never depends on installed fonts; readable at 16 px.
+
+## Hero
+
+Full first viewport (`min-height: 100vh; min-height: 100svh`), content vertically centered below the navigation, and allowed to grow on small screens. Background: one fine dot grid (1 px dots, 22 px pitch, `--pattern-dot` ≈ 13 % / 12 % opacity per theme) faded with a radial mask; hidden in forced-colors mode. No other decoration.
+
+## Project pages
+
+Cards show category, status, name, a short summary, up to six key technologies, **View details**, and external links. `/projects/<id>/` presents A Overview · B Problem (with “Who it helps”) · C Solution · D Technology stack · E Infrastructure & architecture (summary, flow diagram, item list with dashed **planned** badges) · F Links, with a sticky A–F index on `lg+`.
 
 ## Motion
 

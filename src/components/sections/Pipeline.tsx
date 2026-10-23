@@ -151,13 +151,13 @@ export function Pipeline() {
                   style={{ left: "calc(-50% + var(--gap))", right: "calc(50% + var(--gap))" }}
                 >
                   <span
-                    className="block h-full origin-left bg-sage-fg/60 transition-transform duration-500 ease-out-soft"
+                    className="block h-full origin-left bg-sage-fg/60 transition-transform duration-500 ease-out-soft motion-reduce:transition-none"
                     style={{ transform: `scaleX(${reached ? 1 : 0})` }}
                   />
                 </span>
               ) : null}
               <span
-                className={`relative grid size-9 place-items-center rounded-lg border transition-colors duration-300 sm:size-10 ${nodeStyles[state]}`}
+                className={`relative grid size-9 place-items-center rounded-lg border transition-colors duration-300 motion-reduce:transition-none sm:size-10 ${nodeStyles[state]}`}
               >
                 {stage.glyph}
                 {state === "running" ? (
@@ -196,8 +196,7 @@ export function Pipeline() {
             className="-mr-2 inline-flex min-h-8 items-center gap-1.5 rounded-md px-2 text-muted transition-colors hover:text-fg disabled:opacity-40"
           >
             <RotateCcw aria-hidden="true" className="size-3" />
-            Run again
-            <span className="sr-only"> (replay pipeline animation)</span>
+            Run again <span className="sr-only">(replay pipeline animation)</span>
           </button>
         ) : null}
       </div>

@@ -17,8 +17,9 @@ export function Hero() {
     <section
       id="home"
       aria-labelledby="home-title"
-      className="bg-bg pt-[calc(var(--header-h)+clamp(40px,9vh,112px))] pb-16 sm:pb-20 lg:pb-28"
+      className="relative isolate flex min-h-viewport items-center bg-bg pt-[calc(var(--nav-offset)+40px)] pb-16 sm:pb-20"
     >
+      <div aria-hidden="true" className="hero-pattern absolute inset-0 -z-10" />
       <div className="container-fluid grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-7">
           <h1
@@ -49,8 +50,7 @@ export function Hero() {
             </ButtonLink>
             <ButtonLink href={site.resume.href} download={site.resume.fileName} variant="secondary">
               <Download aria-hidden="true" className="size-4" />
-              Download Resume
-              <span className="sr-only"> (PDF)</span>
+              Download Resume <span className="sr-only">(PDF)</span>
             </ButtonLink>
           </div>
 

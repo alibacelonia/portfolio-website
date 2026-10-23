@@ -1,7 +1,7 @@
 variable "project" {
   description = "Name used for resource names and tags."
   type        = string
-  default     = "maba-portfolio"
+  default     = "alibacelonia-portfolio"
 }
 
 variable "environment" {

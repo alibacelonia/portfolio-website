@@ -116,11 +116,11 @@ Verify at the `cloudfront_domain_name` output before touching DNS.
 4. In Cloudflare, replace the existing apex and `www` records with **CNAME → `<cloudfront_domain_name>`**, **DNS only**. Cloudflare flattens the apex CNAME automatically. Keeping the records proxied (orange cloud) would put Cloudflare's TLS and cache in front of CloudFront; DNS only keeps a single CDN and the CloudFront security headers authoritative.
 5. Check `https://alibacelonia.dev`, `https://www.alibacelonia.dev` (should redirect), and the certificate.
 
-### Migrating to maba.dev later
+### Changing the domain later
 
-1. Add `maba.dev`/`www.maba.dev` first in `domain_names` (keep the old names after them so they redirect). A new certificate covering all names is requested; validate it as above (maba.dev DNS is at Namecheap: add the records there, or move DNS to Cloudflare).
-2. Set the GitHub variable `SITE_URL=https://maba.dev` and redeploy. Canonical, sitemap, robots, Open Graph and JSON-LD all follow `NEXT_PUBLIC_SITE_URL`.
-3. Point maba.dev DNS at CloudFront. Do not change `SITE_URL` before the domain actually serves the site.
+`NEXT_PUBLIC_SITE_URL` (GitHub variable `SITE_URL`) is the single source for canonical URLs, sitemap, robots, Open Graph and JSON-LD. To move domains: put the new name first in `domain_names` (older names after it redirect), validate the new certificate, update `SITE_URL`, redeploy, then switch DNS. Do not change `SITE_URL` before the new domain serves the site.
+
+After go-live, update `src/data/projects.ts`: remove `status: "planned"` from the Website Portfolio's provisioning and custom-domain items.
 
 ## Contact form (Formspree)
 

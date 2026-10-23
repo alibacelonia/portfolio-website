@@ -1,50 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Download } from "lucide-react";
-import { site } from "@/lib/site";
+import { navigation, site } from "@/lib/site";
+import { useActiveSection } from "@/hooks/useActiveSection";
+import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { SectionNav } from "./SectionNav";
 import { MobileMenu } from "./MobileMenu";
 
-export function Header() {
-  const [scrolled, setScrolled] = useState(false);
+const sectionIds = navigation.map((item) => item.id);
+const noSections: string[] = [];
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+/**
+ * The single primary navigation: a sticky, floating glass bar. It overlaps the top of the page
+ * (negative bottom margin) so the hero background runs behind it; content offsets use --nav-offset.
+ */
+export function Header() {
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  const tracked = useActiveSection(onHome ? sectionIds : noSections);
+  const active = onHome ? tracked : pathname.startsWith("/projects/") ? "projects" : "";
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-40 h-[var(--header-h)] border-b backdrop-blur-md transition-colors duration-200 ${
-        scrolled
-          ? "border-border bg-[var(--header-bg)]"
-          : "border-transparent bg-[var(--header-bg)]"
-      }`}
-    >
-      <div className="container-fluid flex h-full items-center justify-between gap-3">
-        <a
-          href="#home"
-          className="inline-flex min-h-10 items-center text-sm font-semibold tracking-[0.18em] text-fg"
-          aria-label={`${site.brand} — back to top`}
-        >
-          {site.brand}
-        </a>
-
-        <div className="flex items-center gap-1">
-          <a
-            href={site.resume.href}
-            download={site.resume.fileName}
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-fg-soft transition-colors hover:bg-surface-2 hover:text-fg"
+    <header className="pointer-events-none sticky top-0 z-50 -mb-[var(--nav-offset)] pt-[var(--nav-top)]">
+      <div className="container-fluid">
+        <div className="glass pointer-events-auto relative flex h-[var(--nav-h)] items-center justify-between gap-2 rounded-2xl pr-1.5 pl-2 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+          <Link
+            href="/#home"
+            className="inline-flex size-10 items-center justify-center justify-self-start rounded-lg text-fg transition-colors hover:bg-surface-2"
+            aria-label={`${site.name}, home`}
           >
-            <Download aria-hidden="true" className="size-3.5" />
-            Resume
-            <span className="sr-only"> (PDF)</span>
-          </a>
-          <ThemeToggle />
-          <MobileMenu />
+            <Logo className="h-[17px] w-auto" />
+          </Link>
+
+          <SectionNav active={active} className="hidden lg:block" />
+
+          <div className="flex items-center gap-1 justify-self-end">
+            <ThemeToggle />
+            <a
+              href={site.resume.href}
+              download={site.resume.fileName}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-[13px] font-medium text-fg transition-colors hover:border-border-strong hover:bg-surface-2"
+            >
+              <Download aria-hidden="true" className="size-3.5" />
+              Resume <span className="sr-only">(PDF)</span>
+            </a>
+            <MobileMenu active={active} />
+          </div>
         </div>
       </div>
     </header>

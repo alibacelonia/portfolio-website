@@ -62,8 +62,8 @@ function RoleItem({ role }: { role: Role }) {
               className="size-3.5 transition-transform duration-200 group-open:rotate-180"
             />
             <span className="group-open:hidden">Show details</span>
-            <span className="hidden group-open:inline">Hide details</span>
-            <span className="sr-only"> for {role.title}</span>
+            <span className="hidden group-open:inline">Hide details</span>{" "}
+            <span className="sr-only">for {role.title}</span>
           </summary>
           <ul className="mt-3 space-y-2 text-[13.5px] leading-relaxed text-muted">
             {role.details.map((detail) => (

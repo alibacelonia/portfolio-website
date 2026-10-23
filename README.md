@@ -1,6 +1,6 @@
-# MABA — Personal Engineering Portfolio
+# alibacelonia.dev — Personal Engineering Portfolio
 
-Portfolio of **Mohammed Ali B. Abdullah**: Full-Stack Developer · DevOps Engineer · AI Engineer.
+Portfolio of **Mohammed Ali B. Abdullah** (logo: A/B): Full-Stack Developer · DevOps Engineer · AI Engineer.
 
 A statically exported Next.js site served from a private S3 bucket through CloudFront, provisioned with Terraform and deployed by GitHub Actions using OIDC.
 
@@ -35,17 +35,23 @@ npm run dev        # http://localhost:3000
 | `NEXT_PUBLIC_SITE_URL`          | `https://alibacelonia.dev` | Canonical URL, sitemap, robots, Open Graph, JSON-LD |
 | `NEXT_PUBLIC_FORMSPREE_FORM_ID` | empty                      | Formspree form; empty = `mailto:` fallback          |
 
+## Site structure
+
+- `/`: Hero, Projects, Experience, Skills, Certifications, Contact. A sticky glass navigation bar sits at the top (links collapse into a menu below 1024 px).
+- `/projects/<id>/`: one statically generated page per project (overview, problem, solution, stack, infrastructure, links).
+
 ## Editing content
 
 All content is typed data. Components never need changing to update it.
 
 | File                         | Content                                       |
 | ---------------------------- | --------------------------------------------- |
-| `src/data/projects.ts`       | Four featured projects                        |
+| `src/data/projects.ts`       | Four projects: card summary + detail pages    |
 | `src/data/experience.ts`     | Roles and dates                               |
 | `src/data/skills.ts`         | Skills by discipline (`hands-on` / `working`) |
 | `src/data/certifications.ts` | Certifications and credential URLs            |
 | `src/lib/site.ts`            | Name, tagline, links, navigation, resume path |
+| `src/lib/brand.ts`           | A/B logo path (header, favicon, OG image)     |
 | `public/documents/`          | Resume PDF                                    |
 
 Only add claims that can be verified in the resume or a repository. Sources are listed in [`docs/requirements.md`](docs/requirements.md).

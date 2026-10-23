@@ -3,17 +3,12 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Menu, X } from "lucide-react";
-import { navigation } from "@/lib/site";
-import { useActiveSection } from "@/hooks/useActiveSection";
-
-const sectionIds = navigation.map((item) => item.id);
 const loadPanel = () => import("./MobileMenuPanel");
 const MobileMenuPanel = dynamic(loadPanel, { ssr: false });
 
-/** Section navigation for small screens (the dock takes over from `md`). */
-export function MobileMenu() {
+/** Section navigation below `lg`, where the inline links do not fit. */
+export function MobileMenu({ active }: { active: string }) {
   const [open, setOpen] = useState(false);
-  const active = useActiveSection(sectionIds);
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -33,7 +28,7 @@ export function MobileMenu() {
       if (!panelRef.current?.contains(target) && !buttonRef.current?.contains(target)) close(false);
     };
     const onResize = () => {
-      if (window.matchMedia("(min-width: 768px)").matches) close(false);
+      if (window.matchMedia("(min-width: 1024px)").matches) close(false);
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -46,7 +41,7 @@ export function MobileMenu() {
   }, [open, close]);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         ref={buttonRef}
         type="button"

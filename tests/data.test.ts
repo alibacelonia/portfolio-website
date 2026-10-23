@@ -1,30 +1,55 @@
-import { projects } from "@/data/projects";
+import { getProject, projects } from "@/data/projects";
 import { experience, formatRange, formatYearMonth } from "@/data/experience";
 import { skills } from "@/data/skills";
 import { certifications } from "@/data/certifications";
 
 describe("projects data", () => {
-  it("has four featured projects with the portfolio last", () => {
+  it("has four featured projects with the Website Portfolio last", () => {
     expect(projects).toHaveLength(4);
-    expect(projects.at(-1)?.id).toBe("maba-portfolio");
+    const portfolio = projects.at(-1)!;
+    expect(portfolio.id).toBe("website-portfolio");
+    expect(portfolio.name).toBe("Website Portfolio");
+    expect(portfolio.category).toBe("Personal Website / Full-Stack & DevOps Portfolio");
+    expect(projects.some((p) => /maba/i.test(p.name))).toBe(false);
   });
 
-  it("uses unique ids and complete content", () => {
+  it("gives every project the full detail structure", () => {
     expect(new Set(projects.map((p) => p.id)).size).toBe(projects.length);
     for (const project of projects) {
-      expect(project.purpose.length).toBeGreaterThan(40);
-      expect(project.highlights.length).toBeGreaterThanOrEqual(3);
-      expect(project.stack.length).toBeGreaterThan(0);
-      expect(project.architecture.length).toBeGreaterThanOrEqual(3);
-      expect(project.categories.length).toBeGreaterThan(0);
+      expect(project.id).toMatch(/^[a-z0-9-]+$/);
+      expect(project.summary.length).toBeGreaterThan(40);
+      expect(project.keyTech.length).toBeGreaterThan(0);
+      expect(project.keyTech.length).toBeLessThanOrEqual(6);
+      expect(project.overview.length).toBeGreaterThan(0);
+      expect(project.problem.length).toBeGreaterThan(40);
+      expect(project.audience.length).toBeGreaterThan(10);
+      expect(project.solution.length).toBeGreaterThanOrEqual(3);
+      expect(project.stack.every((g) => g.items.length > 0)).toBe(true);
+      expect(project.infrastructure.items.length).toBeGreaterThan(0);
     }
   });
 
-  it("links only to https URLs under the owner's GitHub account for repositories", () => {
+  it("links only to https URLs, with repositories under the owner's GitHub account", () => {
     for (const project of projects) {
       expect(project.repository.href).toMatch(/^https:\/\/github\.com\/alibacelonia\/[\w.-]+$/);
-      for (const link of project.links) expect(link.href).toMatch(/^https:\/\//);
+      for (const link of [...project.links, project.docs, project.demo].filter(Boolean)) {
+        expect(link!.href).toMatch(/^https:\/\//);
+      }
     }
+  });
+
+  it("documents the portfolio's real delivery path and marks unfinished steps as planned", () => {
+    const portfolio = getProject("website-portfolio")!;
+    expect(portfolio.infrastructure.diagram).toEqual([
+      "GitHub",
+      "GitHub Actions",
+      "Next.js static build",
+      "Amazon S3",
+      "Amazon CloudFront",
+      "alibacelonia.dev",
+    ]);
+    const planned = portfolio.infrastructure.items.filter((i) => i.status === "planned");
+    expect(planned.map((i) => i.label)).toEqual(["AWS provisioning", "Custom domain"]);
   });
 
   it("never ships a screenshot that is not a local asset", () => {

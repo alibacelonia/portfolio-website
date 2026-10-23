@@ -6,8 +6,6 @@ aws_region = "ap-southeast-1"
 # Step 2: add domains. The first one is canonical; others 301-redirect to it.
 domain_names = []
 # domain_names = ["alibacelonia.dev", "www.alibacelonia.dev"]
-# Future migration: ["maba.dev", "www.maba.dev", "alibacelonia.dev", "www.alibacelonia.dev"]
-#   (a certificate covering all names is required; old domains then redirect to maba.dev)
 
 # DNS for alibacelonia.dev is on Cloudflare, so leave this empty and create records manually.
 route53_zone_id = ""

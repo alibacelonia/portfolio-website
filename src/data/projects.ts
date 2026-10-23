@@ -1,111 +1,354 @@
 import type { Project } from "@/types/content";
 
-// Every claim below is taken from the repository's README, architecture docs, source, or CI.
-// See docs/requirements.md before adding anything that is not in the repository.
+// Every claim below is taken from the repository's README, docs, source, or CI configuration
+// (see `source`). Do not add features, metrics, deployments or screenshots that do not exist.
+// docs/requirements.md lists what was verified and when.
 export const projects: Project[] = [
   {
     id: "cloud-incident-service",
     name: "cloud-incident-service",
-    purpose:
-      "AI-assisted AWS incident investigation. A single bounded agent gathers evidence from read-only tools and returns a schema-validated report that keeps confirmed facts, hypotheses and uncertainty separate.",
-    categories: ["AI Engineering", "DevOps / Cloud"],
+    category: "AI Engineering · Cloud Operations",
+    discipline: "ai",
     status: "MVP · synthetic data",
-    architecture: ["incident", "bounded agent", "read-only tools", "validated report"],
-    highlights: [
-      "Two orchestrators behind one protocol: deterministic correlation rules by default, or a model-driven loop capped at 8 tool calls, 6 turns and 60 seconds.",
-      "The model cites evidence by ID only; the service supplies the evidence, rejects anything no tool returned, and every remediation requires human approval.",
-      "Provider adapters for Amazon Bedrock (Converse tool use), the Anthropic API and an offline mock, plus an opt-in live CloudWatch Logs source.",
-      "Offline evaluation of ten scenarios scored on schema, citations, hypothesis, sources and safety, with redacted JSON traces.",
-    ],
-    stack: [
-      "Python",
-      "FastAPI",
-      "Pydantic",
-      "Amazon Bedrock",
-      "Anthropic API",
-      "boto3",
-      "pytest",
-      "uv",
-    ],
+    summary:
+      "An AI-assisted service that investigates AWS incidents with a bounded, read-only agent and returns evidence-cited reports that keep facts, hypotheses and uncertainty separate.",
+    keyTech: ["Python", "FastAPI", "Pydantic", "Amazon Bedrock", "Anthropic API"],
     repository: {
       label: "GitHub",
       href: "https://github.com/alibacelonia/cloud-incident-service",
     },
+    docs: {
+      label: "Architecture",
+      href: "https://github.com/alibacelonia/cloud-incident-service/blob/main/docs/ARCHITECTURE.md",
+    },
     links: [],
-    source: "README.md, docs/ARCHITECTURE.md, orchestration/model.py, .github/workflows/ci.yml",
+    overview: [
+      "Given a short incident report (service, environment, symptoms and a time window of up to 24 hours), the service collects evidence from read-only tools, correlates it by time and service, and returns a schema-validated report.",
+      "The report separates confirmed facts, hypotheses with confidence levels, uncertainties, next diagnostic steps and remediation proposals, and every statement cites the evidence behind it. The service never changes cloud resources. It is a portfolio MVP that runs locally against synthetic data and makes no claims about production scale.",
+    ],
+    problem:
+      "Incident responders gather evidence by hand from metrics, alarms, logs, deployment records, infrastructure changes and runbooks, then correlate it mentally under time pressure. An AI assistant can reduce that overhead, but only if every claim stays traceable to real evidence and every change stays under human control.",
+    audience:
+      "AWS-focused DevOps, cloud operations and site reliability engineers investigating a degraded service or failed deployment, and reviewers who need to audit how an agent reached its conclusions.",
+    solution: [
+      "Four read-only tools: CloudWatch signals, deployment history, infrastructure changes (with a 60-minute look-back) and runbook search.",
+      "Two orchestrators behind one protocol: deterministic correlation rules by default, or a model-driven loop capped at 8 tool calls, 6 turns and 60 seconds.",
+      "Evidence comes from the service, never from the model: the model cites source IDs, anything no tool returned is rejected, and hypotheses are checked against the correlation rules.",
+      "Every remediation proposal requires human approval; stale, malformed or unavailable sources are reported as uncertainty or as a partial report.",
+      "An offline evaluation of ten scenarios scores schema, citations, hypothesis, sources and safety. Investigation traces are redacted for access keys, account IDs and email addresses.",
+    ],
+    stack: [
+      { group: "Backend", items: ["Python 3.12+", "FastAPI", "Pydantic", "Uvicorn"] },
+      {
+        group: "AI / LLM",
+        items: [
+          "Amazon Bedrock (Converse API, tool use)",
+          "Anthropic Messages API",
+          "Offline rule-based mock",
+        ],
+      },
+      { group: "Cloud services", items: ["Amazon CloudWatch Logs (opt-in)", "boto3"] },
+      { group: "Testing & quality", items: ["pytest", "Ruff", "uv"] },
+      { group: "DevOps", items: ["GitHub Actions", "Dependabot", "pip-audit"] },
+    ],
+    infrastructure: {
+      summary:
+        "A local-first service. There is no hosted deployment, container image or infrastructure as code; AWS is reached only through opt-in, read-only adapters.",
+      items: [
+        {
+          label: "Runtime",
+          detail:
+            "Runs locally with Uvicorn on 127.0.0.1, with optional API-key authentication and a 32 KiB request-body limit.",
+        },
+        {
+          label: "CI",
+          detail:
+            "GitHub Actions on Python 3.12, 3.13 and 3.14: formatting, linting, tests and both offline evaluations.",
+        },
+        {
+          label: "Supply chain",
+          detail:
+            "pip-audit dependency audit on pushes, pull requests and weekly; Dependabot updates for uv and GitHub Actions.",
+        },
+        {
+          label: "AWS access",
+          detail:
+            "Least-privilege IAM policy examples for Bedrock invocation and CloudWatch Logs reads. Live tests are opt-in.",
+        },
+        {
+          label: "Observability",
+          detail:
+            "Per-investigation JSON traces of tool calls, model turns and validation outcomes, with secret redaction.",
+        },
+      ],
+      diagram: ["incident request", "bounded agent", "read-only tools", "validated report"],
+    },
+    source:
+      "README.md, docs/PROJECT.md, docs/ARCHITECTURE.md, orchestration/model.py, .github/workflows, .github/dependabot.yml, docs/iam",
   },
   {
     id: "estoe",
     name: "estoe",
-    purpose:
-      "A CLI that turns one cloud secret from AWS Secrets Manager, Azure Key Vault or Google Secret Manager into a local .env file, without copying values by hand.",
-    categories: ["DevOps / Cloud", "Automation"],
+    category: "DevOps Tooling · CLI",
+    discipline: "devops",
     status: "v0.2.0 · PyPI",
-    architecture: ["CLI", "preflight", "provider worker", "encode", "atomic write"],
-    highlights: [
-      "Filesystem and Git preflight runs before any fetch: tracked or unignored destinations, symlinks and unsafe directories are refused.",
-      "SDK calls run in an isolated worker with a 15-second deadline; secret values never reach logs, arguments or diagnostics.",
-      "Private, atomic file publication with distinct create-only and explicit-overwrite paths; dotenv output verified by round-trip tests.",
-      "Released to PyPI from GitHub Actions with Trusted Publishing (no stored token); CI on Python 3.12–3.14 plus a dependency audit.",
-    ],
-    stack: ["Python", "boto3", "Azure SDK", "Google Cloud SDK", "pytest", "uv", "GitHub Actions"],
+    summary:
+      "A command-line tool that turns one cloud secret into a local .env file, so developers stop copying secret values by hand.",
+    keyTech: ["Python", "AWS Secrets Manager", "Azure Key Vault", "Google Secret Manager"],
     repository: { label: "GitHub", href: "https://github.com/alibacelonia/estoe" },
+    docs: {
+      label: "Architecture",
+      href: "https://github.com/alibacelonia/estoe/blob/main/docs/ARCHITECTURE.md",
+    },
     links: [{ label: "PyPI", href: "https://pypi.org/project/estoe/" }],
+    overview: [
+      "estoe (Secret to Env) reads one explicitly selected secret from AWS Secrets Manager, Azure Key Vault or Google Secret Manager, checks that it is a flat JSON object of strings, and writes it as a dotenv file.",
+      "It uses the developer's existing cloud login, can preview key names without values, and refuses unsafe destinations. It only reads: it never creates secrets, logs in, or discovers other secrets.",
+    ],
+    problem:
+      "Setting up a local environment often means copying values from a cloud console into a .env file by hand. That is slow and error-prone, and it leaks secrets into clipboards, shell history, screenshots and, too often, Git.",
+    audience:
+      "Developers on macOS or Linux who keep application configuration in a cloud secret manager and need the same values locally.",
+    solution: [
+      "One command per provider using existing credentials: an AWS profile and region, an Azure CLI session, or Google Application Default Credentials.",
+      "Preflight before any cloud call: tracked or unignored Git destinations, symlinks, special files and unsafe directories are rejected.",
+      "Strict validation: duplicate keys, nested values, non-strings and invalid variable names fail before anything is written.",
+      "Private (0600), atomic writes with separate create-only and explicit-overwrite paths; preview mode shows key names only.",
+      "SDK calls run in an isolated worker with a 15-second deadline, and errors use fixed codes so values never reach logs or diagnostics.",
+    ],
+    stack: [
+      { group: "Application", items: ["Python 3.12+", "argparse", "Hatchling"] },
+      {
+        group: "Cloud SDKs",
+        items: [
+          "boto3 (AWS Secrets Manager)",
+          "Azure Identity + Key Vault Secrets",
+          "Google Cloud Secret Manager",
+        ],
+      },
+      { group: "Testing & quality", items: ["pytest", "Ruff", "uv"] },
+      { group: "CI/CD & release", items: ["GitHub Actions", "PyPI Trusted Publishing"] },
+    ],
+    infrastructure: {
+      summary:
+        "A locally installed CLI, so there is no hosted infrastructure. The engineering is in the release pipeline, repository controls and least-privilege cloud permissions.",
+      items: [
+        {
+          label: "Distribution",
+          detail:
+            "Published on PyPI (v0.2.0) and GitHub Releases; installs with uv tool install estoe.",
+        },
+        {
+          label: "Release pipeline",
+          detail:
+            "GitHub Actions builds and validates the wheel and source distribution, then publishes approved releases through PyPI Trusted Publishing (OIDC), with no stored token.",
+        },
+        {
+          label: "CI",
+          detail:
+            "Formatting, linting and tests on Python 3.12–3.14, with network access denied in tests, plus a dependency audit.",
+        },
+        {
+          label: "Repository controls",
+          detail:
+            "Protected main branch: pull requests, passing CI and resolved conversations required; force pushes and deletion blocked.",
+        },
+        {
+          label: "Cloud permissions",
+          detail:
+            "Least-privilege examples: secretsmanager:GetSecretValue on one secret, kms:Decrypt for customer-managed keys, and equivalent Azure and Google roles.",
+        },
+      ],
+      diagram: ["CLI", "preflight", "provider worker", "validate + encode", "atomic write"],
+    },
     source:
-      "README.md, docs/ARCHITECTURE.md, src/estoe/providers.py, publish-pypi.yml, PyPI JSON API",
+      "README.md, docs/PROJECT.md, docs/ARCHITECTURE.md, src/estoe/providers.py, .github/workflows/publish-pypi.yml, docs/iam, PyPI JSON API",
   },
   {
     id: "ai-project-factory",
     name: "ai-project-factory",
-    purpose:
-      "A Copier-based generator for small, runnable Python and web projects that are ready for requirements-driven, AI-assisted development, with tests, CI and repository instructions.",
-    categories: ["AI Engineering", "Automation", "Full-Stack"],
+    category: "Developer Tooling · AI-assisted Development",
+    discipline: "ai",
     status: "Open source · MIT",
-    architecture: ["CLI", "validate", "select template", "render", "staged move"],
-    highlights: [
-      "Three independent starters: Python CLI (Typer), web SaaS (Next.js, FastAPI, PostgreSQL via Docker Compose) and an AI service with a deterministic mock provider.",
-      "Pydantic-validated project schema with feature-compatibility rules; output is rendered in a temporary directory and never overwrites an existing path.",
-      "A data-driven catalog of 22 UI presets with light and dark semantic tokens and accessible fallbacks.",
-      "Generated repositories include agent instructions, reusable skills and scoped review agents; cloud-incident-service was scaffolded from it.",
-    ],
-    stack: ["Python", "Copier", "Jinja", "Typer", "Pydantic", "pytest", "uv", "GitHub Actions"],
+    summary:
+      "A project generator that creates small, runnable Python and web starters with requirements, tests, CI and AI-agent instructions already aligned.",
+    keyTech: ["Python", "Copier", "Typer", "Pydantic", "GitHub Actions"],
     repository: {
       label: "GitHub",
       href: "https://github.com/alibacelonia/ai-project-factory",
     },
+    docs: {
+      label: "Architecture",
+      href: "https://github.com/alibacelonia/ai-project-factory/blob/main/docs/ARCHITECTURE.md",
+    },
     links: [],
-    source: "README.md, docs/ARCHITECTURE.md, pyproject.toml, cloud-incident-service README",
-  },
-  {
-    id: "maba-portfolio",
-    name: "MABA portfolio",
-    purpose:
-      "This site. A statically exported Next.js portfolio served from a private S3 bucket through CloudFront, provisioned with Terraform and deployed by GitHub Actions using OIDC.",
-    categories: ["DevOps / Cloud", "Full-Stack"],
-    status: "This site",
-    architecture: ["push", "CI gates", "OIDC", "private S3", "CloudFront"],
-    highlights: [
-      "Static export only, with no server runtime. The S3 bucket stays private and is reachable solely through CloudFront Origin Access Control.",
-      "Terraform defines S3, CloudFront, an ACM certificate in us-east-1, security headers and a least-privilege GitHub OIDC deploy role. No long-lived AWS keys.",
-      "Every deploy is gated on linting, type checks, unit tests and Playwright end-to-end and accessibility tests.",
-      "Hashed assets are cached for a year as immutable; HTML is revalidated and CloudFront is invalidated on release.",
+    overview: [
+      "AI Project Factory is a local, Copier-based generator with three starter profiles: a Python CLI, a web SaaS (Next.js, FastAPI and PostgreSQL) and an AI service (FastAPI with a deterministic mock provider).",
+      "Each generated project runs on its own and ships with requirements and architecture documents, tests, CI, and repository instructions, skills and review agents for AI-assisted development. Generation itself makes no AI API calls and needs no paid service.",
+    ],
+    problem:
+      "Starting a project is easy; keeping its requirements, architecture, tests, AI-assistant instructions and CI aligned is harder. Ad hoc starters drift, and AI coding agents work poorly without clear, consistent project context.",
+    audience:
+      "Developers who frequently start small services or tools and want a consistent, tested baseline for requirements-driven, AI-assisted work.",
+    solution: [
+      "A Pydantic-validated project schema with compatibility rules, so unsupported or conflicting feature selections are rejected before generation.",
+      "Optional capabilities, such as OpenAI or Amazon Bedrock adapters, are added only when selected, as tested code or explicit extension seams.",
+      "Staged generation in a temporary sibling directory, moved into place only after Copier succeeds; existing directories are never overwritten.",
+      "A data-driven catalog of 22 UI presets with light and dark semantic tokens and accessibility fallbacks, plus a dependency-free gallery.",
+      "cloud-incident-service was generated from its ai-service profile.",
     ],
     stack: [
-      "Next.js",
-      "TypeScript",
-      "Tailwind CSS",
-      "Motion",
-      "Terraform",
-      "S3",
-      "CloudFront",
-      "GitHub Actions",
+      {
+        group: "Application",
+        items: ["Python 3.12+", "Typer", "Rich", "Pydantic", "Copier", "Jinja"],
+      },
+      {
+        group: "Generated starters",
+        items: ["Next.js", "TypeScript", "FastAPI", "PostgreSQL", "Docker Compose"],
+      },
+      { group: "AI / LLM", items: ["OpenAI and Amazon Bedrock adapters (optional)"] },
+      { group: "Testing & quality", items: ["pytest", "Ruff", "uv", "Secret scanning"] },
+      { group: "DevOps", items: ["GitHub Actions"] },
     ],
+    infrastructure: {
+      summary:
+        "A locally run generator with no hosted infrastructure. Its CI verifies both the factory and representative generated output.",
+      items: [
+        {
+          label: "Distribution",
+          detail:
+            "Installed with uv tool install; templates are packaged into the wheel. Tagged release v0.1.0 on GitHub.",
+        },
+        {
+          label: "CI",
+          detail:
+            "GitHub Actions runs formatting, linting, tests and a secret scan, then generates a SaaS project and type-checks, tests and builds its frontend.",
+        },
+        {
+          label: "Containers",
+          detail:
+            "Generated web SaaS projects include a Docker Compose setup, which CI validates with docker compose config.",
+        },
+        {
+          label: "Security",
+          detail:
+            "CI runs without secrets, cloud credentials, live models or production databases.",
+        },
+      ],
+      diagram: ["CLI", "validate", "select template", "Copier render", "staged move"],
+    },
+    source:
+      "README.md, docs/ARCHITECTURE.md, docs/DEMO.md, docs/ROADMAP.md, pyproject.toml, .github/workflows/ci.yml, GitHub releases",
+  },
+  {
+    id: "website-portfolio",
+    name: "Website Portfolio",
+    category: "Personal Website / Full-Stack & DevOps Portfolio",
+    discipline: "devops",
+    status: "This site",
+    summary:
+      "This website: a statically exported Next.js site built for Amazon S3 and CloudFront, with infrastructure defined in Terraform and deployments through GitHub Actions.",
+    keyTech: ["Next.js", "TypeScript", "Tailwind CSS", "Terraform", "AWS"],
     // The repository must contain this code before the site is deployed (docs/requirements.md).
     repository: {
       label: "GitHub",
       href: "https://github.com/alibacelonia/portfolio-website",
     },
+    docs: {
+      label: "Architecture",
+      href: "https://github.com/alibacelonia/portfolio-website/blob/main/docs/architecture.md",
+    },
     links: [],
-    source: "This repository: infra/terraform, .github/workflows",
+    overview: [
+      "A single-page portfolio with light and dark themes, a CI/CD pipeline illustration, detailed project pages, an experience timeline, grouped skills, verifiable certifications and a contact form.",
+      "It is exported as static files at build time, with no server runtime, so it can be served from object storage behind a CDN.",
+    ],
+    problem:
+      "To create a professional online presence that showcases my full-stack engineering, DevOps, cloud infrastructure and AI engineering experience, with every claim verifiable against my resume and public repositories.",
+    audience: "Recruiters, hiring managers and engineers evaluating my work.",
+    solution: [
+      "Content lives in typed data modules, separate from components, and each claim is traceable to the resume or a repository.",
+      "Accessible by design: semantic structure, keyboard navigation, visible focus, reduced-motion support and automated axe checks in both themes.",
+      "A small performance budget: static HTML, CSS-first animation, and Motion for React only where it is needed.",
+      "A contact form that posts to Formspree when configured and otherwise opens the visitor's email app, never reporting a false success.",
+      "Deployments gated on linting, type checks, unit tests, end-to-end and accessibility tests, and Terraform validation.",
+    ],
+    stack: [
+      {
+        group: "Frontend",
+        items: [
+          "Next.js (static export)",
+          "React",
+          "TypeScript",
+          "Tailwind CSS",
+          "Motion for React",
+        ],
+      },
+      {
+        group: "Testing & quality",
+        items: ["Vitest", "Testing Library", "Playwright", "axe-core", "ESLint", "Prettier"],
+      },
+      { group: "DevOps", items: ["GitHub Actions", "Terraform"] },
+      {
+        group: "Cloud services",
+        items: ["Amazon S3", "Amazon CloudFront", "AWS Certificate Manager", "AWS IAM (OIDC)"],
+      },
+      { group: "Integrations", items: ["Formspree (contact form)"] },
+    ],
+    infrastructure: {
+      summary:
+        "The infrastructure and delivery pipeline are implemented as code and validated in CI. Provisioning in AWS and pointing alibacelonia.dev at CloudFront are the remaining steps.",
+      items: [
+        {
+          label: "Hosting",
+          detail:
+            "Private S3 bucket (public access blocked, encrypted, versioned) readable only by CloudFront through Origin Access Control.",
+        },
+        {
+          label: "CDN & TLS",
+          detail:
+            "CloudFront with HTTPS redirect, HTTP/2 and HTTP/3, security headers (CSP, HSTS) and an ACM certificate in us-east-1.",
+        },
+        {
+          label: "Infrastructure as code",
+          detail:
+            "Terraform for S3, CloudFront, ACM, an index-rewrite function and the deploy role, validated in CI.",
+        },
+        {
+          label: "CI/CD",
+          detail:
+            "GitHub Actions runs CI on pull requests. Pushes to main rerun CI, publish the build with year-long caching for hashed assets, and invalidate CloudFront.",
+        },
+        {
+          label: "Security",
+          detail:
+            "GitHub OIDC federation into a role limited to one bucket and one distribution, so there are no long-lived AWS keys.",
+        },
+        {
+          label: "AWS provisioning",
+          detail: "terraform apply in the production AWS account.",
+          status: "planned",
+        },
+        {
+          label: "Custom domain",
+          detail: "alibacelonia.dev pointed at CloudFront through Cloudflare DNS.",
+          status: "planned",
+        },
+      ],
+      diagram: [
+        "GitHub",
+        "GitHub Actions",
+        "Next.js static build",
+        "Amazon S3",
+        "Amazon CloudFront",
+        "alibacelonia.dev",
+      ],
+    },
+    source:
+      "This repository: next.config.ts, infra/terraform, .github/workflows, scripts/deploy.sh",
   },
 ];
+
+export function getProject(id: string): Project | undefined {
+  return projects.find((project) => project.id === id);
+}

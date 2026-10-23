@@ -34,8 +34,8 @@ export function ExternalLink({ children, className = "", ...props }: AnchorProps
       <ArrowUpRight
         aria-hidden="true"
         className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-      />
-      <span className="sr-only"> (opens in a new tab)</span>
+      />{" "}
+      <span className="sr-only">(opens in a new tab)</span>
     </a>
   );
 }

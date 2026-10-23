@@ -24,16 +24,16 @@ export function normalizeFormId(value: string | undefined): string | null {
 }
 
 export const site = {
-  brand: "MABA",
+  /** Typographic logo text; the drawn mark lives in src/lib/brand.ts. */
+  brand: "A/B",
   name: "Mohammed Ali B. Abdullah",
   roles: ["Full-Stack Developer", "DevOps Engineer", "AI Engineer"],
   tagline:
     "I build scalable applications, automate cloud infrastructure, and develop AI-powered solutions that solve real-world problems.",
   description:
-    "Mohammed Ali B. Abdullah (MABA) — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 8+ years building applications, CI/CD pipelines and cloud infrastructure.",
+    "Mohammed Ali B. Abdullah — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 8+ years building applications, CI/CD pipelines and cloud infrastructure.",
+  /** Single source of truth for the canonical origin (NEXT_PUBLIC_SITE_URL). */
   url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
-  /** Planned domain. Not used as canonical until NEXT_PUBLIC_SITE_URL points to it. */
-  plannedUrl: "https://maba.dev",
   location: "Baguio City, Philippines",
   experienceYears: "8+",
   email: "alibacelonia1234@gmail.com",
@@ -46,6 +46,10 @@ export const site = {
   formspreeId: normalizeFormId(process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID),
 } as const;
 
+/** Host name shown as the site name, e.g. "alibacelonia.dev". */
+export const siteHost = new URL(site.url).host;
+
+/** Section links. Hrefs are root-relative so they also work from project pages. */
 export const navigation: NavItem[] = [
   { id: "home", label: "Home" },
   { id: "projects", label: "Projects" },

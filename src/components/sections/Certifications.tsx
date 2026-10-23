@@ -1,7 +1,7 @@
 import { certifications } from "@/data/certifications";
 import { Section } from "@/components/ui/Section";
 import { ExternalLink } from "@/components/ui/Links";
-import { disciplineDot } from "./Skills";
+import { disciplineDot } from "@/lib/disciplines";
 
 export function Certifications() {
   return (

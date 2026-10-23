@@ -1,8 +1,8 @@
 {
-  "name": "maba-portfolio",
+  "name": "alibacelonia-portfolio",
   "version": "1.0.0",
   "private": true,
-  "description": "MABA — personal engineering portfolio of Mohammed Ali B. Abdullah. Static Next.js export deployed to S3 + CloudFront.",
+  "description": "alibacelonia.dev — personal engineering portfolio of Mohammed Ali B. Abdullah. Static Next.js export deployed to S3 + CloudFront.",
   "license": "UNLICENSED",
   "engines": {
     "node": ">=22"

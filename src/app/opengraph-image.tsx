@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { site } from "@/lib/site";
+import { site, siteHost } from "@/lib/site";
+import { LOGO_PATH, LOGO_VIEWBOX } from "@/lib/brand";
 
 export const dynamic = "force-static";
 export const alt = `${site.name} — ${site.roles.join(" · ")}`;
@@ -34,9 +35,15 @@ export default async function OpengraphImage() {
         fontFamily: "Geist",
       }}
     >
-      <div style={{ display: "flex", fontSize: 22, fontWeight: 600, letterSpacing: 4 }}>
-        {site.brand}
-      </div>
+      <svg width="72" height="48" viewBox={LOGO_VIEWBOX} fill="none">
+        <path
+          d={LOGO_PATH}
+          stroke="#111827"
+          strokeWidth="1.9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ fontSize: 64, fontWeight: 600, letterSpacing: -1.5, lineHeight: 1.1 }}>
@@ -83,7 +90,7 @@ export default async function OpengraphImage() {
             </div>
           ))}
         </div>
-        <div style={{ display: "flex" }}>{new URL(site.url).host}</div>
+        <div style={{ display: "flex" }}>{siteHost}</div>
       </div>
     </div>,
     {

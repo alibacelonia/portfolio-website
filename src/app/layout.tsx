@@ -2,12 +2,11 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { site } from "@/lib/site";
+import { site, siteHost } from "@/lib/site";
 import { themeBootstrapScript } from "@/lib/theme";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 import { Providers } from "@/components/layout/Providers";
 import { Header } from "@/components/layout/Header";
-import { Dock } from "@/components/layout/Dock";
 import { Footer } from "@/components/layout/Footer";
 import { RevealObserver } from "@/components/ui/RevealObserver";
 import "./globals.css";
@@ -16,14 +15,13 @@ const title = `${site.name} — Full-Stack, DevOps & AI Engineer`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: title, template: `%s · ${site.brand}` },
+  title: { default: title, template: `%s · ${site.name}` },
   description: site.description,
-  applicationName: site.brand,
+  applicationName: siteHost,
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
   keywords: [
     "Mohammed Ali B. Abdullah",
-    "MABA",
     "DevOps Engineer",
     "Full-Stack Developer",
     "AI Engineer",
@@ -36,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "profile",
     url: "/",
-    siteName: site.brand,
+    siteName: siteHost,
     title,
     description: site.description,
     locale: "en_US",
@@ -70,7 +68,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <a
           href="#main"
-          className="fixed top-2 left-2 z-50 -translate-y-16 rounded-lg bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform focus:translate-y-0"
+          className="fixed top-2 left-2 z-[60] -translate-y-16 rounded-lg bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform focus:translate-y-0"
         >
           Skip to content
         </a>
@@ -80,7 +78,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
-          <Dock />
         </Providers>
         <RevealObserver />
         <script

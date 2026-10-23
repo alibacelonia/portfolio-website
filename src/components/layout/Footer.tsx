@@ -2,11 +2,11 @@ import { site } from "@/lib/site";
 import { projects } from "@/data/projects";
 import { ExternalLink } from "@/components/ui/Links";
 
-const portfolioRepo = projects.find((project) => project.id === "maba-portfolio")?.repository;
+const portfolioRepo = projects.find((project) => project.id === "website-portfolio")?.repository;
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-bg pt-8 pb-10 md:pb-28">
+    <footer className="border-t border-border bg-bg py-8">
       <div className="container-fluid flex flex-col gap-3 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>
           © {new Date().getFullYear()} {site.name}

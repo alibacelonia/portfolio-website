@@ -1,4 +1,7 @@
-import { normalizeFormId, normalizeSiteUrl } from "@/lib/site";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { normalizeFormId, normalizeSiteUrl, site, siteHost } from "@/lib/site";
+import { LOGO_PATH } from "@/lib/brand";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 
 describe("normalizeSiteUrl", () => {
@@ -8,12 +11,14 @@ describe("normalizeSiteUrl", () => {
   });
 
   it("keeps only the origin", () => {
-    expect(normalizeSiteUrl("https://maba.dev/")).toBe("https://maba.dev");
-    expect(normalizeSiteUrl("https://maba.dev/path?q=1")).toBe("https://maba.dev");
+    expect(normalizeSiteUrl("https://alibacelonia.dev/")).toBe("https://alibacelonia.dev");
+    expect(normalizeSiteUrl("https://preview.example.com/path?q=1")).toBe(
+      "https://preview.example.com",
+    );
   });
 
   it("rejects insecure or invalid URLs, except http on localhost", () => {
-    expect(normalizeSiteUrl("http://maba.dev")).toBe("https://alibacelonia.dev");
+    expect(normalizeSiteUrl("http://alibacelonia.dev")).toBe("https://alibacelonia.dev");
     expect(normalizeSiteUrl("not a url")).toBe("https://alibacelonia.dev");
     expect(normalizeSiteUrl("http://localhost:4173")).toBe("http://localhost:4173");
   });
@@ -36,5 +41,20 @@ describe("structured data", () => {
     expect(data.mainEntity.name).toBe("Mohammed Ali B. Abdullah");
     expect(data.mainEntity.sameAs).toContain("https://github.com/alibacelonia");
     expect(data.mainEntity.hasCredential).toHaveLength(3);
+  });
+});
+
+describe("canonical domain", () => {
+  it("uses alibacelonia.dev as the single configured origin by default", () => {
+    expect(site.url).toBe("https://alibacelonia.dev");
+    expect(siteHost).toBe("alibacelonia.dev");
+  });
+});
+
+describe("brand", () => {
+  it("uses the same A/B mark in the favicon and the header logo", () => {
+    expect(site.brand).toBe("A/B");
+    const icon = readFileSync(join(process.cwd(), "src/app/icon.svg"), "utf8");
+    expect(icon).toContain(`d="${LOGO_PATH}"`);
   });
 });

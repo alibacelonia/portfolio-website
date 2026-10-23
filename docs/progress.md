@@ -1,9 +1,25 @@
 # Progress
 
-**Current phase:** complete through Phase 8 (local). Deployment awaits owner actions (below).
+**Current phase:** Phase 9 (UI, branding and project refinement) complete locally. Deployment awaits owner actions (below).
 **Last updated:** 2026-10-23
 
-## Completed
+## Phase 9 — refinement (2026-10-23)
+
+Checkpoint commit before edits: `d204d1254f7b9a031c40bc904e541697026717f6`.
+
+| Check                           | Result                                                                                                                           |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Lint, types, format             | pass                                                                                                                             |
+| Unit/component (Vitest)         | 50/50                                                                                                                            |
+| E2E + axe (Playwright)          | 36 pass, 2 intentionally skipped; axe 0 violations on `/` and `/projects/website-portfolio/`, light and dark, desktop and mobile |
+| Widths                          | 0 px overflow at 320–1920 px in both themes; first-viewport and detail-page screenshots reviewed                                 |
+| Lighthouse (local, 3 runs each) | Desktop 100/100/100/100 · Mobile 95/100/100/100 · project page mobile 95 · CLS 0                                                 |
+| Initial JS (home)               | 202.6 KB gzipped (+3.6 KB for client routing to project pages)                                                                   |
+| Terraform                       | fmt + validate pass after renaming defaults to `alibacelonia-portfolio`                                                          |
+
+Fixed along the way: screen-reader names missing a space (“View detailsabout estoe”) in six `sr-only` spans; project pages lost `og:image` because page-level `openGraph` replaces the root object; pipeline transitions ran under reduced motion.
+
+## Completed (Phases 0–8)
 
 All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 
@@ -47,4 +63,5 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 4. Approve AWS provisioning: Terraform state bucket, `terraform apply` (see `docs/deployment.md`).
 5. Configure the GitHub `production` environment and variables.
 6. DNS cutover on Cloudflare (replaces the current Vercel site at alibacelonia.dev).
+   Afterwards remove `status: "planned"` from the Website Portfolio infrastructure items in `src/data/projects.ts`.
 7. After going live: run Lighthouse against production (security headers and caching only exist on CloudFront).

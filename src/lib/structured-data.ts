@@ -13,7 +13,6 @@ export function buildPersonJsonLd(): string {
       "@type": "Person",
       "@id": `${site.url}/#person`,
       name: site.name,
-      alternateName: site.brand,
       url: `${site.url}/`,
       email: `mailto:${site.email}`,
       jobTitle: site.roles.join(", "),
