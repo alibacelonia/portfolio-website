@@ -199,8 +199,20 @@ describe("Skills", () => {
 });
 
 describe("Certifications", () => {
-  it("links each certification to its credential", () => {
-    render(<Certifications />);
-    expect(screen.getAllByRole("link", { name: /View credential/ })).toHaveLength(3);
+  it("shows each official badge with its level and a Credly verification link", () => {
+    const { container } = render(<Certifications />);
+    const links = screen.getAllByRole("link", { name: /^Verify on Credly: AWS Certified/ });
+    expect(links).toHaveLength(3);
+    for (const link of links) expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    // Badges are decorative beside the name; next/image may rewrite src through its loader.
+    const badges = [...container.querySelectorAll("img")];
+    expect(badges).toHaveLength(3);
+    expect(badges.every((img) => img.getAttribute("alt") === "")).toBe(true);
+    expect(badges.every((img) => /certifications(%2F|\/)aws-/.test(img.getAttribute("src")!))).toBe(
+      true,
+    );
+    expect(screen.getAllByText("Foundational")).toHaveLength(2);
+    expect(screen.getByText("Associate")).toBeInTheDocument();
+    expect(screen.getByText("SAA-C03")).toBeInTheDocument();
   });
 });

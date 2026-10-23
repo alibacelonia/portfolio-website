@@ -138,6 +138,14 @@ describe("skills data", () => {
 describe("certifications data", () => {
   it("lists the three AWS certifications with verified Credly links", () => {
     expect(certifications.map((c) => c.code)).toEqual(["SAA-C03", "CLF-C02", "AIF-C01"]);
+    expect(certifications.map((c) => c.level)).toEqual([
+      "Associate",
+      "Foundational",
+      "Foundational",
+    ]);
+    for (const cert of certifications) {
+      expect(cert.badge?.src).toMatch(/^\/certifications\/aws-[a-z]+\.webp$/);
+    }
     for (const cert of certifications) {
       if (cert.credentialUrl) {
         expect(cert.credentialUrl).toMatch(/^https:\/\/www\.credly\.com\/badges\/[0-9a-f-]{36}/);

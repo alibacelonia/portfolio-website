@@ -104,11 +104,16 @@ export interface Certification {
   id: string;
   name: string;
   code: string;
+  /** Certification level as printed on the official badge. */
+  level: "Foundational" | "Associate" | "Professional" | "Specialty";
   issuer: string;
   /** Verified public credential URL, or null until verified. */
   credentialUrl: string | null;
   discipline: Discipline;
-  /** Authorized badge image under /public/certifications. */
+  /**
+   * Official badge image under /public/certifications. Only the earner's own Credly badge
+   * artwork, shown unaltered; never a standalone AWS logo.
+   */
   badge?: { src: string; alt: string };
 }
 

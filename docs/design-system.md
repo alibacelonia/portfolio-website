@@ -74,6 +74,10 @@ A vertical, scroll-down timeline (newest first). From `md`: three columns — da
 - **Concurrency:** when a role starts before the next (older) one ended, a sage bracket beside the rail joins the two nodes (Buzzerboy alongside Fujitsu). A handover in the same month is not treated as overlap. The card note explains it in words.
 - **Dates:** range in `type-mono`, then the computed inclusive duration (“4 yrs 3 mos”) or “Current role”, then employment type, all in `type-label`.
 
+## Certifications
+
+One `card-shell` panel split into equal cells by hairlines (the hero overview's cell language), each led by the official Credly badge for that credential. Badges are the section's only saturated color; they are shown unaltered and are decorative (`alt=""`) because the certification name sits beside them. Each cell: name (`type-card-title`, two lines reserved in columns so rows align), exam code chip and level (`type-label`), issuer, and “Verify on Credly”. Three columns from `lg`; below that, badge-left rows (80 px badge, 96 px from `sm`). No standalone AWS logo is used (trademark guidelines allow earners to display their badges, not the AWS logo).
+
 ## Logo
 
 `src/lib/brand.ts` holds one stroke path on a 32×32 grid (condensed A, light-lean slash, B with a slightly larger lower bowl). Available through `Logo` (current text color) and used by `src/app/icon.svg` (light strokes on `#111827`) and the Open Graph image. Paths, not text, so it never depends on installed fonts; readable at 16 px.

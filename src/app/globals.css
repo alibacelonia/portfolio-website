@@ -246,6 +246,14 @@
   font-weight: 500;
 }
 
+/* Card surface without padding, for panels split into cells that pad themselves. */
+@utility card-shell {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
 @utility card {
   border: 1px solid var(--border);
   border-radius: 0.75rem;
