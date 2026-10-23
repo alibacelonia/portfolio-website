@@ -25,8 +25,8 @@ export function Header() {
 
   return (
     <header className="pointer-events-none sticky top-0 z-50 -mb-[var(--nav-offset)] pt-[var(--nav-top)]">
-      <div className="flex justify-center px-4">
-        <div className="glass pointer-events-auto relative flex h-[var(--nav-h)] w-full max-w-full items-center justify-between gap-2 rounded-full p-1 sm:w-auto">
+      <div className="flex justify-end px-4 sm:justify-center">
+        <div className="glass pointer-events-auto relative flex h-[var(--nav-h)] w-[var(--nav-h)] max-w-full items-center justify-between gap-2 rounded-full p-1 sm:w-auto">
           <SectionNav active={active} className="hidden sm:block" />
           <MobileMenu active={active} />
         </div>

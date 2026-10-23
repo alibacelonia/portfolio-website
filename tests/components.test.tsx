@@ -37,8 +37,6 @@ describe("MobileMenu", () => {
     render(<MobileMenu active="skills" />);
     const button = screen.getByRole("button", { name: /Open menu$/ });
     expect(button).toHaveAttribute("aria-expanded", "false");
-    expect(within(button).getByText("<A/B>")).toBeInTheDocument();
-    expect(within(button).getByText("ALI")).toBeInTheDocument();
 
     await user.click(button);
     expect(button).toHaveAttribute("aria-expanded", "true");

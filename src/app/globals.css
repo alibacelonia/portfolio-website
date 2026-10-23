@@ -287,6 +287,24 @@
   }
 }
 
+/* Unframed monochrome portrait with softly faded edges and a fine halftone texture. */
+.hero-portrait {
+  isolation: isolate;
+  -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 45%, #000 65%, transparent 100%);
+  mask-image: radial-gradient(ellipse closest-side at 50% 45%, #000 65%, transparent 100%);
+}
+
+.hero-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(13 17 23 / 0.6) 0.65px, transparent 0.9px);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 /* Hero background: one fine dot grid, faded toward the edges so it never competes with text. */
 .hero-pattern {
   background-image: radial-gradient(var(--pattern-dot) 1px, transparent 1.25px);

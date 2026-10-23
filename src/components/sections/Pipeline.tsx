@@ -74,7 +74,7 @@ const nodeStyles: Record<StageState, string> = {
  * A four-stage delivery pipeline. Renders neutral in static HTML, plays one sequential pass
  * when first visible, then rests on "passed". Reduced motion shows the final state directly.
  */
-export function Pipeline() {
+export function Pipeline({ compact = false }: { compact?: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
   const reduceMotion = usePrefersReducedMotion();
@@ -116,28 +116,40 @@ export function Pipeline() {
   return (
     <figure
       ref={ref}
-      className="overflow-hidden rounded-xl border border-border bg-surface shadow-raised"
+      className={
+        compact
+          ? "border-b border-border"
+          : "overflow-hidden rounded-xl border border-border bg-surface shadow-raised"
+      }
     >
       <figcaption className="sr-only">
         Delivery pipeline used for this site, in four stages: code, build, deploy and monitor.
       </figcaption>
 
-      <div
-        aria-hidden="true"
-        className="flex h-10 items-center gap-3 border-b border-border px-4 font-mono text-[11px] text-muted"
-      >
-        <span className="flex gap-1.5">
-          <span className="size-2 rounded-full bg-border-strong" />
-          <span className="size-2 rounded-full bg-border-strong" />
-          <span className="size-2 rounded-full bg-border-strong" />
-        </span>
-        <span className="min-w-0 flex-1 truncate text-center">
-          <span className="hidden sm:inline">.github/workflows/</span>deploy.yml
-        </span>
-        <span>main</span>
-      </div>
+      {!compact ? (
+        <div
+          aria-hidden="true"
+          className="flex h-10 items-center gap-3 border-b border-border px-4 font-mono text-[11px] text-muted"
+        >
+          <span className="flex gap-1.5">
+            <span className="size-2 rounded-full bg-border-strong" />
+            <span className="size-2 rounded-full bg-border-strong" />
+            <span className="size-2 rounded-full bg-border-strong" />
+          </span>
+          <span className="min-w-0 flex-1 truncate text-center">
+            <span className="hidden sm:inline">.github/workflows/</span>deploy.yml
+          </span>
+          <span>main</span>
+        </div>
+      ) : null}
 
-      <ol className="grid grid-cols-4 px-3 py-7 [--gap:24px] sm:px-6 sm:py-9 sm:[--gap:26px]">
+      <ol
+        className={
+          compact
+            ? "grid grid-cols-4 px-2 py-4 [--gap:18px] sm:px-6 sm:[--gap:20px]"
+            : "grid grid-cols-4 px-3 py-7 [--gap:24px] sm:px-6 sm:py-9 sm:[--gap:26px]"
+        }
+      >
         {stages.map((stage, index) => {
           const state = stateOf(index, current);
           const reached = state !== "idle";
@@ -147,7 +159,11 @@ export function Pipeline() {
                 // Spans from the previous node's right edge to this node's left edge.
                 <span
                   aria-hidden="true"
-                  className="absolute top-[18px] h-px bg-border sm:top-5"
+                  className={
+                    compact
+                      ? "absolute top-3.5 h-px bg-border"
+                      : "absolute top-[18px] h-px bg-border sm:top-5"
+                  }
                   style={{ left: "calc(-50% + var(--gap))", right: "calc(50% + var(--gap))" }}
                 >
                   <span
@@ -157,7 +173,7 @@ export function Pipeline() {
                 </span>
               ) : null}
               <span
-                className={`relative grid size-9 place-items-center rounded-lg border transition-colors duration-300 motion-reduce:transition-none sm:size-10 ${nodeStyles[state]}`}
+                className={`relative grid place-items-center rounded-lg border transition-colors duration-300 motion-reduce:transition-none ${compact ? "size-7" : "size-9 sm:size-10"} ${nodeStyles[state]}`}
               >
                 {stage.glyph}
                 {state === "running" ? (
@@ -167,7 +183,9 @@ export function Pipeline() {
                   />
                 ) : null}
               </span>
-              <span className="mt-3 text-xs font-medium text-fg">{stage.label}</span>
+              <span className={`${compact ? "mt-2" : "mt-3"} text-xs font-medium text-fg`}>
+                {stage.label}
+              </span>
               <span className="mt-0.5 hidden font-mono text-[10.5px] text-muted sm:block">
                 {stage.detail}
               </span>
@@ -176,7 +194,9 @@ export function Pipeline() {
         })}
       </ol>
 
-      <div className="flex h-10 items-center justify-between gap-3 border-t border-border px-4 font-mono text-[11px]">
+      <div
+        className={`flex items-center justify-between gap-3 font-mono text-[11px] ${compact ? "h-9 border-t border-border/50 px-2" : "h-10 border-t border-border px-4"}`}
+      >
         <span
           aria-hidden="true"
           className={`inline-flex items-center gap-1.5 ${current === DONE ? "text-sage-fg" : "text-muted"}`}

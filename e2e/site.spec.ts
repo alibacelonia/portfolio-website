@@ -29,7 +29,7 @@ test("hydrates cleanly with reduced motion and keeps the theme", async ({ browse
   const page = await context.newPage();
   const errors = collectErrors(page);
   await page.goto("/");
-  await expect(page.getByText("4/4 stages passed")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveClass(/\bjs\b/);
   expect(errors).toEqual([]);
@@ -95,8 +95,6 @@ test("shows exactly one section navigation per breakpoint", async ({ page }, tes
     }).toPass({ timeout: 2000 });
   } else {
     await expect(nav).toBeHidden();
-    await expect(menuButton).toContainText("<A/B>");
-    await expect(menuButton).toContainText("ALI");
     await menuButton.click();
     const menu = page.getByRole("navigation", { name: "Sections" });
     await expect(menu.getByRole("link")).toHaveCount(6);
@@ -182,20 +180,24 @@ test("keeps the navigation visible and clear of section headings", async ({ page
   }
 });
 
-test("hero fills the first viewport without clipping its content", async ({ page }) => {
+test("hero fills the first viewport without clipping its content", async ({ page }, testInfo) => {
   await page.goto("/");
   const viewport = page.viewportSize()!;
   const hero = (await page.locator("#home").boundingBox())!;
   expect(hero.height).toBeGreaterThanOrEqual(viewport.height - 1);
   for (const locator of [
     page.locator("h1"),
+    page.getByRole("img", { name: "Portrait of Mohammed Ali B. Abdullah" }),
     page.getByRole("link", { name: "View My Work" }),
-    page.getByRole("figure"),
   ]) {
     const box = (await locator.boundingBox())!;
     expect(box.y).toBeGreaterThanOrEqual(hero.y);
     expect(box.y + box.height).toBeLessThanOrEqual(hero.y + hero.height);
   }
+  await expect(
+    page.getByRole("img", { name: "Portrait of Mohammed Ali B. Abdullah" }),
+  ).toHaveJSProperty("naturalWidth", 800);
+  await page.screenshot({ path: testInfo.outputPath("hero-preview.png") });
 });
 
 test("project cards open static detail pages and lead back", async ({ page }) => {

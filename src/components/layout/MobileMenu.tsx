@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { Menu, X } from "lucide-react";
 const loadPanel = () => import("./MobileMenuPanel");
 const MobileMenuPanel = dynamic(loadPanel, { ssr: false });
 
@@ -46,14 +47,17 @@ export function MobileMenu({ active }: { active: string }) {
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        aria-label={`<A/B> ALI, ${open ? "Close menu" : "Open menu"}`}
+        aria-label={open ? "Close menu" : "Open menu"}
         onPointerEnter={loadPanel}
         onFocus={loadPanel}
         onClick={() => setOpen((value) => !value)}
-        className="flex h-10 w-full items-center justify-between rounded-full px-4 text-fg transition-colors hover:bg-fg/5"
+        className="flex size-10 items-center justify-center rounded-full text-fg transition-colors hover:bg-fg/5"
       >
-        <span className="font-mono text-sm font-medium tracking-tight">{"<A/B>"}</span>
-        <span className="text-xs font-semibold tracking-[0.2em]">ALI</span>
+        {open ? (
+          <X aria-hidden="true" className="size-5" />
+        ) : (
+          <Menu aria-hidden="true" className="size-5" />
+        )}
       </button>
       <MobileMenuPanel
         open={open}

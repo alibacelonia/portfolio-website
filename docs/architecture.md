@@ -17,7 +17,7 @@ src/
 └── types/          shared content types
 ```
 
-- Every page is pre-rendered at build time (`output: "export"`, `trailingSlash: true`, `images.unoptimized`). Client components are limited to interactive islands: header/navigation, mobile menu, theme toggle, pipeline, contact form, reveal observer. Project pages are server-rendered at build time.
+- Every page is pre-rendered at build time (`output: "export"`, `trailingSlash: true`, `images.unoptimized`). Client components are limited to interactive islands: header/navigation, mobile menu, contact form, reveal observer. Project pages are server-rendered at build time.
 - Content is plain typed data; components never hard-code project, role or credential text.
 - `src/lib/site.ts` reads `NEXT_PUBLIC_SITE_URL` (default `https://alibacelonia.dev`), the single source for canonical URLs, sitemap, robots, Open Graph and JSON-LD.
 - Section links are root-relative (`/#projects`) `next/link`s, so they work from project pages too; the header marks “Projects” active on `/projects/` and its detail pages. The homepage's “View all projects” action opens the collection, which shares the same project cards and data.
