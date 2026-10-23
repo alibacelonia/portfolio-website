@@ -35,8 +35,10 @@ describe("MobileMenu", () => {
   it("opens, lists the six sections, and closes on Escape with focus restored", async () => {
     const user = userEvent.setup();
     render(<MobileMenu active="skills" />);
-    const button = screen.getByRole("button", { name: "Open menu" });
+    const button = screen.getByRole("button", { name: /Open menu$/ });
     expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(within(button).getByText("<A/B>")).toBeInTheDocument();
+    expect(within(button).getByText("ALI")).toBeInTheDocument();
 
     await user.click(button);
     expect(button).toHaveAttribute("aria-expanded", "true");
@@ -73,19 +75,14 @@ describe("SectionNav", () => {
 });
 
 describe("Header", () => {
-  it("shows the A/B logo, one section navigation, the theme toggle and the resume", () => {
+  it("keeps all section links without a logo, theme toggle or resume in the dock", () => {
     pathname.current = "/";
     render(<Header />);
-    expect(screen.getByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toHaveAttribute(
-      "href",
-      "/#home",
-    );
+    expect(screen.queryByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toBeNull();
     expect(screen.getAllByRole("navigation", { name: "Sections" })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: /theme/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Resume/ })).toHaveAttribute(
-      "href",
-      "/documents/mohammed-ali-abdullah-resume.pdf",
-    );
+    expect(screen.getAllByRole("link")).toHaveLength(6);
+    expect(screen.queryByRole("button", { name: /theme/i })).toBeNull();
+    expect(screen.queryByRole("link", { name: /Resume/ })).toBeNull();
   });
 
   it("marks Projects as current on project pages", () => {
@@ -159,7 +156,7 @@ describe("ProjectDetail", () => {
     expect(within(flow).getAllByRole("listitem")).toHaveLength(6);
     expect(screen.getByRole("link", { name: "All projects" })).toHaveAttribute(
       "href",
-      "/#projects",
+      expect.stringMatching(/^\/projects\/?$/),
     );
   });
 });

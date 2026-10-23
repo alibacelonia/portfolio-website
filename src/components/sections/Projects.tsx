@@ -6,7 +6,7 @@ import type { Project } from "@/types/content";
 import { disciplineDot } from "@/lib/disciplines";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
-import { ExternalLink } from "@/components/ui/Links";
+import { buttonStyles, ExternalLink } from "@/components/ui/Links";
 
 export function projectHref(project: Pick<Project, "id">): string {
   return `/projects/${project.id}/`;
@@ -17,8 +17,15 @@ export function projectLinks(project: Project) {
   return [project.repository, ...(project.demo ? [project.demo] : []), ...project.links];
 }
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({
+  project,
+  headingLevel = 3,
+}: {
+  project: Project;
+  headingLevel?: 2 | 3;
+}) {
   const headingId = `project-${project.id}`;
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <article
       aria-labelledby={headingId}
@@ -36,9 +43,9 @@ export function ProjectCard({ project }: { project: Project }) {
         <p className="font-mono text-[11px] text-muted">{project.status}</p>
       </div>
 
-      <h3 id={headingId} className="mt-4 text-[17px] font-semibold tracking-tight text-fg">
+      <Heading id={headingId} className="mt-4 text-[17px] font-semibold tracking-tight text-fg">
         {project.name}
-      </h3>
+      </Heading>
       <p className="mt-2 text-sm leading-relaxed text-muted">{project.summary}</p>
 
       <ul aria-label="Key technologies" className="mt-5 mb-6 flex flex-wrap gap-1.5">
@@ -75,6 +82,16 @@ export function ProjectCard({ project }: { project: Project }) {
   );
 }
 
+export function ProjectGrid({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5 2xl:grid-cols-4">
+      {projects.map((project) => (
+        <ProjectCard key={project.id} project={project} headingLevel={headingLevel} />
+      ))}
+    </div>
+  );
+}
+
 export function Projects() {
   return (
     <Section
@@ -89,10 +106,12 @@ export function Projects() {
         </ExternalLink>
       }
     >
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5 2xl:grid-cols-4">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
+      <ProjectGrid />
+      <div className="mt-10 flex justify-center sm:mt-12">
+        <Link href="/projects/" className={buttonStyles.secondary}>
+          View all projects
+          <ArrowRight aria-hidden="true" className="size-4" />
+        </Link>
       </div>
     </Section>
   );

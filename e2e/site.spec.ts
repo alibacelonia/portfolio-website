@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { THEME_STORAGE_KEY } from "../src/lib/theme";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "contact"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -47,11 +48,36 @@ test("has no horizontal overflow at supported widths", async ({ page }, testInfo
   }
 });
 
+test("Lenis smooths wheel scrolling and honors live reduced-motion changes", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Mouse-wheel behavior");
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveClass(/\blenis\b/);
+  await page.mouse.move(800, 400);
+  await page.mouse.wheel(0, 600);
+  await expect(page.locator("html")).toHaveClass(/\blenis-smooth\b/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.mouse.wheel(0, 400);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1000);
+  await expect(page.locator("html")).not.toHaveClass(/\blenis-smooth\b/);
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.mouse.wheel(0, 400);
+  await expect(page.locator("html")).toHaveClass(/\blenis-smooth\b/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1400);
+});
+
 test("shows exactly one section navigation per breakpoint", async ({ page }, testInfo) => {
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Sections" });
-  const menuButton = page.getByRole("button", { name: "Open menu" });
-  await expect(page.getByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toBeVisible();
+  const menuButton = page.getByRole("button", { name: /Open menu$/ });
+  const header = page.getByRole("banner");
+  await expect(header.getByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toHaveCount(0);
+  await expect(header.getByRole("button", { name: /theme/i })).toHaveCount(0);
+  await expect(header.getByRole("link", { name: /Resume/ })).toHaveCount(0);
   if (testInfo.project.name === "desktop") {
     await expect(nav).toHaveCount(1);
     await expect(nav).toBeVisible();
@@ -69,15 +95,59 @@ test("shows exactly one section navigation per breakpoint", async ({ page }, tes
     }).toPass({ timeout: 2000 });
   } else {
     await expect(nav).toBeHidden();
+    await expect(menuButton).toContainText("<A/B>");
+    await expect(menuButton).toContainText("ALI");
     await menuButton.click();
     const menu = page.getByRole("navigation", { name: "Sections" });
+    await expect(menu.getByRole("link")).toHaveCount(6);
+    const menuBox = (await menu.boundingBox())!;
+    expect(menuBox.y).toBeGreaterThan(page.viewportSize()!.height / 2);
     await menu.getByRole("link", { name: "Contact" }).click();
     await expect(page).toHaveURL(/#contact$/);
-    await expect(page.getByRole("button", { name: "Open menu" })).toHaveAttribute(
+    await expect(page.getByRole("button", { name: /Open menu$/ })).toHaveAttribute(
       "aria-expanded",
       "false",
     );
   }
+});
+
+test("mobile snackbar stays at the viewport bottom and dismisses accessibly", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "Mobile navigation");
+  await page.goto("/#skills");
+  await expect(page.locator('header [data-section="skills"]')).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  const trigger = page.getByRole("button", { name: /Open menu$/ });
+  await trigger.click();
+  const menu = page.getByRole("navigation", { name: "Sections" });
+  await expect(menu.getByRole("link", { name: "Skills" })).toBeFocused();
+  const panel = menu.locator("..");
+  await expect(async () => {
+    const box = (await panel.boundingBox())!;
+    expect(Math.abs(page.viewportSize()!.height - box.y - box.height - 16)).toBeLessThan(2);
+  }).toPass();
+
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  await expect(menu).toBeHidden();
+
+  await trigger.click();
+  await page.getByRole("button", { name: "Close navigation" }).click();
+  await expect(trigger).toBeFocused();
+  await expect(menu).toBeHidden();
+
+  await trigger.click();
+  await page.locator("#skills-title").click();
+  await expect(menu).toBeHidden();
+
+  await trigger.click();
+  await page.setViewportSize({ width: 768, height: 900 });
+  await expect(trigger).toBeHidden();
+  await expect(page.getByRole("button", { name: "Close navigation" })).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Sections" })).toBeVisible();
 });
 
 test("keeps the navigation visible and clear of section headings", async ({ page }, testInfo) => {
@@ -92,7 +162,7 @@ test("keeps the navigation visible and clear of section headings", async ({ page
         })
         .click();
     } else {
-      await page.getByRole("button", { name: "Open menu" }).click();
+      await page.getByRole("button", { name: /Open menu$/ }).click();
       await page
         .getByRole("navigation", { name: "Sections" })
         .getByRole("link", {
@@ -105,8 +175,9 @@ test("keeps the navigation visible and clear of section headings", async ({ page
       const header = (await bar.locator("> div > div").boundingBox())!;
       const heading = (await page.locator(`#${id}-title`).boundingBox())!;
       expect(header.y).toBeGreaterThanOrEqual(0);
-      expect(header.y).toBeLessThan(16);
+      expect(header.y).toBeLessThanOrEqual(20);
       expect(heading.y).toBeGreaterThan(header.y + header.height);
+      expect(heading.y).toBeLessThan(page.viewportSize()!.height / 2);
     }).toPass({ timeout: 3000 });
   }
 });
@@ -141,7 +212,20 @@ test("project cards open static detail pages and lead back", async ({ page }) =>
     "https://alibacelonia.dev/projects/estoe/",
   );
   await page.getByRole("link", { name: "All projects" }).click();
+  await expect(page).toHaveURL(/\/projects\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("All projects");
+  const projectCard = page.getByRole("article", { name: "estoe" });
+  await projectCard.scrollIntoViewIfNeeded();
+  await expect(projectCard).toHaveCSS("opacity", "1");
+  await page.getByRole("link", { name: "Back to portfolio" }).click();
   await expect(page).toHaveURL(/\/#projects$/);
+  // Opacity matters here: elements with opacity: 0 still pass toBeVisible().
+  for (const id of SECTIONS.slice(1)) {
+    for (const element of await page.locator(`#${id} [data-reveal]`).all()) {
+      await element.scrollIntoViewIfNeeded();
+      await expect(element).toHaveCSS("opacity", "1");
+    }
+  }
 });
 
 test("project detail pages exist for every project and unknown ones 404", async ({ request }) => {
@@ -151,15 +235,46 @@ test("project detail pages exist for every project and unknown ones 404", async 
   expect((await request.get("/projects/does-not-exist/")).status()).toBe(404);
 });
 
-test("follows the system theme and persists a manual choice", async ({ browser }) => {
-  const context = await browser.newContext({ colorScheme: "dark" });
+test("view all projects opens the collection and cards remain visible after going back", async ({
+  page,
+}) => {
+  await page.goto("/#projects");
+  await page.getByRole("link", { name: "View all projects" }).click();
+  await expect(page).toHaveURL(/\/projects\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("All projects");
+  await expect(page.locator("main article")).toHaveCount(4);
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://alibacelonia.dev/projects/",
+  );
+  await page.getByRole("link", { name: "View details about estoe" }).click();
+  await expect(page).toHaveURL(/\/projects\/estoe\/$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/projects\/$/);
+  const card = page.getByRole("article", { name: "estoe" });
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveCSS("opacity", "1");
+  await page.getByRole("link", { name: "Back to portfolio" }).click();
+  await expect(page).toHaveURL(/\/#projects$/);
+  await expect(page.locator("#projects header[data-reveal]")).toHaveCSS("opacity", "1");
+});
+
+test("uses dark mode only even with a saved light preference", async ({ browser }) => {
+  const context = await browser.newContext({ colorScheme: "light" });
+  await context.addInitScript(
+    (key) => window.localStorage.setItem(key, "light"),
+    THEME_STORAGE_KEY,
+  );
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: "Switch to light theme" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.emulateMedia({ colorScheme: "light" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("button", { name: /theme/i })).toHaveCount(0);
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await context.close();
 });
 

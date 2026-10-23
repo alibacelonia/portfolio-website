@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
 /* Dark mode follows the resolved theme on <html data-theme>, set before paint by the bootstrap script. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -14,6 +15,11 @@
   --muted: #64748b;
   --border: #e5e7eb;
   --border-strong: #d1d5db;
+  --frame-line: rgb(15 23 42 / 0.12);
+  --frame-hatch: rgb(15 23 42 / 0.06);
+  --frame-shade: rgb(15 23 42 / 0.025);
+  --frame-marker: #a1a9b5;
+  --frame-divider-h: clamp(20px, 2.5vw, 32px);
 
   --blue: #a9c4e8;
   --blue-fg: #335c8f;
@@ -25,12 +31,21 @@
 
   --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04);
   --shadow-md: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
-  --glass-bg: rgb(255 255 255 / 0.72);
+  --glass-bg: rgb(255 255 255 / 0.62);
+  --glass-border: rgb(255 255 255 / 0.8);
+  --glass-sheen: rgb(255 255 255 / 0.65);
+  --glass-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 -1px 0 rgb(15 23 42 / 0.04),
+    0 0 0 1px rgb(15 23 42 / 0.06), 0 8px 24px -8px rgb(15 23 42 / 0.16);
+  --nav-active-top: rgb(255 255 255 / 0.96);
+  --nav-active-bottom: rgb(241 245 249 / 0.85);
+  --nav-active-border: rgb(15 23 42 / 0.08);
+  --nav-active-shadow: inset 0 1px 0 #fff, 0 2px 5px rgb(15 23 42 / 0.1);
 
   --gutter: clamp(16px, 5vw, 80px);
   /* Sticky glass navigation: bar height + gap above it. --nav-offset is the space it covers. */
-  --nav-h: 52px;
-  --nav-top: 8px;
+  --nav-h: 50px;
+  --nav-top: 12px;
   --nav-offset: calc(var(--nav-h) + var(--nav-top));
   --pattern-dot: rgb(15 23 42 / 0.13);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -46,6 +61,10 @@
   --muted: #9ca3af;
   --border: #30363d;
   --border-strong: #3d444d;
+  --frame-line: rgb(243 244 246 / 0.1);
+  --frame-hatch: rgb(243 244 246 / 0.06);
+  --frame-shade: rgb(243 244 246 / 0.025);
+  --frame-marker: #505863;
 
   --blue: #7fa3d1;
   --blue-fg: #a9c6ee;
@@ -57,7 +76,16 @@
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-  --glass-bg: rgb(22 27 34 / 0.72);
+  --glass-bg: rgb(28 33 41 / 0.68);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-sheen: rgb(255 255 255 / 0.07);
+  --glass-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1), inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 0 0 1px rgb(0 0 0 / 0.2), 0 10px 28px -8px rgb(0 0 0 / 0.6);
+  --nav-active-top: rgb(93 98 108 / 0.65);
+  --nav-active-bottom: rgb(48 53 62 / 0.85);
+  --nav-active-border: rgb(255 255 255 / 0.14);
+  --nav-active-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 2px 5px rgb(0 0 0 / 0.35);
   --pattern-dot: rgb(243 244 246 / 0.12);
 }
 
@@ -121,12 +149,6 @@
   a {
     text-underline-offset: 3px;
   }
-
-  @media (prefers-reduced-motion: no-preference) {
-    html {
-      scroll-behavior: smooth;
-    }
-  }
 }
 
 /* ---------- Utilities ---------- */
@@ -145,6 +167,90 @@
 
 @utility measure {
   max-width: 64ch;
+}
+
+/* Section framing: continuous rails, fine hatched dividers, and small square junctions. */
+.section-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.section-frame::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: var(--frame-divider-h);
+  border-block: 1px solid var(--frame-line);
+  background: repeating-linear-gradient(135deg, transparent 0 4px, var(--frame-hatch) 4px 5px);
+  pointer-events: none;
+}
+
+.section-guides {
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  left: 50%;
+  width: calc(100% - var(--gutter));
+  max-width: calc(1600px + var(--gutter));
+  border-inline: 1px solid var(--frame-line);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.section-guides::before,
+.section-guides::after {
+  content: "";
+  position: absolute;
+  top: var(--frame-divider-h);
+  width: 5px;
+  height: 5px;
+  background: var(--frame-marker);
+  box-shadow:
+    0 0 0 4px var(--bg),
+    0 calc(-1 * var(--frame-divider-h)) 0 0 var(--frame-marker),
+    0 calc(-1 * var(--frame-divider-h)) 0 4px var(--bg);
+  transform: translate(-50%, -50%);
+}
+
+.section-guides::before {
+  left: 0;
+}
+
+.section-guides::after {
+  left: 100%;
+}
+
+.section-frame--hero::before,
+.section-frame--footer::before,
+.section-frame--hero > .section-guides::before,
+.section-frame--hero > .section-guides::after {
+  display: none;
+}
+
+.section-frame--footer > .section-guides::before,
+.section-frame--footer > .section-guides::after {
+  top: 0;
+  box-shadow: 0 0 0 4px var(--bg);
+}
+
+.section-panel {
+  border: 1px solid var(--frame-line);
+  background: linear-gradient(135deg, var(--frame-shade), transparent), var(--surface);
+}
+
+@media (forced-colors: active) {
+  .section-frame::before,
+  .section-guides::before,
+  .section-guides::after {
+    display: none;
+  }
+
+  .section-guides,
+  .section-panel {
+    border-color: CanvasText;
+    background: Canvas;
+  }
 }
 
 /* Theme switch: only transition colors while the user toggles, never on first paint. */
@@ -177,7 +283,7 @@
 
 @media (min-width: 640px) {
   :root {
-    --nav-top: 12px;
+    --nav-top: 20px;
   }
 }
 
@@ -196,22 +302,31 @@
   }
 }
 
-/* Glass navigation surface (kept subtle; falls back to an opaque surface). */
+/* Frosted navigation with a fine rim and a soft top highlight; opaque fallback below. */
 .glass {
   background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass {
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    backdrop-filter: blur(14px) saturate(140%);
+    background: linear-gradient(180deg, var(--glass-sheen), transparent), var(--glass-bg);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
   }
 }
 
+.nav-indicator {
+  background: linear-gradient(180deg, var(--nav-active-top), var(--nav-active-bottom));
+  border: 1px solid var(--nav-active-border);
+  box-shadow: var(--nav-active-shadow);
+}
+
 @media (forced-colors: active) {
-  .glass {
+  .glass,
+  .nav-indicator {
+    background: Canvas;
     border: 1px solid CanvasText;
+    box-shadow: none;
   }
 }

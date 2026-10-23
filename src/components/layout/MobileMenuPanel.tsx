@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import type { RefObject } from "react";
+import { usePathname } from "next/navigation";
+import { useLenis } from "lenis/react";
+import { useEffect, type RefObject } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, m } from "motion/react";
+import { BadgeCheck, BriefcaseBusiness, CodeXml, FolderKanban, House, Mail, X } from "lucide-react";
 import { navigation } from "@/lib/site";
 
 interface MobileMenuPanelProps {
@@ -11,7 +15,10 @@ interface MobileMenuPanelProps {
   active: string;
   panelRef: RefObject<HTMLDivElement | null>;
   onNavigate: () => void;
+  onClose: () => void;
 }
+
+const sectionIcons = [House, FolderKanban, BriefcaseBusiness, CodeXml, BadgeCheck, Mail];
 
 /** Loaded on first interaction, so Motion's presence animations never ship to desktop visitors. */
 export default function MobileMenuPanel({
@@ -20,39 +27,67 @@ export default function MobileMenuPanel({
   active,
   panelRef,
   onNavigate,
+  onClose,
 }: MobileMenuPanelProps) {
-  return (
+  const onHome = usePathname() === "/";
+  const lenis = useLenis();
+  useEffect(() => {
+    if (open) {
+      const panel = panelRef.current;
+      const link =
+        panel?.querySelector<HTMLAnchorElement>('a[aria-current="location"]') ??
+        panel?.querySelector<HTMLAnchorElement>("a");
+      link?.focus({ preventScroll: true });
+    }
+  }, [open, panelRef]);
+
+  // Portaling escapes the top dock's backdrop-filter, which otherwise contains fixed children.
+  return createPortal(
     <AnimatePresence>
       {open ? (
         <m.div
           ref={panelRef}
           id={id}
-          initial={{ opacity: 0, y: -6 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
+          exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.18 }}
-          className="glass absolute inset-x-0 top-full mt-2 rounded-2xl p-1.5"
+          className="glass pointer-events-auto fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-[60] mx-auto max-w-sm rounded-3xl p-2 sm:hidden"
         >
           <nav aria-label="Sections">
-            <ul className="grid gap-0.5">
-              {navigation.map((item) => {
+            <div className="flex items-center justify-between pl-3">
+              <span className="font-mono text-[10px] tracking-widest text-muted uppercase">
+                Navigation
+              </span>
+              <button
+                type="button"
+                aria-label="Close navigation"
+                onClick={onClose}
+                className="flex size-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-fg/5 hover:text-fg"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
+            </div>
+            <ul className="grid grid-cols-3 gap-1">
+              {navigation.map((item, index) => {
                 const isActive = active === item.id;
+                const Icon = sectionIcons[index] ?? House;
                 return (
                   <li key={item.id}>
                     <Link
                       href={`/#${item.id}`}
+                      scroll={!onHome}
+                      onNavigate={() => lenis?.scrollTo(lenis.actualScroll, { immediate: true })}
                       aria-current={isActive ? "location" : undefined}
                       onClick={onNavigate}
-                      className={`flex min-h-11 items-center justify-between rounded-xl px-3 text-sm transition-colors ${
+                      className={`flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-2xl px-1 text-xs transition-colors ${
                         isActive
-                          ? "bg-surface-2 font-medium text-fg"
-                          : "text-fg-soft hover:bg-surface-2 hover:text-fg"
+                          ? "nav-indicator font-medium text-fg"
+                          : "text-fg-soft hover:bg-fg/5 hover:text-fg"
                       }`}
                     >
+                      <Icon aria-hidden="true" className="size-[18px]" />
                       {item.label}
-                      {isActive ? (
-                        <span aria-hidden="true" className="size-1.5 rounded-full bg-blue-fg" />
-                      ) : null}
                     </Link>
                   </li>
                 );
@@ -61,6 +96,7 @@ export default function MobileMenuPanel({
           </nav>
         </m.div>
       ) : null}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

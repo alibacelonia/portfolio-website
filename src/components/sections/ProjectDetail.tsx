@@ -72,7 +72,7 @@ export function ProjectDetail({ project }: { project: Project }) {
   return (
     <article className="container-fluid pt-[calc(var(--nav-offset)+40px)] pb-20 sm:pb-24">
       <Link
-        href="/#projects"
+        href="/projects/"
         className="inline-flex min-h-10 items-center gap-1.5 text-[13px] font-medium text-muted transition-colors hover:text-fg"
       >
         <ArrowLeft aria-hidden="true" className="size-3.5" />

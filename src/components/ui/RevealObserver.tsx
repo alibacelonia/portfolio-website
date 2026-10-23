@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 /**
- * One observer for every [data-reveal] element. CSS only hides them under `html.js`
+ * Reconnect on route changes to observe each page's new [data-reveal] elements.
+ * CSS only hides them under `html.js`
  * with motion allowed, so without JS or with reduced motion content is simply visible.
  */
 export function RevealObserver() {
+  const pathname = usePathname();
+
   useEffect(() => {
     const elements = document.querySelectorAll<HTMLElement>("[data-reveal]");
     if (!("IntersectionObserver" in window)) {
@@ -26,7 +30,7 @@ export function RevealObserver() {
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   return null;
 }

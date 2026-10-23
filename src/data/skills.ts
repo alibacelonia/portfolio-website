@@ -103,9 +103,20 @@ export const skills: SkillDiscipline[] = [
         ],
       },
       {
+        label: "Agents & retrieval",
+        skills: [
+          { name: "Model Context Protocol (MCP)", level: "working" },
+          { name: "Retrieval-Augmented Generation (RAG)", level: "working" },
+          { name: "LangChain", level: "working" },
+          { name: "LangGraph", level: "working" },
+          { name: "Pydantic AI", level: "working" },
+        ],
+      },
+      {
         label: "Reliability",
         skills: [
-          { name: "Offline evaluation", level: "hands-on" },
+          { name: "Evals (offline evaluation)", level: "hands-on" },
+          { name: "Guardrails", level: "hands-on" },
           { name: "Schema-validated output", level: "hands-on" },
           { name: "Output grounding", level: "hands-on" },
           { name: "Trace redaction", level: "hands-on" },

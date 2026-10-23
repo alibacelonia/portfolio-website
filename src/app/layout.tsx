@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { site, siteHost } from "@/lib/site";
-import { themeBootstrapScript } from "@/lib/theme";
+import { DEFAULT_THEME, themeBootstrapScript } from "@/lib/theme";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 import { Providers } from "@/components/layout/Providers";
 import { Header } from "@/components/layout/Header";
@@ -48,17 +48,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafbfc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d1117" },
-  ],
-  colorScheme: "light dark",
+  themeColor: "#0d1117",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
+      data-theme={DEFAULT_THEME}
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >

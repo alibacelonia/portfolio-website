@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { Menu, X } from "lucide-react";
 const loadPanel = () => import("./MobileMenuPanel");
 const MobileMenuPanel = dynamic(loadPanel, { ssr: false });
 
-/** Section navigation below `lg`, where the inline links do not fit. */
+/** Section navigation below `sm`, where the inline links do not fit. */
 export function MobileMenu({ active }: { active: string }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -15,7 +14,7 @@ export function MobileMenu({ active }: { active: string }) {
 
   const close = useCallback((restoreFocus: boolean) => {
     setOpen(false);
-    if (restoreFocus) buttonRef.current?.focus();
+    if (restoreFocus) buttonRef.current?.focus({ preventScroll: true });
   }, []);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export function MobileMenu({ active }: { active: string }) {
       if (!panelRef.current?.contains(target) && !buttonRef.current?.contains(target)) close(false);
     };
     const onResize = () => {
-      if (window.matchMedia("(min-width: 1024px)").matches) close(false);
+      if (window.matchMedia("(min-width: 640px)").matches) close(false);
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -41,30 +40,28 @@ export function MobileMenu({ active }: { active: string }) {
   }, [open, close]);
 
   return (
-    <div className="lg:hidden">
+    <div className="w-full sm:hidden">
       <button
         ref={buttonRef}
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={`<A/B> ALI, ${open ? "Close menu" : "Open menu"}`}
         onPointerEnter={loadPanel}
         onFocus={loadPanel}
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex size-10 items-center justify-center rounded-lg text-fg-soft transition-colors hover:bg-surface-2 hover:text-fg"
+        className="flex h-10 w-full items-center justify-between rounded-full px-4 text-fg transition-colors hover:bg-fg/5"
       >
-        {open ? (
-          <X aria-hidden="true" className="size-5" />
-        ) : (
-          <Menu aria-hidden="true" className="size-5" />
-        )}
+        <span className="font-mono text-sm font-medium tracking-tight">{"<A/B>"}</span>
+        <span className="text-xs font-semibold tracking-[0.2em]">ALI</span>
       </button>
       <MobileMenuPanel
         open={open}
         id={panelId}
         active={active}
         panelRef={panelRef}
-        onNavigate={() => close(false)}
+        onNavigate={() => close(true)}
+        onClose={() => close(true)}
       />
     </div>
   );

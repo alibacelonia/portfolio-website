@@ -1,23 +1,23 @@
 import { ArrowRight, Download } from "lucide-react";
 import { site } from "@/lib/site";
-import { certifications } from "@/data/certifications";
 import { ButtonLink } from "@/components/ui/Links";
+import { SectionFrame } from "@/components/ui/SectionFrame";
 import { Pipeline } from "./Pipeline";
 
 const roleDots = ["bg-blue", "bg-sage", "bg-lavender"] as const;
 
-const facts = [
-  { label: "Based in", value: "Baguio City, PH" },
-  { label: "Experience", value: `${site.experienceYears} years` },
-  { label: "Certified", value: `${certifications.length} × AWS` },
+const focusAreas = [
+  { label: "Building", value: "Full-stack applications" },
+  { label: "Shipping", value: "Automated cloud delivery" },
+  { label: "Exploring", value: "Applied AI" },
 ];
 
 export function Hero() {
   return (
-    <section
+    <SectionFrame
       id="home"
       aria-labelledby="home-title"
-      className="relative isolate flex min-h-viewport items-center bg-bg pt-[calc(var(--nav-offset)+40px)] pb-16 sm:pb-20"
+      className="section-frame--hero relative isolate flex min-h-viewport items-center bg-bg pt-[calc(var(--nav-offset)+40px)] pb-16 sm:pb-20"
     >
       <div aria-hidden="true" className="hero-pattern absolute inset-0 -z-10" />
       <div className="container-fluid grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
@@ -54,11 +54,19 @@ export function Hero() {
             </ButtonLink>
           </div>
 
-          <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-border pt-5">
-            {facts.map((fact) => (
-              <div key={fact.label} className="min-w-0">
-                <dt className="font-mono text-[11px] text-muted">{fact.label}</dt>
-                <dd className="mt-1 text-[13px] font-medium text-fg">{fact.value}</dd>
+          <dl className="section-panel mt-10 grid max-w-xl grid-cols-3 divide-x divide-border">
+            {focusAreas.map((area, index) => (
+              <div key={area.label} className="min-w-0 p-2.5 sm:p-4">
+                <dt className="flex items-center gap-2 font-mono text-[11px] tracking-wide text-muted uppercase">
+                  <span
+                    aria-hidden="true"
+                    className={`size-1.5 shrink-0 rounded-full ${roleDots[index]}`}
+                  />
+                  {area.label}
+                </dt>
+                <dd className="mt-2 text-xs leading-relaxed font-medium wrap-break-word text-fg sm:text-[13px]">
+                  {area.value}
+                </dd>
               </div>
             ))}
           </dl>
@@ -68,6 +76,6 @@ export function Hero() {
           <Pipeline />
         </div>
       </div>
-    </section>
+    </SectionFrame>
   );
 }

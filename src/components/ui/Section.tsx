@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { SectionFrame } from "./SectionFrame";
 
 interface SectionProps {
   id: string;
@@ -15,15 +16,15 @@ interface SectionProps {
 export function Section({ id, index, title, lead, aside, tone = "bg", children }: SectionProps) {
   const headingId = `${id}-title`;
   return (
-    <section
+    <SectionFrame
       id={id}
       aria-labelledby={headingId}
-      className={`border-t border-border py-16 sm:py-20 lg:py-24 ${tone === "surface" ? "bg-surface" : "bg-bg"}`}
+      className={`py-16 sm:py-20 lg:py-24 ${tone === "surface" ? "bg-surface" : "bg-bg"}`}
     >
       <div className="container-fluid">
         <header
           data-reveal
-          className="mb-10 flex flex-col gap-5 sm:mb-12 lg:flex-row lg:items-end lg:justify-between"
+          className="section-panel mb-10 flex flex-col gap-5 p-5 sm:mb-12 sm:p-7 lg:flex-row lg:items-end lg:justify-between"
         >
           <div className="min-w-0">
             <p className="mb-3 font-mono text-xs tracking-wide text-muted">
@@ -42,6 +43,6 @@ export function Section({ id, index, title, lead, aside, tone = "bg", children }
         </header>
         {children}
       </div>
-    </section>
+    </SectionFrame>
   );
 }

@@ -1,12 +1,13 @@
 export type Theme = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "alibacelonia-theme";
+export const DEFAULT_THEME: Theme = "dark";
 
 /**
- * Runs in <head> before first paint: applies the stored theme or the system preference,
+ * Runs in <head> before first paint: enforces dark mode while light mode is disabled,
  * and marks the document as JS-enabled so progressive enhancements (entrances) can apply.
  */
-export const themeBootstrapScript = `(function(){var d=document.documentElement;d.classList.add('js');var t;try{var s=localStorage.getItem('${THEME_STORAGE_KEY}');if(s==='light'||s==='dark')t=s}catch(e){}if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}d.dataset.theme=t})();`;
+export const themeBootstrapScript = `(function(){var d=document.documentElement;d.classList.add('js');d.dataset.theme='${DEFAULT_THEME}'})();`;
 
 export function readStoredTheme(): Theme | null {
   try {
@@ -17,12 +18,8 @@ export function readStoredTheme(): Theme | null {
   }
 }
 
-export function getSystemTheme(): Theme {
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
 export function getAppliedTheme(): Theme {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  return document.documentElement.dataset.theme === "light" ? "light" : DEFAULT_THEME;
 }
 
 /** Applies a theme; `persist` stores it as the user's explicit choice. */
