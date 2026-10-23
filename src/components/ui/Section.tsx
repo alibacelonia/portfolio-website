@@ -8,18 +8,22 @@ interface SectionProps {
   lead?: ReactNode;
   /** Right-aligned header content (legend, counts). */
   aside?: ReactNode;
-  tone?: "bg" | "surface";
+  /** Optional full-width action row below the padded section content. */
+  footer?: ReactNode;
   children: ReactNode;
 }
 
-/** Full-width band with a consistent header. The heading id labels the region. */
-export function Section({ id, index, title, lead, aside, tone = "bg", children }: SectionProps) {
+/**
+ * Full-width band with a consistent header. Every section shares the same background and
+ * spacing; cards inside use the `card` utility. The heading id labels the region.
+ */
+export function Section({ id, index, title, lead, aside, footer, children }: SectionProps) {
   const headingId = `${id}-title`;
   return (
     <SectionFrame
       id={id}
       aria-labelledby={headingId}
-      className={`py-16 sm:py-20 lg:py-24 ${tone === "surface" ? "bg-surface" : "bg-bg"}`}
+      className={`bg-bg pt-16 sm:pt-20 lg:pt-24 ${footer ? "" : "pb-16 sm:pb-20 lg:pb-24"}`}
     >
       <div className="container-fluid">
         <header
@@ -27,22 +31,20 @@ export function Section({ id, index, title, lead, aside, tone = "bg", children }
           className="section-panel mb-10 flex flex-col gap-5 p-5 sm:mb-12 sm:p-7 lg:flex-row lg:items-end lg:justify-between"
         >
           <div className="min-w-0">
-            <p className="mb-3 font-mono text-xs tracking-wide text-muted">
+            <p className="mb-3 type-eyebrow">
               <span aria-hidden="true">{index} / </span>
               {title}
             </p>
-            <h2
-              id={headingId}
-              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-semibold tracking-tight text-fg"
-            >
+            <h2 id={headingId} className="type-section-title">
               {title}
             </h2>
-            {lead ? <p className="mt-3 measure text-[15px] text-muted">{lead}</p> : null}
+            {lead ? <p className="mt-3 measure type-lead">{lead}</p> : null}
           </div>
           {aside ? <div className="shrink-0">{aside}</div> : null}
         </header>
         {children}
       </div>
+      {footer}
     </SectionFrame>
   );
 }

@@ -42,20 +42,25 @@
   --nav-active-border: rgb(15 23 42 / 0.08);
   --nav-active-shadow: inset 0 1px 0 #fff, 0 2px 5px rgb(15 23 42 / 0.1);
 
-  --gutter: clamp(16px, 5vw, 80px);
+  --gutter: clamp(32px, 7.5vw, 120px);
+  --frame-inset: clamp(16px, 5vw, 80px);
+  --frame-width: min(
+    calc(100% - 2 * var(--frame-inset)),
+    calc(1600px + 2 * (var(--gutter) - var(--frame-inset)))
+  );
+  --section-action-h: clamp(96px, 8vw, 136px);
   /* Sticky glass navigation: bar height + gap above it. --nav-offset is the space it covers. */
   --nav-h: 50px;
   --nav-top: 12px;
   --nav-offset: calc(var(--nav-h) + var(--nav-top));
-  --pattern-dot: rgb(15 23 42 / 0.13);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0d1117;
-  --surface: #161b22;
-  --surface-2: #1c2129;
+  --bg: #090c10;
+  --surface: #11151b;
+  --surface-2: #181c23;
   --fg: #f3f4f6;
   --fg-soft: #d1d5db;
   --muted: #9ca3af;
@@ -86,7 +91,6 @@
   --nav-active-bottom: rgb(48 53 62 / 0.85);
   --nav-active-border: rgb(255 255 255 / 0.14);
   --nav-active-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 2px 5px rgb(0 0 0 / 0.35);
-  --pattern-dot: rgb(243 244 246 / 0.12);
 }
 
 @theme inline {
@@ -165,6 +169,95 @@
   min-height: 100svh;
 }
 
+/* ---------- Shared type scale and card (docs/design-system.md) ----------
+   One utility per role so every section uses identical sizes. Color is baked in only where a
+   role always has the same color; otherwise pair the utility with a text-* color class. */
+@utility type-eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+  color: var(--muted);
+}
+
+/* Monospace data (dates, flows) without a fixed color; pair with a text-* class. */
+@utility type-mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+@utility type-section-title {
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--fg);
+}
+
+@utility type-page-title {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--fg);
+}
+
+@utility type-lead {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+@utility type-card-title {
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+}
+
+/* Long-form reading text (project pages): same size as the lead. */
+@utility type-prose {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+@utility type-body {
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+@utility type-small {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+@utility type-label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+}
+
+@utility type-action {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+@utility card {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem;
+
+  @media (width >= 40rem) {
+    padding: 1.5rem;
+  }
+}
+
 @utility measure {
   max-width: 64ch;
 }
@@ -179,10 +272,10 @@
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 0 0 auto;
+  top: 0;
+  inset-inline: 0;
   height: var(--frame-divider-h);
   border-block: 1px solid var(--frame-line);
-  background: repeating-linear-gradient(135deg, transparent 0 4px, var(--frame-hatch) 4px 5px);
   pointer-events: none;
 }
 
@@ -190,12 +283,160 @@
   position: absolute;
   z-index: -1;
   inset-block: 0;
-  left: 50%;
-  width: calc(100% - var(--gutter));
-  max-width: calc(1600px + var(--gutter));
   border-inline: 1px solid var(--frame-line);
-  transform: translateX(-50%);
   pointer-events: none;
+}
+
+.section-guides,
+.section-action-guides {
+  left: 50%;
+  right: auto;
+  width: var(--frame-width);
+  transform: translateX(-50%);
+}
+
+.section-frame::before,
+.section-action {
+  background-image:
+    linear-gradient(var(--bg), var(--bg)),
+    repeating-linear-gradient(135deg, transparent 0 4px, var(--frame-hatch) 4px 5px);
+  background-size:
+    var(--frame-width) 100%,
+    auto;
+  background-position: center;
+  background-repeat: no-repeat, repeat;
+}
+
+.section-action {
+  position: relative;
+  display: flex;
+  height: var(--section-action-h);
+  align-items: center;
+  justify-content: center;
+  border-block: 1px solid var(--frame-line);
+}
+
+.section-action-guides {
+  position: absolute;
+  inset-block: -1px;
+  border-inline: 1px solid var(--frame-line);
+  pointer-events: none;
+}
+
+.section-action-guides::before,
+.section-action-guides::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  background: var(--frame-marker);
+  box-shadow:
+    0 0 0 4px var(--bg),
+    0 calc(var(--section-action-h) - 1px) 0 0 var(--frame-marker),
+    0 calc(var(--section-action-h) - 1px) 0 4px var(--bg);
+  transform: translate(-50%, -50%);
+}
+
+.section-action-guides::before {
+  left: 0;
+}
+
+.section-action-guides::after {
+  left: 100%;
+}
+
+.hero-overview {
+  --hero-cell-h: 128px;
+  --section-action-h: calc(2 * var(--hero-cell-h) + 2px);
+  width: 100%;
+  height: auto;
+}
+
+.hero-overview-grid {
+  position: relative;
+  display: grid;
+  width: var(--frame-width);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-inline: 1px solid var(--frame-line);
+}
+
+.hero-overview-cell {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: var(--hero-cell-h);
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(16px, 2vw, 32px);
+  border-right: 1px solid var(--frame-line);
+  border-bottom: 1px solid var(--frame-line);
+}
+
+.hero-overview-cell:nth-child(2n) {
+  border-right: 0;
+}
+
+.hero-overview-cell:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.hero-overview-cell::before,
+.hero-overview-cell::after,
+.hero-overview-grid::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 5px;
+  height: 5px;
+  background: var(--frame-marker);
+  box-shadow: 0 0 0 4px var(--bg);
+  pointer-events: none;
+}
+
+.hero-overview-cell::before,
+.hero-overview-cell::after {
+  right: -3px;
+}
+
+.hero-overview-cell::before {
+  top: -3px;
+}
+
+.hero-overview-cell::after {
+  bottom: -3px;
+}
+
+.hero-overview-grid::before {
+  top: calc(50% - 3px);
+  left: -3px;
+}
+
+@media (min-width: 1024px) {
+  .hero-overview {
+    --hero-cell-h: 136px;
+    --section-action-h: calc(var(--hero-cell-h) + 2px);
+  }
+
+  .hero-overview-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .hero-overview-cell {
+    border-bottom: 0;
+  }
+
+  .hero-overview-cell:nth-child(2n) {
+    border-right: 1px solid var(--frame-line);
+  }
+
+  .hero-overview-cell:last-child {
+    border-right: 0;
+  }
+
+  .hero-overview-grid::before {
+    display: none;
+  }
 }
 
 .section-guides::before,
@@ -221,6 +462,14 @@
   left: 100%;
 }
 
+/* A section that ends in an action strip (hero overview, "View all projects") already closes with
+   a bordered band, so the next section starts flush against it instead of adding its own divider. */
+.section-frame:has(> .section-action:last-child) + .section-frame::before,
+.section-frame:has(> .section-action:last-child) + .section-frame > .section-guides::before,
+.section-frame:has(> .section-action:last-child) + .section-frame > .section-guides::after {
+  display: none;
+}
+
 .section-frame--hero::before,
 .section-frame--footer::before,
 .section-frame--hero > .section-guides::before,
@@ -234,6 +483,10 @@
   box-shadow: 0 0 0 4px var(--bg);
 }
 
+.section-frame--footer {
+  border-top: 1px solid var(--frame-line);
+}
+
 .section-panel {
   border: 1px solid var(--frame-line);
   background: linear-gradient(135deg, var(--frame-shade), transparent), var(--surface);
@@ -242,11 +495,20 @@
 @media (forced-colors: active) {
   .section-frame::before,
   .section-guides::before,
-  .section-guides::after {
+  .section-guides::after,
+  .section-action-guides::before,
+  .section-action-guides::after,
+  .hero-overview-cell::before,
+  .hero-overview-cell::after,
+  .hero-overview-grid::before {
     display: none;
   }
 
   .section-guides,
+  .section-action-guides,
+  .section-action,
+  .hero-overview-grid,
+  .hero-overview-cell,
   .section-panel {
     border-color: CanvasText;
     background: Canvas;
@@ -287,37 +549,143 @@
   }
 }
 
-/* Unframed monochrome portrait with softly faded edges and a fine halftone texture. */
+/* Square monochrome portrait with a fine halftone texture. */
+/* ---------- Experience timeline ----------
+   Rail geometry is shared through custom properties so nodes, segments and the concurrency bracket
+   line up on every breakpoint. --exp-node-c is the vertical center of a node within its row. */
+.exp-timeline {
+  --exp-gap: 1rem;
+  --exp-node: 11px;
+  --exp-node-c: 9px;
+  row-gap: var(--exp-gap);
+}
+
+@media (min-width: 768px) {
+  .exp-timeline {
+    /* Card padding (24px) + half the card-title line (17px × 1.35 / 2). */
+    --exp-node-c: 35.5px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .exp-timeline {
+    --exp-gap: 1.25rem;
+  }
+}
+
+.exp-node {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--exp-node-c) - var(--exp-node) / 2);
+  z-index: 1;
+  width: var(--exp-node);
+  height: var(--exp-node);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 9999px;
+  background: var(--surface);
+  transform: translateX(-50%);
+}
+
+.exp-node[data-current] {
+  border-color: var(--sage-fg);
+  background: var(--sage);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sage) 22%, transparent);
+}
+
+/* From this node to the next node: through the rest of the row and the gap below it. */
+.exp-segment,
+.exp-branch {
+  position: absolute;
+  top: var(--exp-node-c);
+  height: calc(100% + var(--exp-gap));
+}
+
+.exp-segment {
+  left: 50%;
+  width: 2px;
+  background: var(--border-strong);
+  transform: translateX(-50%);
+}
+
+.exp-segment-fill {
+  display: none;
+  height: 100%;
+  background: var(--fg-soft);
+  opacity: 0.55;
+  transform-origin: top;
+}
+
+/* Concurrency bracket beside the rail, joining two overlapping roles. */
+.exp-branch {
+  left: calc(50% + var(--exp-node) / 2 + 3px);
+  width: 9px;
+  border: 1.5px solid var(--sage);
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  opacity: 0.8;
+}
+
+/* Scroll-driven progress: the rail fills and nodes light up as they pass mid-screen.
+   Progressive enhancement: without support or with reduced motion the rail is static. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .exp-segment-fill {
+      display: block;
+      animation: exp-fill linear both;
+      animation-timeline: view();
+      animation-range: cover 50vh cover calc(100% - 50vh);
+    }
+
+    .exp-node:not([data-current]) {
+      animation: exp-node linear both;
+      animation-timeline: view();
+      animation-range: cover calc(50vh - 8px) cover calc(50vh + 8px);
+    }
+  }
+}
+
+@keyframes exp-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes exp-node {
+  from {
+    border-color: var(--border-strong);
+    background: var(--surface);
+  }
+  to {
+    border-color: var(--fg-soft);
+    background: var(--fg-soft);
+  }
+}
+
+@media (forced-colors: active) {
+  .exp-node,
+  .exp-segment,
+  .exp-branch {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+}
+
 .hero-portrait {
   isolation: isolate;
-  -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 45%, #000 65%, transparent 100%);
-  mask-image: radial-gradient(ellipse closest-side at 50% 45%, #000 65%, transparent 100%);
 }
 
 .hero-portrait::after {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgb(13 17 23 / 0.6) 0.65px, transparent 0.9px);
+  background-image: radial-gradient(rgb(9 12 16 / 0.6) 0.65px, transparent 0.9px);
   background-size: 3px 3px;
   mix-blend-mode: multiply;
   opacity: 0.35;
   pointer-events: none;
-}
-
-/* Hero background: one fine dot grid, faded toward the edges so it never competes with text. */
-.hero-pattern {
-  background-image: radial-gradient(var(--pattern-dot) 1px, transparent 1.25px);
-  background-size: 22px 22px;
-  background-position: center top;
-  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
-  mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
-}
-
-@media (forced-colors: active) {
-  .hero-pattern {
-    display: none;
-  }
 }
 
 /* Frosted navigation with a fine rim and a soft top highlight; opaque fallback below. */

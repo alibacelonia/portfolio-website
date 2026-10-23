@@ -31,11 +31,11 @@ export const site = {
   tagline:
     "I build scalable applications, automate cloud infrastructure, and develop AI-powered solutions that solve real-world problems.",
   description:
-    "Mohammed Ali B. Abdullah — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 8+ years building applications, CI/CD pipelines and cloud infrastructure.",
+    "Mohammed Ali B. Abdullah — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 7+ years building applications, CI/CD pipelines and cloud infrastructure.",
   /** Single source of truth for the canonical origin (NEXT_PUBLIC_SITE_URL). */
   url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   location: "Baguio City, Philippines",
-  experienceYears: "8+",
+  experienceYears: "7+",
   email: "alibacelonia1234@gmail.com",
   github: "https://github.com/alibacelonia",
   linkedin: "https://www.linkedin.com/in/alibacelonia",

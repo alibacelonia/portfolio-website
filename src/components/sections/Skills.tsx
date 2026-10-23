@@ -7,7 +7,7 @@ function Legend() {
   return (
     <div
       aria-hidden="true"
-      className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted"
+      className="flex flex-wrap items-center gap-x-4 gap-y-2 type-small text-muted"
     >
       <span className="inline-flex items-center gap-2">
         <span className="inline-block h-4 w-6 rounded border border-border bg-surface-2" />
@@ -27,7 +27,6 @@ export function Skills() {
       id="skills"
       index="04"
       title="Skills"
-      tone="surface"
       lead={
         <>
           Grouped by discipline. Solid tags are tools used in production roles or public projects;
@@ -42,11 +41,11 @@ export function Skills() {
             key={discipline.id}
             data-reveal
             aria-labelledby={`skills-${discipline.id}`}
-            className="rounded-xl border border-border bg-bg p-5 sm:p-6"
+            className="card"
           >
             <h3
               id={`skills-${discipline.id}`}
-              className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-fg"
+              className="flex items-center gap-2.5 type-card-title"
             >
               <span
                 aria-hidden="true"
@@ -54,12 +53,12 @@ export function Skills() {
               />
               {discipline.title}
             </h3>
-            <p className="mt-1.5 text-[13.5px] text-muted">{discipline.description}</p>
+            <p className="mt-2 type-body text-muted">{discipline.description}</p>
 
             <div className="mt-5 space-y-5">
               {discipline.groups.map((group) => (
                 <div key={group.label}>
-                  <h4 className="font-mono text-[11px] text-muted">{group.label}</h4>
+                  <h4 className="type-label text-muted">{group.label}</h4>
                   <ul className="mt-2 flex flex-wrap gap-1.5">
                     {group.skills.map((skill) => (
                       <Tag key={skill.name} level={skill.level}>

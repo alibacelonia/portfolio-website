@@ -2,35 +2,30 @@ import { ArrowRight, Download } from "lucide-react";
 import Image from "next/image";
 import { site } from "@/lib/site";
 import { ExternalLink } from "@/components/ui/Links";
+import { EmailLink } from "@/components/ui/EmailLink";
 import { SectionFrame } from "@/components/ui/SectionFrame";
+import { HeroOverview } from "./HeroOverview";
 
 const roleDots = ["bg-blue", "bg-sage", "bg-lavender"] as const;
-
-const focusAreas = [
-  { label: "Building", value: "Full-stack applications" },
-  { label: "Shipping", value: "Automated cloud delivery" },
-  { label: "Exploring", value: "Applied AI" },
-];
 
 export function Hero() {
   return (
     <SectionFrame
       id="home"
       aria-labelledby="home-title"
-      className="section-frame--hero relative isolate flex min-h-viewport items-center bg-bg pt-[calc(var(--nav-offset)+40px)] pb-16 sm:pb-20"
+      className="section-frame--hero relative isolate flex min-h-viewport flex-col bg-bg pt-[calc(var(--nav-offset)+24px)]"
     >
-      <div aria-hidden="true" className="hero-pattern absolute inset-0 -z-10" />
-      <div className="container-fluid">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-x-12 gap-y-8 lg:grid-cols-12 xl:gap-x-20">
-          <div className="lg:col-span-7 lg:col-start-6 lg:row-start-1">
+      <div className="container-fluid flex flex-1 items-center pt-6 pb-14 sm:py-20 lg:py-16">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-12 gap-y-10 lg:grid-cols-[auto_minmax(0,1fr)] xl:gap-x-16">
+          <div className="min-w-0 text-center lg:col-start-2 lg:row-start-1 lg:text-left">
             <h1
               id="home-title"
-              className="font-mono text-[clamp(1.75rem,1.15rem+2.3vw,3rem)] leading-[1.15] font-medium tracking-tight text-fg"
+              className="font-mono text-[clamp(1.875rem,1rem+2.2vw,3rem)] leading-[1.1] font-medium tracking-tight text-balance text-fg"
             >
               {site.name}
             </h1>
 
-            <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] font-medium text-fg-soft sm:text-base">
+            <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[15px] font-medium text-fg-soft sm:text-base lg:justify-start">
               {site.roles.map((role, index) => (
                 <span key={role} className="inline-flex items-center gap-2">
                   <span aria-hidden="true" className={`size-1.5 rounded-full ${roleDots[index]}`} />
@@ -40,11 +35,11 @@ export function Hero() {
               ))}
             </p>
 
-            <p className="mt-6 max-w-[52ch] text-base leading-[1.8] text-muted sm:text-lg">
+            <p className="mx-auto mt-6 max-w-[54ch] text-base leading-[1.75] text-muted sm:text-lg lg:mx-0">
               {site.tagline}
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] font-medium">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm font-medium lg:justify-start">
               <a
                 href="#projects"
                 className="group inline-flex min-h-11 items-center gap-2 text-fg hover:underline"
@@ -62,24 +57,19 @@ export function Hero() {
               </a>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 font-mono text-xs text-muted sm:mt-5">
+            <div className="mx-auto mt-5 flex w-fit flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border px-2 pt-4 font-mono text-xs text-muted lg:mx-0 lg:justify-start lg:pl-0">
               <ExternalLink href={site.github} className="min-h-10 hover:text-fg">
                 github
               </ExternalLink>
               <ExternalLink href={site.linkedin} className="min-h-10 hover:text-fg">
                 linkedin
               </ExternalLink>
-              <a
-                href={`mailto:${site.email}`}
-                className="inline-flex min-h-10 items-center gap-1 hover:text-fg"
-              >
-                email <ArrowRight aria-hidden="true" className="size-3.5 -rotate-45" />
-              </a>
+              <EmailLink email={site.email} />
             </div>
           </div>
 
-          <div className="row-start-1 lg:col-span-5 lg:col-start-1">
-            <div className="hero-portrait relative aspect-square w-60 sm:w-80 lg:w-full">
+          <div className="row-start-1 flex justify-center lg:col-start-1 lg:justify-start">
+            <div className="hero-portrait relative aspect-square w-56 max-w-full overflow-hidden sm:w-72 lg:w-[19rem] xl:w-[22rem] 2xl:w-96">
               <Image
                 src="/images/mohammed-ali-abdullah.webp"
                 alt={`Portrait of ${site.name}`}
@@ -90,30 +80,9 @@ export function Hero() {
               />
             </div>
           </div>
-
-          <div className="mt-2 min-w-0 lg:col-span-12 lg:mt-4">
-            <dl className="grid grid-cols-3 divide-x divide-border border-y border-border">
-              {focusAreas.map((area, index) => (
-                <div
-                  key={area.label}
-                  className="min-w-0 px-2.5 py-5 first:pl-0 last:pr-0 sm:px-6 sm:py-6"
-                >
-                  <dt className="flex items-center gap-2 font-mono text-[11px] tracking-wide text-muted uppercase">
-                    <span
-                      aria-hidden="true"
-                      className={`size-1.5 shrink-0 rounded-full ${roleDots[index]}`}
-                    />
-                    {area.label}
-                  </dt>
-                  <dd className="mt-2 text-xs leading-relaxed font-medium wrap-break-word text-fg sm:text-base">
-                    {area.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
         </div>
       </div>
+      <HeroOverview />
     </SectionFrame>
   );
 }

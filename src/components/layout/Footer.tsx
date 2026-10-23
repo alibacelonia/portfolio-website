@@ -6,9 +6,9 @@ const portfolioRepo = projects.find((project) => project.id === "website-portfol
 
 export function Footer() {
   return (
-    <footer className="section-frame section-frame--footer border-t border-border bg-bg py-8">
+    <footer className="section-frame section-frame--footer bg-bg py-8">
       <div aria-hidden="true" className="section-guides" />
-      <div className="container-fluid flex flex-col gap-3 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
+      <div className="container-fluid flex flex-col gap-3 type-small text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>
           © {new Date().getFullYear()} {site.name}
         </p>

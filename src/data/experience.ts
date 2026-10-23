@@ -134,3 +134,29 @@ export function formatYearMonth(value: string): string {
 export function formatRange(role: Pick<Role, "start" | "end">): string {
   return `${formatYearMonth(role.start)} – ${role.end ? formatYearMonth(role.end) : "Present"}`;
 }
+
+function toMonthIndex(value: string): number {
+  const [year, month] = value.split("-").map(Number);
+  return year! * 12 + (month! - 1);
+}
+
+/** Inclusive length of a finished role, e.g. "1 yr 6 mos". Current roles have no fixed length. */
+export function formatDuration(role: Pick<Role, "start" | "end">): string | null {
+  if (!role.end) return null;
+  const months = toMonthIndex(role.end) - toMonthIndex(role.start) + 1;
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  const parts = [
+    years ? `${years} yr${years > 1 ? "s" : ""}` : "",
+    rest ? `${rest} mo${rest > 1 ? "s" : ""}` : "",
+  ].filter(Boolean);
+  return parts.join(" ");
+}
+
+/** True when a role started before the next (older) role ended, e.g. a part-time engagement. */
+export function overlapsNext(
+  role: Pick<Role, "start">,
+  next: Pick<Role, "end"> | undefined,
+): boolean {
+  return Boolean(next?.end && role.start < next.end);
+}

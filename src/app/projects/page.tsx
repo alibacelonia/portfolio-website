@@ -27,16 +27,14 @@ export default function ProjectsPage() {
     <div className="container-fluid pt-[calc(var(--nav-offset)+40px)] pb-20 sm:pb-24">
       <Link
         href="/#projects"
-        className="inline-flex min-h-10 items-center gap-1.5 text-[13px] font-medium text-muted transition-colors hover:text-fg"
+        className="inline-flex min-h-10 items-center gap-1.5 type-action text-muted transition-colors hover:text-fg"
       >
         <ArrowLeft aria-hidden="true" className="size-3.5" />
         Back to portfolio
       </Link>
       <header className="mt-6 mb-10 sm:mb-12">
-        <h1 className="text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-tight font-semibold tracking-tight text-fg">
-          All projects
-        </h1>
-        <p className="mt-4 max-w-[68ch] text-base leading-relaxed text-muted">{description}</p>
+        <h1 className="type-page-title">All projects</h1>
+        <p className="mt-4 max-w-[68ch] type-lead">{description}</p>
       </header>
       <ProjectGrid headingLevel={2} />
     </div>

@@ -56,9 +56,7 @@ export default function MobileMenuPanel({
         >
           <nav aria-label="Sections">
             <div className="flex items-center justify-between pl-3">
-              <span className="font-mono text-[10px] tracking-widest text-muted uppercase">
-                Navigation
-              </span>
+              <span className="type-label tracking-widest text-muted uppercase">Navigation</span>
               <button
                 type="button"
                 aria-label="Close navigation"

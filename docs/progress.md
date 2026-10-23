@@ -58,7 +58,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 ## Remaining / blocked (owner actions)
 
 1. Push this repository to `github.com/alibacelonia/portfolio-website` (currently empty) and update its description.
-2. Decide whether to publish the resume as is: `public/documents/…pdf` contains a street address and phone number.
+2. ~~Resume privacy~~ — resolved: replaced with the public resume (no address or phone).
 3. Create a Formspree form; set `FORMSPREE_FORM_ID`.
 4. Approve AWS provisioning: Terraform state bucket, `terraform apply` (see `docs/deployment.md`).
 5. Configure the GitHub `production` environment and variables.

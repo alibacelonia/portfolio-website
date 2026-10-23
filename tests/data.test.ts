@@ -1,5 +1,11 @@
 import { getProject, projects } from "@/data/projects";
-import { experience, formatRange, formatYearMonth } from "@/data/experience";
+import {
+  experience,
+  formatDuration,
+  formatRange,
+  formatYearMonth,
+  overlapsNext,
+} from "@/data/experience";
 import { skills } from "@/data/skills";
 import { certifications } from "@/data/certifications";
 
@@ -98,6 +104,24 @@ describe("experience data", () => {
   it("rejects malformed year-months", () => {
     expect(() => formatYearMonth("2024-13")).toThrow();
     expect(formatYearMonth("2018-07")).toBe("Jul 2018");
+  });
+});
+
+describe("experience timeline helpers", () => {
+  it("formats inclusive durations and leaves current roles open", () => {
+    expect(formatDuration({ start: "2018-07", end: "2019-12" })).toBe("1 yr 6 mos");
+    expect(formatDuration({ start: "2022-07", end: "2026-09" })).toBe("4 yrs 3 mos");
+    expect(formatDuration({ start: "2020-06", end: "2021-03" })).toBe("10 mos");
+    expect(formatDuration({ start: "2021-01", end: "2021-12" })).toBe("1 yr");
+    expect(formatDuration({ start: "2024-08", end: null })).toBeNull();
+  });
+
+  it("detects concurrent roles but not same-month handovers", () => {
+    const [buzzerboy, fujitsu, daProgrammer, daWeb] = experience;
+    expect(overlapsNext(buzzerboy!, fujitsu)).toBe(true);
+    expect(overlapsNext(fujitsu!, daProgrammer)).toBe(false);
+    expect(overlapsNext(daProgrammer!, daWeb)).toBe(false);
+    expect(overlapsNext(daWeb!, undefined)).toBe(false);
   });
 });
 

@@ -171,6 +171,21 @@ describe("Experience", () => {
   });
 });
 
+describe("Experience timeline", () => {
+  it("draws a node per role, rail segments between them and one concurrency bracket", () => {
+    const { container } = render(<Experience />);
+    expect(container.querySelectorAll(".exp-node")).toHaveLength(5);
+    expect(container.querySelectorAll(".exp-segment")).toHaveLength(4);
+    expect(container.querySelectorAll(".exp-node[data-current]")).toHaveLength(1);
+    // Only the part-time Buzzerboy role overlaps the role below it (Fujitsu).
+    const branches = container.querySelectorAll(".exp-branch");
+    expect(branches).toHaveLength(1);
+    expect(branches[0]!.closest("li")).toHaveAttribute("id", "role-buzzerboy");
+    expect(container.querySelector("#role-buzzerboy")).toHaveTextContent("Current role");
+    expect(container.querySelector("#role-fujitsu")).toHaveTextContent("4 yrs 3 mos");
+  });
+});
+
 describe("Skills", () => {
   it("announces working-knowledge tags to screen readers", () => {
     render(<Skills />);

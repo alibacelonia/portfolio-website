@@ -189,6 +189,7 @@ test("hero fills the first viewport without clipping its content", async ({ page
     page.locator("h1"),
     page.getByRole("img", { name: "Portrait of Mohammed Ali B. Abdullah" }),
     page.getByRole("link", { name: "View My Work" }),
+    page.getByRole("link", { name: "Start a conversation" }),
   ]) {
     const box = (await locator.boundingBox())!;
     expect(box.y).toBeGreaterThanOrEqual(hero.y);
@@ -198,6 +199,59 @@ test("hero fills the first viewport without clipping its content", async ({ page
     page.getByRole("img", { name: "Portrait of Mohammed Ali B. Abdullah" }),
   ).toHaveJSProperty("naturalWidth", 800);
   await page.screenshot({ path: testInfo.outputPath("hero-preview.png") });
+});
+
+test("hero overview fills its frame with four equal cells and opens contact", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const grid = page.locator('#home dl[aria-label="At a glance"]');
+  const cells = grid.locator(":scope > div");
+  await expect(cells).toHaveCount(4);
+  const frame = (await page.locator("#home > .section-guides").boundingBox())!;
+  const bounds = (await grid.boundingBox())!;
+  expect(Math.abs(bounds.x - frame.x)).toBeLessThan(2);
+  expect(Math.abs(bounds.width - frame.width)).toBeLessThan(2);
+  const first = (await cells.first().boundingBox())!;
+  const columns = testInfo.project.name === "desktop" ? 4 : 2;
+  expect(Math.abs(first.width * columns + 2 - bounds.width)).toBeLessThan(2);
+  for (const cell of await cells.all()) {
+    const box = (await cell.boundingBox())!;
+    expect(Math.abs(box.width - first.width)).toBeLessThan(2);
+    expect(Math.abs(box.height - first.height)).toBeLessThan(2);
+  }
+  const fontSizes = await grid
+    .locator("dd")
+    .evaluateAll((values) =>
+      values.map((value) => getComputedStyle(value.querySelector("a") ?? value).fontSize),
+    );
+  expect(new Set(fontSizes).size).toBe(1);
+  await grid.getByRole("link", { name: "AWS 3×" }).click();
+  await expect(page).toHaveURL(/#certifications$/);
+  await expect(page.locator("#certifications-title")).toBeInViewport();
+  await page.goto("/");
+  await cells.last().getByRole("link", { name: "Start a conversation" }).click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.locator("#contact-title")).toBeInViewport();
+});
+
+test("hero email copies on desktop and retains mailto on mobile", async ({
+  page,
+  context,
+}, testInfo) => {
+  await page.goto("/");
+  const email = page.locator('#home a[href="mailto:alibacelonia1234@gmail.com"]');
+  await expect(email).toHaveText("email");
+  if (testInfo.project.name === "desktop") {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await email.click();
+    await expect(email).toHaveText("copied!");
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      "alibacelonia1234@gmail.com",
+    );
+  } else {
+    await expect(email).toHaveAttribute("href", "mailto:alibacelonia1234@gmail.com");
+  }
 });
 
 test("project cards open static detail pages and lead back", async ({ page }) => {
@@ -239,8 +293,11 @@ test("project detail pages exist for every project and unknown ones 404", async 
 
 test("view all projects opens the collection and cards remain visible after going back", async ({
   page,
-}) => {
+}, testInfo) => {
   await page.goto("/#projects");
+  await page.locator("#projects .section-action").screenshot({
+    path: testInfo.outputPath("projects-divider-preview.png"),
+  });
   await page.getByRole("link", { name: "View all projects" }).click();
   await expect(page).toHaveURL(/\/projects\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("All projects");
@@ -343,4 +400,15 @@ test("unknown paths render the 404 page", async ({ request }) => {
   const response = await request.get("/404.html");
   expect(response.status()).toBe(200);
   expect(await response.text()).toContain("Page not found");
+});
+
+test("experience dates stay beside their card while scrolling", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Dates are pinned from the md breakpoint");
+  await page.goto("/#role-buzzerboy");
+  const card = page.locator("#role-buzzerboy article");
+  const dates = page.locator("#role-buzzerboy > div").first();
+  const box = (await card.boundingBox())!;
+  // Scroll partway through the card: the dates should remain visible within the row.
+  await page.mouse.wheel(0, box.height / 2);
+  await expect(dates).toBeInViewport();
 });

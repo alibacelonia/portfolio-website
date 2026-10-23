@@ -119,14 +119,9 @@ export function ContactForm({
 
   if (status.kind === "success") {
     return (
-      <div
-        ref={statusRef}
-        tabIndex={-1}
-        role="status"
-        className="rounded-xl border border-border bg-surface p-6 shadow-card outline-none sm:p-8"
-      >
-        <p className="text-base font-semibold text-fg">Message sent. Thank you, {status.name}.</p>
-        <p className="mt-2 text-sm text-muted">
+      <div ref={statusRef} tabIndex={-1} role="status" className="outline-none">
+        <p className="type-card-title">Message sent. Thank you, {status.name}.</p>
+        <p className="mt-2 type-body text-muted">
           Replies will go to <span className="text-fg-soft">{status.email}</span>.
         </p>
         <button
@@ -135,7 +130,7 @@ export function ContactForm({
             startedAt.current = now();
             setStatus({ kind: "idle" });
           }}
-          className="mt-6 inline-flex min-h-10 items-center rounded-lg border border-border-strong px-4 text-sm font-medium text-fg transition-colors hover:bg-surface-2"
+          className="mt-6 inline-flex min-h-10 items-center rounded-lg border border-border-strong px-4 type-action text-fg transition-colors hover:bg-surface-2"
         >
           Send another message
         </button>
@@ -145,7 +140,7 @@ export function ContactForm({
 
   const submitting = status.kind === "submitting";
   const inputClass = (field: ContactField) =>
-    `block w-full rounded-lg border bg-bg px-3 py-2.5 text-[15px] text-fg placeholder:text-muted/70 transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-fg disabled:opacity-60 ${
+    `block w-full rounded-lg border bg-bg px-3 py-2.5 text-base text-fg placeholder:text-muted/70 transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-fg disabled:opacity-60 ${
       errors[field] ? "border-danger" : "border-border-strong hover:border-fg/30"
     }`;
 
@@ -170,7 +165,7 @@ export function ContactForm({
       <div className={field === "message" || field === "subject" ? "sm:col-span-2" : undefined}>
         <label
           htmlFor={fieldId(field)}
-          className="mb-1.5 block text-[13px] font-medium text-fg-soft"
+          className="mb-1.5 block type-small font-medium text-fg-soft"
         >
           {label}
           <span aria-hidden="true" className="text-muted">
@@ -201,7 +196,7 @@ export function ContactForm({
           />
         )}
         {errors[field] ? (
-          <p id={errorId(field)} className="mt-1.5 text-[13px] text-danger">
+          <p id={errorId(field)} className="mt-1.5 type-small text-danger">
             {errors[field]}
           </p>
         ) : null}
@@ -215,9 +210,9 @@ export function ContactForm({
       onSubmit={onSubmit}
       aria-describedby={`${id}-required`}
       aria-busy={submitting}
-      className="relative rounded-xl border border-border bg-surface p-5 shadow-card sm:p-7"
+      className="relative"
     >
-      <p id={`${id}-required`} className="mb-5 text-[13px] text-muted">
+      <p id={`${id}-required`} className="mb-5 type-small text-muted">
         All fields are required.
       </p>
 
@@ -251,7 +246,7 @@ export function ContactForm({
           ref={statusRef}
           tabIndex={-1}
           role="alert"
-          className="mt-5 flex gap-2.5 rounded-lg border border-danger/30 bg-danger/5 p-3 text-[13px] text-fg-soft outline-none"
+          className="mt-5 flex gap-2.5 rounded-lg border border-danger/30 bg-danger/5 p-3 type-small text-fg-soft outline-none"
         >
           <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-danger" />
           <p>
@@ -269,7 +264,7 @@ export function ContactForm({
           ref={statusRef}
           tabIndex={-1}
           role="status"
-          className="mt-5 rounded-lg border border-border bg-surface-2 p-3 text-[13px] text-fg-soft outline-none"
+          className="mt-5 rounded-lg border border-border bg-surface-2 p-3 type-small text-fg-soft outline-none"
         >
           Your email app should open with this message ready to send. Nothing has been sent yet. If
           it didn&apos;t open, email{" "}
@@ -281,7 +276,7 @@ export function ContactForm({
       ) : null}
 
       <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-muted">
+        <p className="type-small text-muted">
           {configured
             ? "Sent via Formspree. Your details are only used to reply to you."
             : "Opens your email app with the message filled in."}
@@ -289,7 +284,7 @@ export function ContactForm({
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-fg px-5 text-sm font-medium text-bg transition-[background-color,transform] hover:bg-fg/85 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-fg px-5 type-action text-bg transition-[background-color,transform] hover:bg-fg/85 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
         >
           {submitting ? (
             <>
