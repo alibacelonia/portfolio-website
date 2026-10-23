@@ -1,0 +1,55 @@
+# Design system
+
+Premium, minimalist, full-width, with restrained operating-system details (window chrome on the pipeline card, a glass dock, monospace status labels). Hierarchy comes from size, weight, spacing and contrast — never from colored or gradient text.
+
+## Tokens
+
+Defined as CSS variables in `src/app/globals.css` and exposed to Tailwind through `@theme inline`.
+
+| Token                          | Light                 | Dark                  | Use                                     |
+| ------------------------------ | --------------------- | --------------------- | --------------------------------------- |
+| `--bg`                         | `#FAFBFC`             | `#0D1117`             | Page and alternating section background |
+| `--surface`                    | `#FFFFFF`             | `#161B22`             | Cards, alternating section surface      |
+| `--surface-2`                  | `#F3F5F8`             | `#1C2129`             | Insets, tags, code                      |
+| `--fg`                         | `#111827`             | `#F3F4F6`             | Primary text                            |
+| `--muted`                      | `#64748B`             | `#9CA3AF`             | Secondary text                          |
+| `--border`                     | `#E5E7EB`             | `#30363D`             | Hairlines                               |
+| `--blue` / `--blue-fg`         | `#A9C4E8` / `#335C8F` | `#7FA3D1` / `#A9C6EE` | Full-Stack, links, focus                |
+| `--sage` / `--sage-fg`         | `#B4CDB6` / `#3F6B49` | `#8DAF92` / `#B4D3B8` | DevOps / Cloud, pipeline success        |
+| `--lavender` / `--lavender-fg` | `#C9BFE6` / `#5D4E8E` | `#A496CF` / `#CABFEF` | AI Engineering                          |
+
+`*-fg` variants are the only accent colors allowed on text; each meets 4.5:1 against `--bg` and `--surface` in its theme. Fill variants are used only for dots, lines and soft tints (`color-mix` at ≤ 18 %).
+
+## Typography
+
+- Geist Sans (via the `geist` package, self-hosted by `next/font`) for everything; Geist Mono for section indices, pipeline labels, dates and architecture flows.
+- Body 15 px (`text-[15px]`), supporting 13–14 px, navigation 13 px, mono labels 11–12 px.
+- Section headings `clamp(1.5rem, 1.2rem + 1vw, 2rem)`; hero name `clamp(1.75rem, 1.2rem + 2.4vw, 3rem)`.
+- Text measure: paragraphs capped at `60–68ch`.
+
+## Layout
+
+- No global max-width. Each section is a full-width band (`--bg` / `--surface` alternation, 1 px top border).
+- Inner content uses `.container-fluid`: fluid gutters `clamp(16px, 5vw, 80px)`, content capped at 1600 px only so 4K screens keep a readable grid.
+- Section header: mono index (`02`) + title + lead on the left; optional meta on the right (stacks on mobile).
+- Grids: projects 1 → 2 (`md`) → 4 (`2xl`) columns; skills 1 → 3 (`lg`); certifications 1 → 3 (`md`); experience date column appears at `md`.
+- Touch targets ≥ 40 px (44 px for primary actions and mobile menu items).
+
+## Components
+
+| Component    | Notes                                                                                                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Header       | 56 px, translucent `--bg` with hairline border on scroll. Brand, Resume, theme toggle, menu button (`<md`).                                                                                |
+| Dock (`md+`) | Fixed bottom-center pill. `backdrop-filter: blur(14px) saturate(140%)`, 72 % surface, 1 px border, soft shadow. 13 px labels. Active pill slides with a measured CSS transform (see D-18). |
+| Mobile menu  | Disclosure panel under the header, Escape closes, focus returns to the button.                                                                                                             |
+| Card         | `--surface`, 1 px border, 12 px radius, shadow `0 1px 2px rgb(0 0 0 / 4%)`. Hover: border darkens, 2 px lift (no glow).                                                                    |
+| Tag          | 12 px, 6 px radius, `--surface-2`. Working-knowledge tags use a dashed border plus visually hidden text.                                                                                   |
+| Button       | Primary: solid `--fg` on `--bg`. Secondary: bordered. 40–44 px tall.                                                                                                                       |
+
+## Motion
+
+Motion for React is used where it earns its weight: `AnimatePresence` for the mobile menu's enter/exit (lazy-loaded with the panel, so desktop never downloads it) and `useInView` to start the pipeline sequence. `LazyMotion` loads only `domAnimation`; `MotionConfig reducedMotion="user"` applies globally. The dock indicator, theme icon swap, card hover and section entrances are CSS transitions (D-04, D-18). Entrances apply only when JavaScript has run (`html.js`), so content is visible without JS. Durations ≤ 500 ms, easing `cubic-bezier(0.2, 0.8, 0.2, 1)`. `prefers-reduced-motion: reduce` disables entrances, smooth scrolling and pipeline sequencing; the reduced-motion check is hydration-safe (`usePrefersReducedMotion`).
+
+## Prohibited
+
+Gradient or colored display text, neon, saturated gradients, photos, glowing cards, decorative patterns, percentage skill bars, fake screenshots or badges, duplicate navigation.

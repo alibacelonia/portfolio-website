@@ -1,0 +1,178 @@
+# Deployment
+
+Nothing in this repository provisions AWS resources or changes DNS automatically. Every step below is run deliberately by the owner.
+
+## Overview
+
+| Piece          | Where                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Infrastructure | `infra/terraform` (S3, CloudFront, ACM, OIDC role)                                                           |
+| CI             | `.github/workflows/ci.yml`: lint, typecheck, format, unit tests, build, Playwright + axe, Terraform validate |
+| CD             | `.github/workflows/deploy.yml`: on push to `main`, reruns CI, then publishes with `scripts/deploy.sh`        |
+| DNS            | `alibacelonia.dev` is on **Cloudflare** (not Route 53)                                                       |
+
+## 1. Prerequisites
+
+- AWS account with permission to create S3, CloudFront, ACM, and IAM resources (admin for the first apply).
+- Terraform ≥ 1.10, AWS CLI v2, Node 22.
+- This code pushed to `github.com/alibacelonia/portfolio-website` (currently empty). Update that repository's description; it still describes an older API Gateway/Lambda/SES design.
+
+## 2. Terraform state (one time)
+
+```bash
+aws s3api create-bucket --bucket <state-bucket> --region ap-southeast-1 \
+  --create-bucket-configuration LocationConstraint=ap-southeast-1
+aws s3api put-bucket-versioning --bucket <state-bucket> --versioning-configuration Status=Enabled
+aws s3api put-public-access-block --bucket <state-bucket> \
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+```
+
+```bash
+cd infra/terraform
+cp backend.hcl.example backend.hcl        # set the state bucket
+cp terraform.tfvars.example terraform.tfvars
+terraform init -backend-config=backend.hcl
+```
+
+## 3. First apply: no custom domain
+
+Keep `domain_names = []`. The site is then served at the `*.cloudfront.net` hostname.
+
+```bash
+terraform plan -out=tfplan
+terraform apply tfplan
+terraform output
+```
+
+If the account already has the GitHub OIDC provider (`token.actions.githubusercontent.com`), set `create_github_oidc_provider = false` and pass `github_oidc_provider_arn`.
+
+## 4. GitHub configuration
+
+1. **Settings → Environments → New environment `production`.**
+   - Deployment branches: _Selected branches_ → `main`.
+   - Optional: _Required reviewers_ (yourself) for a manual approval gate.
+2. **Settings → Secrets and variables → Actions → Variables** (no secrets are needed):
+
+| Variable                     | Value                                                              |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `AWS_DEPLOY_ROLE_ARN`        | `terraform output -raw deploy_role_arn`                            |
+| `AWS_REGION`                 | `ap-southeast-1` (or your `aws_region`)                            |
+| `S3_BUCKET`                  | `terraform output -raw bucket_name`                                |
+| `CLOUDFRONT_DISTRIBUTION_ID` | `terraform output -raw cloudfront_distribution_id`                 |
+| `SITE_URL`                   | `https://alibacelonia.dev` (canonical origin baked into the build) |
+| `FORMSPREE_FORM_ID`          | Formspree form ID (optional; see below)                            |
+
+The deploy job is **skipped** until `AWS_DEPLOY_ROLE_ARN` is set, so CI stays green before AWS exists.
+
+### How OIDC works here
+
+GitHub issues a short-lived token for each job. The role's trust policy accepts it only when:
+
+- `aud` = `sts.amazonaws.com`, and
+- `sub` = `repo:alibacelonia/portfolio-website:environment:production`
+
+So only jobs in that repository that target the protected `production` environment (which is restricted to `main`) can assume the role. The role can list and write objects in one bucket and invalidate one distribution. No access keys exist.
+
+## 5. Deploy
+
+Push to `main` (or run **Actions → Deploy → Run workflow**). The deploy job:
+
+1. downloads the `out/` artifact built and tested by CI in the same run;
+2. uploads `_next/static/**` with `Cache-Control: public, max-age=31536000, immutable`;
+3. uploads everything else with `public, max-age=0, must-revalidate` and deletes files no longer in the build (old hashed assets are kept on purpose);
+4. uploads `/opengraph-image` as `image/png`;
+5. invalidates `/*` and waits for completion.
+
+Manual deploy from a workstation (same script):
+
+```bash
+npm ci && NEXT_PUBLIC_SITE_URL=https://alibacelonia.dev npm run build
+S3_BUCKET=... CLOUDFRONT_DISTRIBUTION_ID=... scripts/deploy.sh out
+```
+
+Verify at the `cloudfront_domain_name` output before touching DNS.
+
+## 6. Custom domain (Cloudflare DNS)
+
+`alibacelonia.dev` currently points at an existing Vercel deployment through Cloudflare. Switching DNS replaces that live site, so do this only when ready.
+
+1. In `terraform.tfvars`: `domain_names = ["alibacelonia.dev", "www.alibacelonia.dev"]` (first = canonical; `www` 301-redirects to it).
+2. Request the certificate first, then add its validation records:
+
+   ```bash
+   terraform apply -target='aws_acm_certificate.site[0]'
+   terraform output acm_validation_records
+   ```
+
+   In Cloudflare, create each record as **CNAME, Proxy status: DNS only** (grey cloud). Validation records must not be proxied.
+
+3. Finish the apply. It waits (up to 60 minutes) until ACM issues the certificate, then adds the aliases to CloudFront:
+
+   ```bash
+   terraform apply
+   terraform output dns_records_to_create
+   ```
+
+4. In Cloudflare, replace the existing apex and `www` records with **CNAME → `<cloudfront_domain_name>`**, **DNS only**. Cloudflare flattens the apex CNAME automatically. Keeping the records proxied (orange cloud) would put Cloudflare's TLS and cache in front of CloudFront; DNS only keeps a single CDN and the CloudFront security headers authoritative.
+5. Check `https://alibacelonia.dev`, `https://www.alibacelonia.dev` (should redirect), and the certificate.
+
+### Migrating to maba.dev later
+
+1. Add `maba.dev`/`www.maba.dev` first in `domain_names` (keep the old names after them so they redirect). A new certificate covering all names is requested; validate it as above (maba.dev DNS is at Namecheap: add the records there, or move DNS to Cloudflare).
+2. Set the GitHub variable `SITE_URL=https://maba.dev` and redeploy. Canonical, sitemap, robots, Open Graph and JSON-LD all follow `NEXT_PUBLIC_SITE_URL`.
+3. Point maba.dev DNS at CloudFront. Do not change `SITE_URL` before the domain actually serves the site.
+
+## Contact form (Formspree)
+
+1. Create a form at formspree.io; set its notification email.
+2. Copy the form ID (the part after `/f/`) into the GitHub variable `FORMSPREE_FORM_ID` and, for local testing, `.env.local`.
+3. In the Formspree form settings, restrict allowed domains to the production domain.
+
+The ID is public by design. Without it, the form validates input and opens the visitor's email client with the message prefilled, stating that nothing has been sent.
+
+## Rollback
+
+- **Preferred:** `git revert <bad-commit>` and push to `main`. CI rebuilds and redeploys a known state.
+- **Emergency (bypasses CI):** the bucket is versioned. Rebuild the last good commit locally and run `scripts/deploy.sh`, or restore objects to their previous versions:
+
+  ```bash
+  aws s3api list-object-versions --bucket <bucket> --prefix index.html
+  aws s3api copy-object --bucket <bucket> --key index.html \
+    --copy-source "<bucket>/index.html?versionId=<version>" \
+    --cache-control "public, max-age=0, must-revalidate" --metadata-directive REPLACE \
+    --content-type text/html
+  aws cloudfront create-invalidation --distribution-id <id> --paths "/*"
+  ```
+
+  Previous versions are kept for 30 days (`noncurrent_version_retention_days`).
+
+- **Infrastructure:** revert the Terraform change and `terraform apply`.
+
+## Cleanup
+
+```bash
+aws s3 rm s3://<bucket> --recursive            # current objects
+# versioned buckets also need old versions removed (or set force_destroy = true and apply first)
+terraform destroy
+```
+
+Remove the Cloudflare records and GitHub variables afterwards. The ACM certificate is deleted by `destroy` once CloudFront no longer uses it.
+
+## Cost
+
+For a personal portfolio, expect low single-digit USD per month or less:
+
+- **CloudFront:** the always-free tier covers 1 TB transfer and 10 M requests per month. Invalidations: first 1,000 paths/month free (each deploy uses one `/*` path). CloudFront Functions: 2 M invocations/month free.
+- **S3:** a few MB of storage plus versions; requests are mostly served from cache.
+- **ACM** public certificates: free. **Route 53** (only if used): about USD 0.50 per hosted zone per month.
+- **IAM/OIDC:** free.
+
+Set an AWS Budget alert (for example USD 5) on the account.
+
+## Local production preview
+
+```bash
+npm run build && npm run preview     # http://localhost:4173
+```
+
+`serve` does not apply the CloudFront security headers or cache rules; those exist only in AWS.

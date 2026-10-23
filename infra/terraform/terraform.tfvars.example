@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars (git-ignored) and adjust.
+
+aws_region = "ap-southeast-1"
+
+# Step 1: leave domains empty to deploy on the *.cloudfront.net hostname and verify the site.
+# Step 2: add domains. The first one is canonical; others 301-redirect to it.
+domain_names = []
+# domain_names = ["alibacelonia.dev", "www.alibacelonia.dev"]
+# Future migration: ["maba.dev", "www.maba.dev", "alibacelonia.dev", "www.alibacelonia.dev"]
+#   (a certificate covering all names is required; old domains then redirect to maba.dev)
+
+# DNS for alibacelonia.dev is on Cloudflare, so leave this empty and create records manually.
+route53_zone_id = ""
+
+github_repository  = "alibacelonia/portfolio-website"
+github_environment = "production"
+
+# Set to false (and pass the ARN) if the AWS account already has the GitHub OIDC provider.
+create_github_oidc_provider = true
+# github_oidc_provider_arn  = "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"

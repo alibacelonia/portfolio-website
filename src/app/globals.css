@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+/* Dark mode follows the resolved theme on <html data-theme>, set before paint by the bootstrap script. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------- Design tokens (docs/design-system.md) ---------- */
+:root {
+  color-scheme: light;
+  --bg: #fafbfc;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --fg: #111827;
+  --fg-soft: #334155;
+  --muted: #64748b;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+
+  --blue: #a9c4e8;
+  --blue-fg: #335c8f;
+  --sage: #b4cdb6;
+  --sage-fg: #3f6b49;
+  --lavender: #c9bfe6;
+  --lavender-fg: #5d4e8e;
+  --danger: #b42318;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
+  --dock-bg: rgb(255 255 255 / 0.72);
+  --header-bg: rgb(250 251 252 / 0.82);
+
+  --gutter: clamp(16px, 5vw, 80px);
+  --header-h: 56px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #1c2129;
+  --fg: #f3f4f6;
+  --fg-soft: #d1d5db;
+  --muted: #9ca3af;
+  --border: #30363d;
+  --border-strong: #3d444d;
+
+  --blue: #7fa3d1;
+  --blue-fg: #a9c6ee;
+  --sage: #8daf92;
+  --sage-fg: #b4d3b8;
+  --lavender: #a496cf;
+  --lavender-fg: #cabfef;
+  --danger: #fda29b;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --dock-bg: rgb(22 27 34 / 0.72);
+  --header-bg: rgb(13 17 23 / 0.82);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-fg-soft: var(--fg-soft);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-blue: var(--blue);
+  --color-blue-fg: var(--blue-fg);
+  --color-sage: var(--sage);
+  --color-sage-fg: var(--sage-fg);
+  --color-lavender: var(--lavender);
+  --color-lavender-fg: var(--lavender-fg);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-card: var(--shadow-sm);
+  --shadow-raised: var(--shadow-md);
+  --ease-out-soft: var(--ease);
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: clip;
+    background: var(--bg);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--blue) 45%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--blue-fg);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+}
+
+/* ---------- Utilities ---------- */
+@utility container-fluid {
+  width: 100%;
+  max-width: calc(1600px + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility measure {
+  max-width: 64ch;
+}
+
+/* Theme switch: only transition colors while the user toggles, never on first paint. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background-color 200ms var(--ease),
+    border-color 200ms var(--ease),
+    color 200ms var(--ease),
+    fill 200ms var(--ease),
+    stroke 200ms var(--ease) !important;
+}
+
+/* Section entrance: applied only when JS is running (html.js), so content is visible without it. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 500ms var(--ease),
+      transform 500ms var(--ease);
+  }
+  .js [data-reveal][data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Glass dock surface (kept subtle; falls back to an opaque surface). */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--dock-bg);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+}
+
+@media (forced-colors: active) {
+  .glass {
+    border: 1px solid CanvasText;
+  }
+}
