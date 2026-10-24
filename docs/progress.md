@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: Case-study preview cards made claymorphic like the dock; the hatched background behind them is unchanged (D-51).
 - 2026-10-24: Website Portfolio updated for the live system: key stack, overview, stack (contact API services, Cloudflare DNS), infrastructure rows (no planned items left) and a Deploy / Serve / Contact architecture graph on its project page (D-49).
 - 2026-10-24: IronFort screenshot replaced with the owner-supplied homepage image (5 × 3.5 in, 1600 × 1120 WebP).
 - 2026-10-24: Website Portfolio case study shows the owner-supplied screenshot of this site (1600 × 1120 WebP) instead of the architecture flow.
