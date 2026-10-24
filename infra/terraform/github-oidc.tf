@@ -18,11 +18,13 @@ data "aws_iam_policy_document" "deploy_trust" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
-    # Only jobs in this repository that target the protected environment can deploy.
+    # Only jobs in this repository that target the protected environment can deploy. With GitHub's
+    # immutable subject claims the prefix carries the owner and repository IDs, so a deleted and
+    # re-created account or repository with the same name cannot match.
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repository}:environment:${var.github_environment}"]
+      values   = ["${local.github_sub_prefix}:environment:${var.github_environment}"]
     }
   }
 }

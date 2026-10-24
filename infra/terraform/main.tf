@@ -7,6 +7,9 @@ locals {
   certificate   = local.create_cert ? aws_acm_certificate_validation.site[0].certificate_arn : var.acm_certificate_arn
   oidc_provider = var.create_github_oidc_provider ? aws_iam_openid_connect_provider.github[0].arn : var.github_oidc_provider_arn
 
+  # e.g. repo:owner@123/name@456 (immutable subject) or repo:owner/name (legacy).
+  github_sub_prefix = var.github_oidc_subject_prefix != "" ? var.github_oidc_subject_prefix : "repo:${var.github_repository}"
+
   contact_origins = length(var.contact_allowed_origins) > 0 ? var.contact_allowed_origins : [for d in var.domain_names : "https://${d}"]
   contact_api     = var.enable_contact_api ? module.contact_api[0].api_origin : ""
 
