@@ -1,4 +1,4 @@
-import { buildMailto, isValidEmail, submitToFormspree, validateContact } from "@/lib/contact";
+import { isValidEmail, submitToContactApi, validateContact } from "@/lib/contact";
 
 const valid = {
   name: "Ada Lovelace",
@@ -34,41 +34,31 @@ describe("validateContact", () => {
   });
 });
 
-describe("buildMailto", () => {
-  it("encodes subject and body without plus signs", () => {
-    const url = buildMailto("me@example.com", valid);
-    expect(url.startsWith("mailto:me@example.com?subject=Hello&body=")).toBe(true);
-    expect(url).not.toContain("+");
-    expect(decodeURIComponent(url)).toContain("— Ada Lovelace <ada@example.com>");
-  });
-});
+describe("submitToContactApi", () => {
+  const send = (fetchMock: typeof fetch) =>
+    submitToContactApi(
+      "https://api.example.com/contact",
+      { ...valid, _gotcha: "", turnstileToken: "tok" },
+      fetchMock,
+    );
 
-describe("submitToFormspree", () => {
-  it("posts JSON to the form endpoint and reports success", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
-    const result = await submitToFormspree("abcd1234", { ...valid, _gotcha: "" }, fetchMock);
-    expect(result).toEqual({ ok: true });
-    const [url, init] = fetchMock.mock.calls[0]!;
-    expect(url).toBe("https://formspree.io/f/abcd1234");
-    expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body)).toMatchObject({ email: "ada@example.com", _gotcha: "" });
+  it("posts trimmed JSON with the Turnstile token", async () => {
+    const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
+    expect(await send(fetchMock as unknown as typeof fetch)).toEqual({ ok: true });
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("https://api.example.com/contact");
+    expect(JSON.parse(init.body as string)).toMatchObject({ turnstileToken: "tok", _gotcha: "" });
   });
 
-  it("surfaces provider error messages", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(JSON.stringify({ errors: [{ message: "Form not found" }] }), { status: 404 }),
-      );
-    expect(await submitToFormspree("abcd1234", { ...valid, _gotcha: "" }, fetchMock)).toEqual({
+  it("maps API error codes and network failures to readable messages", async () => {
+    const rejected = vi.fn(
+      async () => new Response(JSON.stringify({ code: "duplicate" }), { status: 409 }),
+    );
+    expect(await send(rejected as unknown as typeof fetch)).toEqual({
       ok: false,
-      message: "Form not found",
+      message: "This message was already sent.",
     });
-  });
-
-  it("handles network failures", async () => {
-    const fetchMock = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"));
-    const result = await submitToFormspree("abcd1234", { ...valid, _gotcha: "" }, fetchMock);
-    expect(result.ok).toBe(false);
+    const offline = vi.fn().mockRejectedValue(new TypeError("offline"));
+    expect((await send(offline)).ok).toBe(false);
   });
 });

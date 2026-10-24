@@ -68,7 +68,7 @@ describe("SectionNav", () => {
       "/#experience",
       "/#skills",
       "/#certifications",
-      "/#contact",
+      "/#connect",
     ]);
     expect(screen.getByRole("link", { name: "Experience" })).toHaveAttribute(
       "aria-current",

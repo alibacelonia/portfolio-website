@@ -17,10 +17,24 @@ export function normalizeSiteUrl(value: string | undefined): string {
   }
 }
 
-/** Formspree IDs are short alphanumeric strings. Anything else is treated as unconfigured. */
-export function normalizeFormId(value: string | undefined): string | null {
-  const id = value?.trim();
-  return id && /^[A-Za-z0-9]{4,32}$/.test(id) ? id : null;
+/** HTTPS endpoint (or http://localhost) for the contact API; anything else is unconfigured. */
+export function normalizeApiUrl(value: string | undefined): string | null {
+  try {
+    const url = new URL(value?.trim() ?? "");
+    const isLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    return url.protocol === "https:" || (isLocal && url.protocol === "http:") ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Cal.com links look like `user/event`; anything else hides the booking tab. */
+export function normalizeCalLink(value: string | undefined): string | null {
+  const link = value
+    ?.trim()
+    .replace(/^https?:\/\/(app\.)?cal\.com\//, "")
+    .replace(/^\/+|\/+$/g, "");
+  return link && /^[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)?$/.test(link) ? link : null;
 }
 
 export const site = {
@@ -45,7 +59,11 @@ export const site = {
     href: "/documents/mohammed-ali-abdullah-resume.pdf",
     fileName: "Mohammed-Ali-Abdullah-Resume.pdf",
   },
-  formspreeId: normalizeFormId(process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID),
+  /** Contact API (API Gateway → Lambda → SES); the only way the form sends. */
+  contactApiUrl: normalizeApiUrl(process.env.NEXT_PUBLIC_CONTACT_API_URL),
+  turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || null,
+  /** Cal.com `user/event` for the Book a call tab. */
+  calLink: normalizeCalLink(process.env.NEXT_PUBLIC_CAL_LINK),
 } as const;
 
 /** Host name shown as the site name, e.g. "alibacelonia.dev". */
@@ -58,5 +76,5 @@ export const navigation: NavItem[] = [
   { id: "experience", label: "Experience" },
   { id: "skills", label: "Skills" },
   { id: "certifications", label: "Certifications" },
-  { id: "contact", label: "Contact" },
+  { id: "connect", label: "Connect" },
 ];

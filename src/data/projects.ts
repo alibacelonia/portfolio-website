@@ -303,7 +303,7 @@ export const projects: Project[] = [
       "Content lives in typed data modules, separate from components, and each claim is traceable to the resume or a repository.",
       "Accessible by design: semantic structure, keyboard navigation, visible focus, reduced-motion support and automated axe checks in both themes.",
       "A small performance budget: static HTML, CSS-first animation, and Motion for React only where it is needed.",
-      "A contact form that posts to Formspree when configured and otherwise opens the visitor's email app, never reporting a false success.",
+      "A contact form that sends through the site's own API (API Gateway, Lambda and SES, with Cloudflare Turnstile and rate limits), with clear sending, success and error states.",
       "Deployments gated on linting, type checks, unit tests, end-to-end and accessibility tests, and Terraform validation.",
     ],
     stack: [
@@ -326,7 +326,7 @@ export const projects: Project[] = [
         group: "Cloud services",
         items: ["Amazon S3", "Amazon CloudFront", "AWS Certificate Manager", "AWS IAM (OIDC)"],
       },
-      { group: "Integrations", items: ["Formspree (contact form)"] },
+      { group: "Integrations", items: ["Cloudflare Turnstile", "Cal.com (booking)"] },
     ],
     infrastructure: {
       summary:

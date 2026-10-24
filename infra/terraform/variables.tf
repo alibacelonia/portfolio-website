@@ -71,7 +71,7 @@ variable "price_class" {
 variable "content_security_policy" {
   description = "Content-Security-Policy header. 'unsafe-inline' scripts are required by Next.js static export inline payloads."
   type        = string
-  default     = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://formspree.io; form-action 'self' https://formspree.io; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+  default     = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
 }
 
 variable "github_repository" {
@@ -101,4 +101,48 @@ variable "github_oidc_provider_arn" {
   description = "Existing GitHub OIDC provider ARN, used when create_github_oidc_provider is false."
   type        = string
   default     = ""
+}
+
+# ---------- Contact API (API Gateway + Lambda + DynamoDB + SES), off until approved ----------
+
+variable "enable_contact_api" {
+  description = "Create the contact form backend. Chargeable resources; enable only with owner approval."
+  type        = bool
+  default     = false
+}
+
+variable "contact_sender_domain" {
+  description = "Domain verified in SES for the contact form's From address."
+  type        = string
+  default     = "alibacelonia.dev"
+}
+
+variable "contact_from_address" {
+  description = "From address for contact form emails (must be at contact_sender_domain)."
+  type        = string
+  default     = "noreply@alibacelonia.dev"
+}
+
+variable "contact_to_address" {
+  description = "Inbox that receives contact form messages."
+  type        = string
+  default     = "alibacelonia1234@gmail.com"
+}
+
+variable "contact_allowed_origins" {
+  description = "Origins allowed to call the contact API. Defaults to https:// + each domain_names entry."
+  type        = list(string)
+  default     = []
+}
+
+variable "turnstile_secret_parameter" {
+  description = "SSM SecureString name holding the Cloudflare Turnstile secret (create it with the AWS CLI; never in Terraform)."
+  type        = string
+  default     = "/alibacelonia-portfolio/turnstile-secret"
+}
+
+variable "cal_origin" {
+  description = "Booking embed origin allowed in frame-src (Cal.com)."
+  type        = string
+  default     = "https://cal.com"
 }

@@ -843,6 +843,15 @@ html:not(.js) .case-panel-item {
   }
 }
 
+/* Connect: the portrait as a slightly tilted instant photo. */
+.connect-polaroid {
+  padding: 5px 5px 14px;
+  background: #f4f4f5;
+  border-radius: 3px;
+  box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.6);
+  rotate: -4deg;
+}
+
 /* Project cursor (ProjectCursor): replaces the native cursor over case-study cards for a mouse.
    A neutral light disc (not a pastel accent) so it reads on every card tint. */
 @media (hover: hover) and (pointer: fine) and (forced-colors: none) {

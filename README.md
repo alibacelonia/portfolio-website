@@ -30,10 +30,12 @@ npm run dev        # http://localhost:3000
 
 ## Configuration
 
-| Variable                        | Default                    | Effect                                              |
-| ------------------------------- | -------------------------- | --------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`          | `https://alibacelonia.dev` | Canonical URL, sitemap, robots, Open Graph, JSON-LD |
-| `NEXT_PUBLIC_FORMSPREE_FORM_ID` | empty                      | Formspree form; empty = `mailto:` fallback          |
+| Variable                         | Default                    | Effect                                                         |
+| -------------------------------- | -------------------------- | -------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`           | `https://alibacelonia.dev` | Canonical URL, sitemap, robots, Open Graph, JSON-LD            |
+| `NEXT_PUBLIC_CONTACT_API_URL`    | empty                      | Contact API endpoint; empty = form reports sending unavailable |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | empty                      | Cloudflare Turnstile site key (public)                         |
+| `NEXT_PUBLIC_CAL_LINK`           | empty                      | Cal.com `user/event` for the Book a call tab                   |
 
 ## Site structure
 

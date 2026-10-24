@@ -44,7 +44,7 @@ resource "aws_cloudfront_response_headers_policy" "security" {
       override        = true
     }
     content_security_policy {
-      content_security_policy = var.content_security_policy
+      content_security_policy = local.content_security_policy
       override                = true
     }
   }

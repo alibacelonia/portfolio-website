@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { normalizeFormId, normalizeSiteUrl, site, siteHost } from "@/lib/site";
+import { normalizeApiUrl, normalizeCalLink, normalizeSiteUrl, site, siteHost } from "@/lib/site";
 import { LOGO_PATH } from "@/lib/brand";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 
@@ -21,15 +21,6 @@ describe("normalizeSiteUrl", () => {
     expect(normalizeSiteUrl("http://alibacelonia.dev")).toBe("https://alibacelonia.dev");
     expect(normalizeSiteUrl("not a url")).toBe("https://alibacelonia.dev");
     expect(normalizeSiteUrl("http://localhost:4173")).toBe("http://localhost:4173");
-  });
-});
-
-describe("normalizeFormId", () => {
-  it("accepts plain Formspree IDs only", () => {
-    expect(normalizeFormId("xyzabcde")).toBe("xyzabcde");
-    expect(normalizeFormId("")).toBeNull();
-    expect(normalizeFormId(undefined)).toBeNull();
-    expect(normalizeFormId("../evil")).toBeNull();
   });
 });
 
@@ -56,5 +47,23 @@ describe("brand", () => {
     expect(site.brand).toBe("A/B");
     const icon = readFileSync(join(process.cwd(), "src/app/icon.svg"), "utf8");
     expect(icon).toContain(`d="${LOGO_PATH}"`);
+  });
+});
+
+describe("contact settings", () => {
+  it("accepts only https API URLs (or localhost)", () => {
+    expect(normalizeApiUrl("https://x.execute-api.ap-southeast-1.amazonaws.com/contact")).toMatch(
+      /^https:/,
+    );
+    expect(normalizeApiUrl("http://localhost:3001/contact")).toBe("http://localhost:3001/contact");
+    expect(normalizeApiUrl("http://example.com")).toBeNull();
+    expect(normalizeApiUrl("")).toBeNull();
+  });
+
+  it("normalizes Cal.com links to user/event", () => {
+    expect(normalizeCalLink("https://cal.com/alibacelonia/30min/")).toBe("alibacelonia/30min");
+    expect(normalizeCalLink("alibacelonia")).toBe("alibacelonia");
+    expect(normalizeCalLink("javascript:alert(1)")).toBeNull();
+    expect(normalizeCalLink(undefined)).toBeNull();
   });
 });

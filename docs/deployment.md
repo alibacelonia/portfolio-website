@@ -60,7 +60,9 @@ If the account already has the GitHub OIDC provider (`token.actions.githubuserco
 | `S3_BUCKET`                  | `terraform output -raw bucket_name`                                |
 | `CLOUDFRONT_DISTRIBUTION_ID` | `terraform output -raw cloudfront_distribution_id`                 |
 | `SITE_URL`                   | `https://alibacelonia.dev` (canonical origin baked into the build) |
-| `FORMSPREE_FORM_ID`          | Formspree form ID (optional; see below)                            |
+| `CONTACT_API_URL`            | Contact API endpoint (see Contact API)                             |
+| `TURNSTILE_SITE_KEY`         | Cloudflare Turnstile site key (public)                             |
+| `CAL_LINK`                   | Cal.com `user/event` for the Book a call tab (optional)            |
 
 The deploy job is **skipped** until `AWS_DEPLOY_ROLE_ARN` is set, so CI stays green before AWS exists.
 
@@ -122,13 +124,37 @@ Verify at the `cloudfront_domain_name` output before touching DNS.
 
 After go-live, update `src/data/projects.ts`: remove `status: "planned"` from the Website Portfolio's provisioning and custom-domain items.
 
-## Contact form (Formspree)
+## Contact API (API Gateway, Lambda, DynamoDB, SES) — needs owner approval
 
-1. Create a form at formspree.io; set its notification email.
-2. Copy the form ID (the part after `/f/`) into the GitHub variable `FORMSPREE_FORM_ID` and, for local testing, `.env.local`.
-3. In the Formspree form settings, restrict allowed domains to the production domain.
+```
+Visitor → alibacelonia.dev (static form + Cloudflare Turnstile)
+        → API Gateway HTTP API  POST /contact  (CORS: site origin; throttle 2 rps, burst 5)
+        → Lambda (Node.js 22, arm64)  infra/lambda/contact
+            validate → verify Turnstile → per-IP hourly limit → duplicate check → daily quota
+            ↕ DynamoDB  (counters and fingerprints with TTL)
+        → Amazon SES  noreply@alibacelonia.dev → alibacelonia1234@gmail.com  (Reply-To: visitor)
+```
 
-The ID is public by design. Without it, the form validates input and opens the visitor's email client with the message prefilled, stating that nothing has been sent.
+Everything is in `infra/terraform/modules/contact-api`, created only when `enable_contact_api = true`. All of these are chargeable AWS resources (low cost at portfolio volume: pay-per-request DynamoDB, Lambda and HTTP API free tiers, SES about $0.10 per 1,000 emails), so nothing here has been applied.
+
+1. **Turnstile:** in Cloudflare, create a Turnstile widget for `alibacelonia.dev` (and `localhost` for testing). The site key is public; the secret key is not.
+2. **Store the secret in SSM** (never in Terraform, code or GitHub):
+   ```sh
+   aws ssm put-parameter --region ap-southeast-1 --type SecureString \
+     --name /alibacelonia-portfolio/turnstile-secret --value '<secret key>'
+   ```
+3. **Apply** with `enable_contact_api = true` in `terraform.tfvars` (and `domain_names` set, which also supplies the allowed origin). Applying sends an SES verification email to the recipient inbox; click it.
+4. **SES domain (DNS change, needs approval):** add the three `contact_ses_dkim_records` CNAMEs in Cloudflare as _DNS only_. Optionally add an SPF/DMARC record for the domain.
+5. **Leave the SES sandbox:** request production access in the SES console. In the sandbox, only verified addresses can receive mail (the recipient is verified in step 3, so the form works for you either way).
+6. **GitHub variables:** `CONTACT_API_URL` = `contact_api_endpoint` output, `TURNSTILE_SITE_KEY` = the site key. Redeploy. The form then sends through the API; until `CONTACT_API_URL` is set it tells visitors sending isn't available and shows the email address.
+
+The CloudFront CSP already allows `challenges.cloudflare.com` (Turnstile) and `https://cal.com` (booking embed), and adds the API origin automatically when the module is enabled.
+
+Limits (variables in the module): 5 messages per IP per hour, 50 per day overall, identical messages from the same address rejected for 24 hours, Lambda concurrency capped at 5. Logs contain no names, emails, messages or raw IPs.
+
+## Booking (Cal.com)
+
+Set the GitHub variable `CAL_LINK` (e.g. `alibacelonia/30min`) to show the **Book a call** tab on `/connect/`; it embeds Cal.com in an iframe. Without it the tab is hidden in production.
 
 ## Rollback
 

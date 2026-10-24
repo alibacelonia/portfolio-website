@@ -137,3 +137,13 @@ Cascades cap their delay (8 steps for cards, 24 for tags) so long lists never fe
 ## Prohibited
 
 Gradient or colored display text, neon, saturated gradients, stock photos, glowing cards, decorative patterns beyond the portrait texture and section hatching, percentage skill bars, fake screenshots or badges, duplicate navigation.
+
+## Connect (home section and `/connect/`)
+
+Modeled on the owner's reference contact page. Nav label “Connect” (`#connect`); title “Tell me what you're building”. A shared `ConnectPanel` has three columns from `lg` (two from `md`, stacked on phones):
+
+- **Who:** the portrait as a tilted instant photo (`connect-polaroid`, grayscale), name in Instrument Serif, a sage dot with live local time (Asia/Manila; empty in the static HTML, filled after hydration) and the location.
+- **What brings you here?** Toggle buttons (`aria-pressed`): Project, Role, Just a hey. The choice shows a short serif-italic note (announced politely) and, on `/connect/`, fills the form's subject until the visitor edits it.
+- **Or reach me directly:** an email card with a Copy button (status announced), then LinkedIn, GitHub and résumé icon buttons (40 px).
+
+The home section closes with a “Send a message” strip to `/connect/`, which adds Book a call / Send a message tabs below the panel. The form sends only through the contact API: a sending state on the button, a success panel (sage check, “Message sent. Thank you, {name}.”, reply address, “Send another message”) and an error alert that keeps the message, names the reason, offers the email address and turns the button into “Try again”. The reference's call booking is omitted: there is no booking service to link to.

@@ -3,7 +3,7 @@ import { Projects } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
 import { Skills } from "@/components/sections/Skills";
 import { Certifications } from "@/components/sections/Certifications";
-import { Contact } from "@/components/sections/Contact";
+import { Connect } from "@/components/sections/Connect";
 
 export default function HomePage() {
   return (
@@ -13,7 +13,7 @@ export default function HomePage() {
       <Experience />
       <Skills />
       <Certifications />
-      <Contact />
+      <Connect />
     </>
   );
 }

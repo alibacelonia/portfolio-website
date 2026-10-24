@@ -51,3 +51,13 @@ output "dns_records_to_create" {
     }
   ] : []
 }
+
+output "contact_api_endpoint" {
+  description = "Set as NEXT_PUBLIC_CONTACT_API_URL (GitHub variable) once the contact API is enabled."
+  value       = var.enable_contact_api ? module.contact_api[0].endpoint : null
+}
+
+output "contact_ses_dkim_records" {
+  description = "Add these CNAMEs in Cloudflare (DNS only) to verify the SES sender domain."
+  value       = var.enable_contact_api ? module.contact_api[0].ses_dkim_records : []
+}

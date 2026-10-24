@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
 
-const paths = ["/", "/projects/", "/projects/website-portfolio/"];
+const paths = ["/", "/connect/", "/projects/", "/projects/website-portfolio/"];
 
 for (const path of paths) {
   for (const colorScheme of ["light", "dark"] as const) {

@@ -35,3 +35,11 @@ infra/terraform/backend.hcl
 
 # source material kept outside the published site
 /resume.pdf
+
+# Private owner guide (never commit)
+PRIVATE-SETUP-GUIDE.md
+
+# Terraform plan files (contain account details and variable values)
+*.tfplan
+tfplan
+infra/terraform/tfplan*

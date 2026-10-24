@@ -3,7 +3,7 @@ import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
 
-const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "contact"];
+const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
 
 function collectErrors(page: Page) {
@@ -110,8 +110,8 @@ test("shows exactly one section navigation per breakpoint", async ({ page }, tes
     await expect(menu.getByRole("link")).toHaveCount(6);
     const menuBox = (await menu.boundingBox())!;
     expect(menuBox.y).toBeGreaterThan(page.viewportSize()!.height / 2);
-    await menu.getByRole("link", { name: "Contact" }).click();
-    await expect(page).toHaveURL(/#contact$/);
+    await menu.getByRole("link", { name: "Connect" }).click();
+    await expect(page).toHaveURL(/#connect$/);
     await expect(page.getByRole("button", { name: /Open menu$/ })).toHaveAttribute(
       "aria-expanded",
       "false",
@@ -161,7 +161,7 @@ test("mobile snackbar stays at the viewport bottom and dismisses accessibly", as
 test("keeps the navigation visible and clear of section headings", async ({ page }, testInfo) => {
   await page.goto("/");
   const bar = page.getByRole("banner");
-  for (const id of ["projects", "skills", "contact"]) {
+  for (const id of ["projects", "skills", "connect"]) {
     if (testInfo.project.name === "desktop") {
       await page
         .getByRole("navigation", { name: "Sections" })
@@ -241,8 +241,8 @@ test("hero overview fills its frame with four equal cells and opens contact", as
   await expect(page.locator("#certifications-title")).toBeInViewport();
   await page.goto("/");
   await cells.last().getByRole("link", { name: "Start a conversation" }).click();
-  await expect(page).toHaveURL(/#contact$/);
-  await expect(page.locator("#contact-title")).toBeInViewport();
+  await expect(page).toHaveURL(/#connect$/);
+  await expect(page.locator("#connect-title")).toBeInViewport();
 });
 
 test("hero email copies on desktop and retains mailto on mobile", async ({
@@ -375,10 +375,15 @@ test("external links open safely in a new tab", async ({ page }) => {
   }
 });
 
-test("contact form validates with the keyboard", async ({ page }) => {
-  await page.goto("/#contact");
-  const form = page.locator("#contact form");
-  await form.getByRole("button", { name: /send message|open email app/i }).click();
+test("connect page: a reason fills the subject, and the form validates with the keyboard", async ({
+  page,
+}) => {
+  await page.goto("/connect/");
+  const form = page.locator("#connect form");
+  await page.getByRole("button", { name: "Role" }).click();
+  await expect(page.getByRole("button", { name: "Role" })).toHaveAttribute("aria-pressed", "true");
+  await expect(form.getByLabel(/^Subject/)).toHaveValue("Role opportunity");
+  await form.getByRole("button", { name: /send message/i }).click();
   await expect(form.getByLabel(/^Name/)).toBeFocused();
   await expect(form.getByLabel(/^Name/)).toHaveAttribute("aria-invalid", "true");
   await form.getByLabel(/^Email/).fill("not-an-email");

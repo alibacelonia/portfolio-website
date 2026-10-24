@@ -53,49 +53,45 @@ export function validateContact(values: ContactValues): ContactErrors {
   return errors;
 }
 
-export function buildMailto(to: string, values: ContactValues): string {
-  const body = `${values.message.trim()}\n\n— ${values.name.trim()} <${values.email.trim()}>`;
-  const params = new URLSearchParams({ subject: values.subject.trim(), body });
-  // URLSearchParams encodes spaces as "+", which mail clients show literally.
-  return `mailto:${to}?${params.toString().replace(/\+/g, "%20")}`;
-}
-
 export type SubmitResult = { ok: true } | { ok: false; message: string };
 
-/** Posts to Formspree's AJAX endpoint. `_gotcha` is Formspree's honeypot field. */
-export async function submitToFormspree(
-  formId: string,
-  values: ContactValues & { _gotcha: string },
+/** Messages for the contact API's error codes (infra/lambda/contact). */
+const API_MESSAGES: Record<string, string> = {
+  challenge: "The verification check failed. Please complete it again.",
+  rate_limited: "Too many messages from your connection. Please try again in an hour.",
+  duplicate: "This message was already sent.",
+  daily_quota: "The form has reached today's limit.",
+  invalid: "Some fields are missing or invalid.",
+};
+
+/** Posts to the site's own contact API with a Cloudflare Turnstile token. */
+export async function submitToContactApi(
+  url: string,
+  values: ContactValues & { _gotcha: string; turnstileToken: string },
   fetchImpl: typeof fetch = fetch,
   timeoutMs = 15000,
 ): Promise<SubmitResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetchImpl(`https://formspree.io/f/${encodeURIComponent(formId)}`, {
+    const response = await fetchImpl(url, {
       method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: values.name.trim(),
         email: values.email.trim(),
-        _replyto: values.email.trim(),
-        _subject: values.subject.trim(),
         subject: values.subject.trim(),
         message: values.message.trim(),
+        turnstileToken: values.turnstileToken,
         _gotcha: values._gotcha,
       }),
       signal: controller.signal,
     });
     if (response.ok) return { ok: true };
-
-    let message = "The form service rejected the message.";
+    let message = "The message service rejected the message.";
     try {
-      const data = (await response.json()) as { errors?: { message?: string }[] };
-      const detail = data.errors
-        ?.map((error) => error.message)
-        .filter(Boolean)
-        .join(" ");
-      if (detail) message = detail;
+      const data = (await response.json()) as { code?: string };
+      if (data.code && API_MESSAGES[data.code]) message = API_MESSAGES[data.code]!;
     } catch {
       // Non-JSON error body; keep the generic message.
     }

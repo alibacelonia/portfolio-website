@@ -4,25 +4,25 @@ Source briefs: the original portfolio brief and the UI/branding refinement brief
 
 ## Functional requirements (summary)
 
-| ID    | Requirement                                                                                                                                         |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FR-1  | Single page with six sections in order: Hero, Projects, Experience, Skills, Certifications, Contact.                                                |
-| FR-2  | Sticky glass navigation bar: A/B logo, section links, theme toggle, resume; mobile menu below `lg`.                                                 |
-| FR-3  | One navigation system only (the bottom dock was removed).                                                                                           |
-| FR-4  | Hero with name, roles, supporting text, two actions, four-stage pipeline (Code → Build → Deploy → Monitor).                                         |
-| FR-5b | Each project has a static detail page: overview, problem, solution, stack, infrastructure (implemented vs planned), links.                          |
-| FR-5  | Four projects from a typed data module; portfolio itself is the fourth.                                                                             |
-| FR-6  | Experience timeline from the resume with accurate dates and overlap explanation.                                                                    |
-| FR-7  | Skills grouped by discipline, distinguishing hands-on from working knowledge. No proficiency meters.                                                |
-| FR-8  | Three AWS certification cards with verified credential links.                                                                                       |
-| FR-9  | Contact form (Formspree, configurable) with validation, honeypot, loading/success/error states, and an honest `mailto:` fallback when unconfigured. |
-| FR-10 | Light/dark themes: system default, persisted manual choice, no flash.                                                                               |
-| FR-11 | SEO: title, description, canonical, Open Graph, OG image, robots, sitemap, JSON-LD. Domain configurable.                                            |
-| NFR-1 | `output: "export"` only. No SSR, API routes, Server Actions, or middleware.                                                                         |
-| NFR-2 | Responsive 320 px → 1920 px+, no horizontal overflow.                                                                                               |
-| NFR-3 | WCAG 2.2 AA intent: semantics, keyboard, focus, contrast, reduced motion.                                                                           |
-| NFR-4 | Lighthouse ≥ 90 in all four categories (exceptions documented).                                                                                     |
-| NFR-5 | Terraform + GitHub Actions (OIDC) deployment to private S3 + CloudFront. No resources provisioned without approval.                                 |
+| ID    | Requirement                                                                                                                                                                                           |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-1  | Single page with six sections in order: Hero, Projects, Experience, Skills, Certifications, Contact.                                                                                                  |
+| FR-2  | Sticky glass navigation bar: A/B logo, section links, theme toggle, resume; mobile menu below `lg`.                                                                                                   |
+| FR-3  | One navigation system only (the bottom dock was removed).                                                                                                                                             |
+| FR-4  | Hero with name, roles, supporting text, two actions, four-stage pipeline (Code → Build → Deploy → Monitor).                                                                                           |
+| FR-5b | Each project has a static detail page: overview, problem, solution, stack, infrastructure (implemented vs planned), links.                                                                            |
+| FR-5  | Four projects from a typed data module; portfolio itself is the fourth.                                                                                                                               |
+| FR-6  | Experience timeline from the resume with accurate dates and overlap explanation.                                                                                                                      |
+| FR-7  | Skills grouped by discipline, distinguishing hands-on from working knowledge. No proficiency meters.                                                                                                  |
+| FR-8  | Three AWS certification cards with verified credential links.                                                                                                                                         |
+| FR-9  | Contact form that sends through the site's own API (API Gateway, Lambda, SES, Turnstile) with validation, honeypot, and loading/success/error states; an honest error when the API is not configured. |
+| FR-10 | Light/dark themes: system default, persisted manual choice, no flash.                                                                                                                                 |
+| FR-11 | SEO: title, description, canonical, Open Graph, OG image, robots, sitemap, JSON-LD. Domain configurable.                                                                                              |
+| NFR-1 | `output: "export"` only. No SSR, API routes, Server Actions, or middleware.                                                                                                                           |
+| NFR-2 | Responsive 320 px → 1920 px+, no horizontal overflow.                                                                                                                                                 |
+| NFR-3 | WCAG 2.2 AA intent: semantics, keyboard, focus, contrast, reduced motion.                                                                                                                             |
+| NFR-4 | Lighthouse ≥ 90 in all four categories (exceptions documented).                                                                                                                                       |
+| NFR-5 | Terraform + GitHub Actions (OIDC) deployment to private S3 + CloudFront. No resources provisioned without approval.                                                                                   |
 
 ## Verified content
 
@@ -50,7 +50,7 @@ Notes:
 | Item                             | Status                                                                                                                                                                                                                                                                                                                    | Where to change                                         |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | Portfolio repository             | `github.com/alibacelonia/portfolio-website` exists but is **empty**, and its description refers to an older API Gateway/Lambda/SES design. Push this code there (or change the URL) and update the description.                                                                                                           | `src/data/projects.ts`                                  |
-| Formspree form ID                | Not provided. Without it the form opens the visitor's email client.                                                                                                                                                                                                                                                       | `NEXT_PUBLIC_FORMSPREE_FORM_ID`                         |
+| Contact API URL / Turnstile key  | Set later by the owner. Without the URL the form reports that sending isn't available.                                                                                                                                                                                                                                    | `NEXT_PUBLIC_CONTACT_API_URL`                           |
 | Project screenshots / live demos | None exist (all three are CLI/API projects). None shown.                                                                                                                                                                                                                                                                  | `src/data/projects.ts`                                  |
 | Certification badge images       | Official Credly badge images for the three credentials (downloaded 2026-10-24), resized to 320 px WebP, artwork unaltered. Earners may display their own badges; a standalone AWS logo is not used (trademark).                                                                                                           | `public/certifications/` + `src/data/certifications.ts` |
 | Resume PDF                       | Public portfolio resume (2026-10-23): no street address or phone number; same roles, dates and Credly links as the original. Served from `public/documents/`.                                                                                                                                                             |

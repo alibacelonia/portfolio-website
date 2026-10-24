@@ -40,7 +40,9 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: "1"
           NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
-          NEXT_PUBLIC_FORMSPREE_FORM_ID: ${{ vars.FORMSPREE_FORM_ID }}
+          NEXT_PUBLIC_CONTACT_API_URL: ${{ vars.CONTACT_API_URL }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
+          NEXT_PUBLIC_CAL_LINK: ${{ vars.CAL_LINK }}
 
       - name: Verify export output
         run: |

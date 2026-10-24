@@ -21,7 +21,7 @@ Fixed along the way: screen-reader names missing a space (“View detailsabout e
 
 ## Case studies (2026-10-24)
 
-Home Projects follows the owner's “curated work” reference: preview cards (tagline above the screenshot) in a 65/35 split with one pinned, centered details panel that switches at 25% (D-34, D-35); on desktop the layout spans the section rails, split by a divider into a hatched card column and the details with a progress ruler that marks the active project (D-36). The details start and stop 40 px below the top of the first and last images (D-37). A custom “VIEW · EXPLORE · DISCOVER” cursor appears over the cards for a mouse (D-38). Lint, types, format and build pass; Vitest 63/63; Playwright 55 pass, 5 intentionally skipped, axe 0 violations.
+Home Projects follows the owner's “curated work” reference: preview cards (tagline above the screenshot) in a 65/35 split with one pinned, centered details panel that switches at 25% (D-34, D-35); on desktop the layout spans the section rails, split by a divider into a hatched card column and the details with a progress ruler that marks the active project (D-36). The details start and stop 40 px below the top of the first and last images (D-37). A custom “VIEW · EXPLORE · DISCOVER” cursor appears over the cards for a mouse (D-38). Contact is now Connect: a home section plus a `/connect/` page with the form (D-39), a Book a call (Cal.com) / Send a message tab pair, and an opt-in contact API (API Gateway, Lambda, DynamoDB, SES, Turnstile; not applied) (D-40). Lint, types, format and build pass; Vitest 63/63; Playwright 55 pass, 5 intentionally skipped, axe 0 violations.
 
 ## Completed (Phases 0–8)
 
@@ -63,7 +63,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 
 1. Push this repository to `github.com/alibacelonia/portfolio-website` (currently empty) and update its description.
 2. ~~Resume privacy~~ — resolved: replaced with the public resume (no address or phone).
-3. Create a Formspree form; set `FORMSPREE_FORM_ID`.
+3. Contact API: Turnstile widget and SSM secret, approve `enable_contact_api`, SES DKIM records, then set `CONTACT_API_URL` and `TURNSTILE_SITE_KEY` (see `docs/deployment.md`).
 4. Approve AWS provisioning: Terraform state bucket, `terraform apply` (see `docs/deployment.md`).
 5. Configure the GitHub `production` environment and variables.
 6. DNS cutover on Cloudflare (replaces the current Vercel site at alibacelonia.dev).

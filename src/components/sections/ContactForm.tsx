@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { CircleAlert, LoaderCircle, Mail, Send } from "lucide-react";
+import { CircleAlert, CircleCheck, LoaderCircle, RotateCcw, Send } from "lucide-react";
 import { site } from "@/lib/site";
+import { Turnstile } from "@/components/ui/Turnstile";
 import {
   CONTACT_LIMITS,
   MIN_FILL_MS,
-  buildMailto,
-  submitToFormspree,
+  submitToContactApi,
   validateContact,
   type ContactErrors,
   type ContactField,
@@ -18,27 +18,30 @@ type Status =
   | { kind: "idle" }
   | { kind: "submitting" }
   | { kind: "success"; name: string; email: string }
-  | { kind: "error"; message: string }
-  | { kind: "mailto" };
+  | { kind: "error"; message: string };
 
 const EMPTY: ContactValues = { name: "", email: "", subject: "", message: "" };
 const FIELDS: ContactField[] = ["name", "email", "subject", "message"];
 
 interface ContactFormProps {
-  /** Formspree form ID; null switches to the mailto fallback. */
-  formId?: string | null;
+  /** Contact API endpoint (NEXT_PUBLIC_CONTACT_API_URL). Unset: sending reports that it's unavailable. */
+  apiUrl?: string | null;
+  /** Cloudflare Turnstile site key; when set, a check is required before sending. */
+  turnstileSiteKey?: string | null;
   recipient?: string;
   fetchImpl?: typeof fetch;
-  openUrl?: (url: string) => void;
   now?: () => number;
+  /** Suggested subject (e.g. from the Connect reason); fills the field until the visitor edits it. */
+  subject?: string;
 }
 
 export function ContactForm({
-  formId = site.formspreeId,
+  apiUrl = site.contactApiUrl,
+  turnstileSiteKey = site.turnstileSiteKey,
   recipient = site.email,
   fetchImpl,
-  openUrl = (url) => window.location.assign(url),
   now = Date.now,
+  subject,
 }: ContactFormProps) {
   const id = useId();
   const [values, setValues] = useState<ContactValues>(EMPTY);
@@ -51,14 +54,20 @@ export function ContactForm({
     {},
   );
   const statusRef = useRef<HTMLDivElement>(null);
-  const configured = Boolean(formId);
+  const needsChallenge = Boolean(turnstileSiteKey);
+  const [token, setToken] = useState<string | null>(null);
+  const [challengeRound, setChallengeRound] = useState(0);
 
   useEffect(() => {
     startedAt.current = now();
   }, [now]);
 
+  // Follow the suggested subject until the visitor types their own.
+  const [subjectEdited, setSubjectEdited] = useState(false);
+  const current = subjectEdited || subject === undefined ? values : { ...values, subject };
+
   useEffect(() => {
-    if (status.kind === "success" || status.kind === "error" || status.kind === "mailto") {
+    if (status.kind === "success" || status.kind === "error") {
       statusRef.current?.focus();
     }
   }, [status]);
@@ -68,7 +77,8 @@ export function ContactForm({
 
   const onChange =
     (field: ContactField) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const next = { ...values, [field]: event.target.value };
+      if (field === "subject") setSubjectEdited(true);
+      const next = { ...current, [field]: event.target.value };
       setValues(next);
       if (touched[field]) setErrors((prev) => ({ ...prev, [field]: validateContact(next)[field] }));
       if (status.kind === "error") setStatus({ kind: "idle" });
@@ -76,14 +86,14 @@ export function ContactForm({
 
   const onBlur = (field: ContactField) => () => {
     setTouched((prev) => ({ ...prev, [field]: true }));
-    setErrors((prev) => ({ ...prev, [field]: validateContact(values)[field] }));
+    setErrors((prev) => ({ ...prev, [field]: validateContact(current)[field] }));
   };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (status.kind === "submitting") return;
 
-    const nextErrors = validateContact(values);
+    const nextErrors = validateContact(current);
     setErrors(nextErrors);
     setTouched({ name: true, email: true, subject: true, message: true });
     const firstInvalid = FIELDS.find((field) => nextErrors[field]);
@@ -100,16 +110,26 @@ export function ContactForm({
       return;
     }
 
-    if (!configured || !formId) {
-      if (!honeypot) openUrl(buildMailto(recipient, values));
-      setStatus({ kind: "mailto" });
+    if (!apiUrl) {
+      setStatus({ kind: "error", message: "Sending isn't available right now." });
+      return;
+    }
+
+    if (needsChallenge && !token) {
+      setStatus({ kind: "error", message: "Please complete the verification check first." });
       return;
     }
 
     setStatus({ kind: "submitting" });
-    const result = await submitToFormspree(formId, { ...values, _gotcha: honeypot }, fetchImpl);
+    const result = await submitToContactApi(
+      apiUrl,
+      { ...current, _gotcha: honeypot, turnstileToken: token ?? "" },
+      fetchImpl,
+    );
+    // Turnstile tokens are single-use: get a fresh check for any next attempt.
+    if (needsChallenge) setChallengeRound((round) => round + 1);
     if (result.ok) {
-      setStatus({ kind: "success", name: values.name.trim(), email: values.email.trim() });
+      setStatus({ kind: "success", name: current.name.trim(), email: current.email.trim() });
       setValues(EMPTY);
       setTouched({});
     } else {
@@ -119,10 +139,19 @@ export function ContactForm({
 
   if (status.kind === "success") {
     return (
-      <div ref={statusRef} tabIndex={-1} role="status" className="outline-none">
-        <p className="type-card-title">Message sent. Thank you, {status.name}.</p>
-        <p className="mt-2 type-body text-muted">
-          Replies will go to <span className="text-fg-soft">{status.email}</span>.
+      <div
+        ref={statusRef}
+        tabIndex={-1}
+        role="status"
+        className="flex flex-col items-center py-6 text-center outline-none"
+      >
+        <span className="flex size-12 items-center justify-center rounded-full bg-sage/15">
+          <CircleCheck aria-hidden="true" className="size-6 text-sage-fg" />
+        </span>
+        <p className="mt-4 type-card-title">Message sent. Thank you, {status.name}.</p>
+        <p className="mt-2 max-w-[44ch] type-body text-muted">
+          It&apos;s in my inbox. Replies will go to{" "}
+          <span className="text-fg-soft">{status.email}</span>.
         </p>
         <button
           type="button"
@@ -152,7 +181,7 @@ export function ContactForm({
     const shared = {
       id: fieldId(field),
       name: field,
-      value: values[field],
+      value: current[field],
       onChange: onChange(field),
       onBlur: onBlur(field),
       required: true,
@@ -241,45 +270,36 @@ export function ContactForm({
         />
       </div>
 
+      {turnstileSiteKey ? (
+        <div className="mt-5">
+          <Turnstile siteKey={turnstileSiteKey} onToken={setToken} resetKey={challengeRound} />
+        </div>
+      ) : null}
+
       {status.kind === "error" ? (
         <div
           ref={statusRef}
           tabIndex={-1}
           role="alert"
-          className="mt-5 flex gap-2.5 rounded-lg border border-danger/30 bg-danger/5 p-3 type-small text-fg-soft outline-none"
+          className="mt-5 flex gap-3 rounded-lg border border-danger/30 bg-danger/5 p-4 type-small text-fg-soft outline-none"
         >
           <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-danger" />
-          <p>
-            Your message wasn&apos;t sent. {status.message} You can try again or email{" "}
-            <a href={`mailto:${recipient}`} className="font-medium text-blue-fg underline">
-              {recipient}
-            </a>{" "}
-            directly.
-          </p>
-        </div>
-      ) : null}
-
-      {status.kind === "mailto" ? (
-        <div
-          ref={statusRef}
-          tabIndex={-1}
-          role="status"
-          className="mt-5 rounded-lg border border-border bg-surface-2 p-3 type-small text-fg-soft outline-none"
-        >
-          Your email app should open with this message ready to send. Nothing has been sent yet. If
-          it didn&apos;t open, email{" "}
-          <a href={`mailto:${recipient}`} className="font-medium text-blue-fg underline">
-            {recipient}
-          </a>
-          .
+          <div>
+            <p className="font-medium text-fg">Your message wasn&apos;t sent.</p>
+            <p className="mt-1">
+              {status.message} Your message is still here, so you can try again, or email{" "}
+              <a href={`mailto:${recipient}`} className="font-medium text-blue-fg underline">
+                {recipient}
+              </a>{" "}
+              directly.
+            </p>
+          </div>
         </div>
       ) : null}
 
       <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="type-small text-muted">
-          {configured
-            ? "Sent via Formspree. Your details are only used to reply to you."
-            : "Opens your email app with the message filled in."}
+          Sent straight to my inbox. Your details are only used to reply to you.
         </p>
         <button
           type="submit"
@@ -294,15 +314,15 @@ export function ContactForm({
               />
               Sending…
             </>
-          ) : configured ? (
+          ) : status.kind === "error" ? (
             <>
-              <Send aria-hidden="true" className="size-4" />
-              Send message
+              <RotateCcw aria-hidden="true" className="size-4" />
+              Try again
             </>
           ) : (
             <>
-              <Mail aria-hidden="true" className="size-4" />
-              Open email app
+              <Send aria-hidden="true" className="size-4" />
+              Send message
             </>
           )}
         </button>
