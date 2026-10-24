@@ -220,6 +220,9 @@ test("hero fills the first viewport without clipping its content", async ({ page
 test("hero overview fills its frame with four equal cells and opens contact", async ({
   page,
 }, testInfo) => {
+  // The links are what's under test, not the smooth-scroll animation: jump instantly so a slow,
+  // busy runner can't outlast the viewport check (it flaked under parallel load).
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const grid = page.locator('#home dl[aria-label="At a glance"]');
   const cells = grid.locator(":scope > div");
@@ -416,6 +419,40 @@ test("connect page: the booking tab embeds the calendar and arrow keys switch ta
   await expect(page.getByRole("tab", { name: "Send a message" })).toBeFocused();
   await expect(page.locator("#connect form")).toBeVisible();
   await expect(page.locator('iframe[src*="cal.com"]')).toBeHidden();
+});
+
+test("connect page: a finished booking shows the site's confirmation, then a fresh calendar", async ({
+  page,
+}) => {
+  await page.goto("/connect/");
+  const call = page.getByRole("tab", { name: "Book a call" });
+  test.skip((await call.count()) === 0, "Build has no NEXT_PUBLIC_CAL_LINK");
+  const calendar = page.locator('#connect-panel-call iframe[src*="cal.com"]');
+  await expect(calendar).toBeVisible();
+  // What Cal.com's frame posts when a booking goes through (pending: the event needs confirmation).
+  await page
+    .frameLocator('#connect-panel-call iframe[src*="cal.com"]')
+    .locator("body")
+    .evaluate(() =>
+      window.parent.postMessage(
+        {
+          fullType: "CAL:book:bookingSuccessfulV2",
+          data: {
+            title: "30 Minute Meeting",
+            startTime: "2026-10-27T05:30:00.000Z",
+            status: "PENDING",
+          },
+        },
+        "*",
+      ),
+    );
+  const confirmation = page.getByRole("status").filter({ hasText: "Request sent" });
+  await expect(confirmation).toBeVisible();
+  await expect(confirmation).toBeFocused();
+  await expect(confirmation).toContainText("30 Minute Meeting");
+  await expect(calendar).toHaveCount(0);
+  await confirmation.getByRole("button", { name: "Book another time" }).click();
+  await expect(page.locator('#connect-panel-call iframe[src*="cal.com"]')).toBeVisible();
 });
 
 test("publishes SEO metadata, robots and sitemap", async ({ page, request }) => {

@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CircleCheck, RotateCcw } from "lucide-react";
 
 export const CAL_EMBED_ORIGIN = "https://app.cal.com";
 export const CAL_EMBED_SCRIPT = `${CAL_EMBED_ORIGIN}/embed/embed.js`;
 const NAMESPACE = "book";
+/** Origins the booking frame posts its events from (embed and plain-iframe fallback). */
+const CAL_ORIGINS = new Set([CAL_EMBED_ORIGIN, "https://cal.com"]);
+const BOOKED_EVENT =
+  /^CAL:[^:]*:(bookingSuccessfulV2|rescheduleBookingSuccessfulV2|bookingSuccessful)$/;
 /** Give up on the embed script after this long and show the plain iframe instead. */
 const READY_TIMEOUT_MS = 15_000;
 
@@ -64,12 +69,133 @@ function loadCal(): { cal: CalGlobal; ready: Promise<void> } {
   return { cal: window.Cal, ready: loading };
 }
 
+export interface Booking {
+  title?: string;
+  startTime?: string;
+  /** The event needs the owner's confirmation before it's final. */
+  pending: boolean;
+  rescheduled: boolean;
+}
+
+/**
+ * Reads a booking from a Cal.com frame message (`{ fullType: "CAL:<ns>:bookingSuccessfulV2", data }`;
+ * the older `bookingSuccessful` nests it under `data.booking`). Anything else returns null.
+ */
+export function parseBooking(origin: string, message: unknown): Booking | null {
+  if (!CAL_ORIGINS.has(origin) || typeof message !== "object" || message === null) return null;
+  const { fullType, data } = message as { fullType?: unknown; data?: Record<string, unknown> };
+  const type = typeof fullType === "string" ? BOOKED_EVENT.exec(fullType)?.[1] : undefined;
+  if (!type) return null;
+  const booking = (data?.booking ?? data ?? {}) as Record<string, unknown>;
+  const text = (value: unknown) => (typeof value === "string" ? value : undefined);
+  return {
+    title: text(booking.title),
+    startTime: text(booking.startTime),
+    pending: booking.status === "PENDING" || data?.confirmed === false,
+    rescheduled: type.startsWith("reschedule"),
+  };
+}
+
+/**
+ * Cal.com booking calendar. When a booking succeeds, Cal.com's own success page would replace the
+ * calendar inside the frame (and loses the dark theme), so the site shows its own confirmation
+ * instead; "Book another time" brings back a fresh calendar.
+ */
+export function CalEmbed({ link, title }: { link: string; title: string }) {
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [round, setRound] = useState(0);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      const booked = parseBooking(event.origin, event.data);
+      if (booked) setBooking(booked);
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  if (booking) {
+    return (
+      <BookingConfirmed
+        booking={booking}
+        onBookAnother={() => {
+          setBooking(null);
+          setRound((value) => value + 1);
+        }}
+      />
+    );
+  }
+  // Each round is a new Cal.com namespace, so a fresh calendar never reuses the finished one.
+  return <CalendarFrame key={round} link={link} title={title} round={round} />;
+}
+
+function BookingConfirmed({
+  booking,
+  onBookAnother,
+}: {
+  booking: Booking;
+  onBookAnother: () => void;
+}) {
+  const panel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    panel.current?.focus();
+  }, []);
+  const start = booking.startTime ? new Date(booking.startTime) : null;
+  const when =
+    start && !Number.isNaN(start.getTime())
+      ? new Intl.DateTimeFormat(undefined, {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          timeZoneName: "short",
+        }).format(start)
+      : null;
+  const heading = booking.pending
+    ? "Request sent"
+    : booking.rescheduled
+      ? "Your call is rescheduled"
+      : "Your call is booked";
+  return (
+    <div
+      ref={panel}
+      tabIndex={-1}
+      role="status"
+      className="mx-auto flex max-w-xl flex-col items-center card py-10 text-center outline-none"
+    >
+      <span className="flex size-12 items-center justify-center rounded-full bg-sage/15">
+        <CircleCheck aria-hidden="true" className="size-6 text-sage-fg" />
+      </span>
+      <p className="mt-4 type-card-title">{heading}</p>
+      {booking.title || when ? (
+        <p className="mt-2 type-body text-fg-soft">
+          {[booking.title, when].filter(Boolean).join(" · ")}
+        </p>
+      ) : null}
+      <p className="mt-1 max-w-[44ch] type-body text-muted">
+        {booking.pending
+          ? "You'll get an email as soon as it's confirmed."
+          : "A calendar invite is on its way to your email."}
+      </p>
+      <button
+        type="button"
+        onClick={onBookAnother}
+        className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-lg border border-border-strong px-4 type-action text-fg transition-colors hover:bg-surface-2"
+      >
+        <RotateCcw aria-hidden="true" className="size-4" />
+        Book another time
+      </button>
+    </div>
+  );
+}
+
 /**
  * Inline Cal.com booking calendar in Cal.com's own dark theme (event details, month view, time
  * slots), sized to its content with no surrounding box. A skeleton shows until Cal.com reports the
  * link is ready; if the embed script is blocked or slow, the plain booking iframe is used instead.
  */
-export function CalEmbed({ link, title }: { link: string; title: string }) {
+function CalendarFrame({ link, title, round }: { link: string; title: string; round: number }) {
   const container = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"loading" | "ready" | "fallback">("loading");
 
@@ -88,8 +214,9 @@ export function CalEmbed({ link, title }: { link: string; title: string }) {
     timer = window.setTimeout(() => settle("fallback"), READY_TIMEOUT_MS);
 
     const { cal, ready } = loadCal();
-    if (!cal.ns[NAMESPACE]) cal("init", NAMESPACE, { origin: CAL_EMBED_ORIGIN });
-    const api = cal.ns[NAMESPACE]!;
+    const namespace = round ? `${NAMESPACE}${round}` : NAMESPACE;
+    if (!cal.ns[namespace]) cal("init", namespace, { origin: CAL_EMBED_ORIGIN });
+    const api = cal.ns[namespace]!;
     api("inline", {
       elementOrSelector: el,
       calLink: link,
@@ -110,7 +237,7 @@ export function CalEmbed({ link, title }: { link: string; title: string }) {
       window.clearTimeout(timer);
       el.remove();
     };
-  }, [link, title]);
+  }, [link, title, round]);
 
   if (state === "fallback") {
     return (
