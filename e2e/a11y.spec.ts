@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { openMessageTab, stubThirdParty } from "./fixtures";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
 
 const paths = ["/", "/connect/", "/projects/", "/projects/website-portfolio/"];
@@ -14,6 +15,7 @@ for (const path of paths) {
         colorScheme,
         reducedMotion: "reduce",
       });
+      await stubThirdParty(context);
       const page = await context.newPage();
       await context.addInitScript(({ key, theme }) => window.localStorage.setItem(key, theme), {
         key: THEME_STORAGE_KEY,
@@ -31,16 +33,26 @@ for (const path of paths) {
           el.dataset.revealed = "true";
         }),
       );
-      const results = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
-        .analyze();
-      const summary = results.violations.map(
-        (v) =>
-          `${v.id}: ${v.nodes
-            .map((n) => n.target.join(" "))
-            .slice(0, 3)
-            .join(", ")}`,
-      );
+      const scan = async () => {
+        const results = await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
+          // The booking embed is Cal.com's markup, not ours (stubbed in tests anyway).
+          .exclude('iframe[src*="cal.com"]')
+          .analyze();
+        return results.violations.map(
+          (v) =>
+            `${v.id}: ${v.nodes
+              .map((n) => n.target.join(" "))
+              .slice(0, 3)
+              .join(", ")}`,
+        );
+      };
+      const summary = await scan();
+      // With a booking tab the form starts hidden; check it too.
+      if (path === "/connect/" && (await page.getByRole("tab").count())) {
+        await openMessageTab(page);
+        summary.push(...(await scan()));
+      }
       expect(summary).toEqual([]);
       await context.close();
     });

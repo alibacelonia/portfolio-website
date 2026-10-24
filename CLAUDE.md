@@ -15,10 +15,11 @@ alibacelonia.dev portfolio (A/B logo): Next.js 16 static export → private S3 +
 - `NEXT_PUBLIC_SITE_URL` (`src/lib/site.ts`) is the only source of the canonical domain. Never hard-code the domain elsewhere.
 - Project content follows the `Project` type; mark unimplemented infrastructure `status: "planned"`.
 - Never deploy, run `terraform apply`, or change DNS without explicit owner approval.
+- **E2E must pass with the contact/booking variables set and unset.** CI builds with the real repository variables (`CAL_LINK`, `TURNSTILE_SITE_KEY`, `CONTACT_API_URL`), which add a booking tab and third-party embeds. Import `test` from `e2e/fixtures.ts` (it stubs Cal.com and Turnstile; call `stubThirdParty` on contexts you create), use `openMessageTab` before touching the form, and run `npm run test:e2e:configured` as well as `npm run test:e2e` before pushing.
 
 ## Commands
 
-`npm run validate` (lint, typecheck, format, unit, build) · `npm run test:e2e` (after build) · `npm run tf:validate`
+`npm run validate` (lint, typecheck, format, unit, build) · `npm run test:e2e` (after build) · `npm run test:e2e:configured` (builds with placeholder contact/booking variables, then E2E) · `npm run tf:validate`
 
 ## Where things are
 

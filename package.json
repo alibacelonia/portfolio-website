@@ -18,6 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:configured": "NEXT_PUBLIC_CONTACT_API_URL=https://example.execute-api.ap-southeast-1.amazonaws.com/contact NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA NEXT_PUBLIC_CAL_LINK=example/30min next build && playwright test",
     "lhci": "lhci autorun",
     "tf:fmt": "terraform -chdir=infra/terraform fmt -recursive -check",
     "tf:validate": "terraform -chdir=infra/terraform init -backend=false -input=false && terraform -chdir=infra/terraform validate",

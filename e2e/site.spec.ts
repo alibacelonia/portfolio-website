@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, openMessageTab, stubThirdParty, test } from "./fixtures";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
@@ -36,6 +37,7 @@ test("renders the six sections in order with a single h1", async ({ page }) => {
 
 test("hydrates cleanly with reduced motion and keeps the theme", async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: "reduce", colorScheme: "dark" });
+  await stubThirdParty(context);
   const page = await context.newPage();
   const errors = collectErrors(page);
   await page.goto("/");
@@ -333,6 +335,7 @@ test("view all projects opens the collection and cards remain visible after goin
 
 test("uses dark mode only even with a saved light preference", async ({ browser }) => {
   const context = await browser.newContext({ colorScheme: "light" });
+  await stubThirdParty(context);
   await context.addInitScript(
     (key) => window.localStorage.setItem(key, "light"),
     THEME_STORAGE_KEY,
@@ -381,6 +384,7 @@ test("connect page: a reason fills the subject, and the form validates with the 
   page,
 }) => {
   await page.goto("/connect/");
+  await openMessageTab(page);
   const form = page.locator("#connect form");
   await page.getByRole("button", { name: "Role" }).click();
   await expect(page.getByRole("button", { name: "Role" })).toHaveAttribute("aria-pressed", "true");
@@ -391,6 +395,21 @@ test("connect page: a reason fills the subject, and the form validates with the 
   await form.getByLabel(/^Email/).fill("not-an-email");
   await form.getByLabel(/^Email/).press("Tab");
   await expect(page.getByText(/valid email address/)).toBeVisible();
+});
+
+test("connect page: the booking tab embeds the calendar and arrow keys switch tabs", async ({
+  page,
+}) => {
+  await page.goto("/connect/");
+  const call = page.getByRole("tab", { name: "Book a call" });
+  test.skip((await call.count()) === 0, "Build has no NEXT_PUBLIC_CAL_LINK");
+  await expect(call).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator('iframe[src*="cal.com"]')).toBeVisible();
+  await call.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("tab", { name: "Send a message" })).toBeFocused();
+  await expect(page.locator("#connect form")).toBeVisible();
+  await expect(page.locator('iframe[src*="cal.com"]')).toHaveCount(0);
 });
 
 test("publishes SEO metadata, robots and sitemap", async ({ page, request }) => {

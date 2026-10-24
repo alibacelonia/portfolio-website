@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-24: CI E2E failed once `CAL_LINK` was set: the default Book a call tab hid the form, and axe scanned the live Cal.com iframe. Tests now stub third-party services, open the message tab when present, check both tabs with axe, and pass with the variables set or unset (D-43).
 
 ## Design decisions that changed
 
