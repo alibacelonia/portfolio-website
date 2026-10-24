@@ -628,6 +628,23 @@ test("case screenshots are framed in the second-lightest color of their card's g
   }
 });
 
+test("case cards are dimmed until hovered, for a mouse only", async ({ page }, testInfo) => {
+  await page.goto("/");
+  const stage = page.locator(".case-stage").first();
+  const veil = () => stage.evaluate((el) => getComputedStyle(el, "::after"));
+  if (testInfo.project.name === "mobile") {
+    // Touch screens have no hover, so cards are never dimmed there.
+    expect(await stage.evaluate((el) => getComputedStyle(el, "::after").content)).toBe("none");
+    return;
+  }
+  await stage.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  await expect.poll(async () => (await veil()).opacity).toBe("1");
+  expect((await veil()).backgroundColor).toBe("rgba(0, 0, 0, 0.3)");
+  await stage.hover();
+  await expect.poll(async () => (await veil()).opacity).toBe("0");
+});
+
 test("project cards show the custom cursor for a mouse only", async ({ page }, testInfo) => {
   await page.goto("/");
   const cursor = page.locator(".project-cursor");

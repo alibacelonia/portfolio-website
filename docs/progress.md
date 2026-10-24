@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: Case cards dimmed by a 30 % overlay that fades on hover (mouse only) (D-56).
 - 2026-10-25: Case cards use the owner's gradients (pink, blue, grey, purple, pink); screenshot frames use each gradient's second-lightest stop (D-55).
 - 2026-10-25: Screenshot frames now use their card's own background (`--stage-bg`), enforced by an E2E test (D-54).
 - 2026-10-25: IronFort card trial: dark bluish grey to white diagonal gradient (per-card `stageGradient`, D-53).

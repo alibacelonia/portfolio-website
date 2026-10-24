@@ -996,9 +996,38 @@ html:not(.js) .case-panel-item {
     0 0 0 1px var(--border-strong);
 }
 
+/* A dark veil dims each card until it's hovered, then fades away so the card brightens. Mouse
+   only: touch screens have no hover, so there the cards stay at full brightness. */
+@media (hover: hover) and (pointer: fine) {
+  .case-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background: rgb(0 0 0 / 0.3);
+    pointer-events: none;
+    transition: opacity 400ms var(--ease);
+  }
+
+  .case-stage:hover::after {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-stage::after {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
   .case-stage {
     border: 1px solid CanvasText;
+  }
+
+  .case-stage::after {
+    display: none;
   }
 }
 
