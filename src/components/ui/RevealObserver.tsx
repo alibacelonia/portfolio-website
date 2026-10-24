@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Reconnect on route changes to observe each page's new [data-reveal] elements.
+ * Reconnect on route changes to observe each page's new [data-reveal] and [data-reveal-group]
+ * elements.
  * CSS only hides them under `html.js`
  * with motion allowed, so without JS or with reduced motion content is simply visible.
  */
@@ -12,7 +13,7 @@ export function RevealObserver() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const elements = document.querySelectorAll<HTMLElement>("[data-reveal]");
+    const elements = document.querySelectorAll<HTMLElement>("[data-reveal], [data-reveal-group]");
     if (!("IntersectionObserver" in window)) {
       elements.forEach((el) => (el.dataset.revealed = "true"));
       return;

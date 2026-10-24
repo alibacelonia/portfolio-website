@@ -35,6 +35,8 @@ export const site = {
   /** Single source of truth for the canonical origin (NEXT_PUBLIC_SITE_URL). */
   url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   location: "Baguio City, Philippines",
+  /** Short form for the hero ("Based in the Philippines"). */
+  basedIn: "the Philippines",
   experienceYears: "7+",
   email: "alibacelonia1234@gmail.com",
   github: "https://github.com/alibacelonia",

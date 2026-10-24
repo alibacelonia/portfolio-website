@@ -10,7 +10,7 @@ src/
 ├── components/
 │   ├── layout/     Header (sticky glass bar), SectionNav, MobileMenu(+Panel), Footer, Providers, SmoothScroll
 │   ├── sections/   Hero, Pipeline, Projects, ProjectDetail, Experience, Skills, Certifications, Contact(+Form)
-│   └── ui/         Section(+Frame), Tag, ButtonLink, ExternalLink, ThemeToggle, Logo, RevealObserver
+│   └── ui/         Section(+Frame), OverviewStrip, ActionStrip, Tag, ButtonLink, ExternalLink, ThemeToggle, Logo, RevealObserver
 ├── data/           projects, experience, skills, certifications, navigation (typed, no JSX)
 ├── hooks/          useActiveSection, useTheme
 ├── lib/            site config (env-driven URL), brand (logo path), disciplines, contact, theme

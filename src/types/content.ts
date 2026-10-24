@@ -23,6 +23,12 @@ export interface Project {
   name: string;
   /** Display category, e.g. "DevOps Tooling · CLI". */
   category: string;
+  /** Short type shown beside the name in case studies, e.g. "CLI", "AI service". */
+  kind: string;
+  /** One-line hook shown on the case-study preview card. */
+  tagline: string;
+  /** Three or four short highlights for the case-study panel. */
+  highlights: string[];
   /** Drives the accent dot color. */
   discipline: Discipline;
   /** Short, factual status, e.g. "v0.2.0 · PyPI". */
@@ -57,6 +63,39 @@ export interface Project {
 
   /** Only a genuine screenshot under /public/projects. */
   screenshot?: { src: string; alt: string; width: number; height: number };
+  /** Where the content was verified, for maintainers. Not rendered. */
+  source: string;
+}
+
+/** Commercial work for a client: no public repository, so it links to the product instead. */
+export interface ClientWork {
+  id: string;
+  name: string;
+  /** Short product category, e.g. "Compliance automation SaaS". */
+  category: string;
+  /** Short type shown beside the name in case studies, e.g. "CLI", "AI service". */
+  kind: string;
+  /** One-line hook shown on the case-study preview card. */
+  tagline: string;
+  /** Three or four short highlights for the case-study panel. */
+  highlights: string[];
+  discipline: Discipline;
+  /** Public description of the product, from its own website. */
+  summary: string;
+  /** Role and engagement, e.g. "Product Engineer · Freelance via Buzzerboy". */
+  role: string;
+  period: string;
+  /** What I built: never broader than my own work. Optional; omitted when not shown. */
+  contributions?: string[];
+  tech: string[];
+  link: ProjectLink;
+  /** A genuine product screenshot under /public/projects, shown on the left of the card. */
+  screenshot?: { src: string; alt: string; width: number; height: number };
+  /**
+   * Publish only after the client has confirmed the product may be named and described.
+   * Unpublished entries are never rendered.
+   */
+  published: boolean;
   /** Where the content was verified, for maintainers. Not rendered. */
   source: string;
 }

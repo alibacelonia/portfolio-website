@@ -5,6 +5,11 @@ import { MobileMenu } from "@/components/layout/MobileMenu";
 import { SectionNav } from "@/components/layout/SectionNav";
 import { Header } from "@/components/layout/Header";
 import { ProjectDetail } from "@/components/sections/ProjectDetail";
+import { ProjectCollection } from "@/components/sections/Projects";
+import { clientWork, publishedClientWork } from "@/data/clientWork";
+import ProjectsPage from "@/app/projects/page";
+import { CaseStudies } from "@/components/sections/CaseStudies";
+import { buildCaseStudies } from "@/lib/caseStudies";
 import { Pipeline } from "@/components/sections/Pipeline";
 import { ProjectCard } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
@@ -136,19 +141,34 @@ describe("ProjectCard", () => {
 });
 
 describe("ProjectDetail", () => {
-  it("presents sections A–F for the Website Portfolio and flags planned infrastructure", () => {
-    render(<ProjectDetail project={getProject("website-portfolio")!} />);
+  it("builds the page from framed bands with an at-a-glance strip", () => {
+    const { container } = render(<ProjectDetail project={getProject("website-portfolio")!} />);
     expect(
       screen.getByRole("heading", { level: 1, name: "Website Portfolio" }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
       "Overview",
-      "Problem",
       "Solution",
-      "Technology stack",
       "Infrastructure & architecture",
-      "Links",
     ]);
+    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
+      "What it does",
+      "Problem",
+      "Technology stack",
+    ]);
+
+    const glance = container.querySelector('dl[aria-label="Project at a glance"]')!;
+    expect(glance).not.toBeNull();
+    expect([...glance.querySelectorAll("dt")].map((dt) => dt.textContent)).toEqual([
+      "Status",
+      "Discipline",
+      "Key stack",
+      "Repository",
+    ]);
+    const repo = screen.getByRole("link", { name: /^View on GitHub: Website Portfolio/ });
+    expect(repo).toHaveAttribute("href", "https://github.com/alibacelonia/portfolio-website");
+    expect(repo).toHaveAttribute("rel", "noopener noreferrer");
+
     expect(screen.getAllByText("planned")).toHaveLength(2);
     const flow = screen.getByRole("list", { name: "Website Portfolio flow" });
     expect(within(flow).getAllByRole("listitem")).toHaveLength(6);
@@ -156,6 +176,124 @@ describe("ProjectDetail", () => {
       "href",
       expect.stringMatching(/^\/projects\/?$/),
     );
+    // Projects wrap around: the last project leads to the first.
+    expect(
+      screen.getByRole("link", { name: "Next project: cloud-incident-service" }),
+    ).toHaveAttribute("href", expect.stringMatching(/^\/projects\/cloud-incident-service\/?$/));
+  });
+});
+
+describe("ProjectCollection", () => {
+  it("shows only the open-source grid while no client work is published", () => {
+    render(<ProjectCollection level={3} work={[]} />);
+    expect(screen.queryByText("Professional work")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(4);
+  });
+
+  it("groups published client work above open source, one heading level down", () => {
+    render(<ProjectCollection level={3} work={[{ ...clientWork[0]!, published: true }]} />);
+    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
+      "Professional work",
+      "Open source",
+    ]);
+    expect(screen.getByRole("heading", { level: 4, name: "IronFort" })).toBeInTheDocument();
+    // Contributions are optional; without them the card lists technologies only.
+    expect(screen.queryByText("What I built")).not.toBeInTheDocument();
+    const ironfort = screen.getByRole("article", { name: "IronFort" });
+    expect(within(ironfort).getByText("Amazon Bedrock")).toBeInTheDocument();
+    expect(within(ironfort).getByText("Route 53")).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 4 })).toHaveLength(5);
+    // The genuine product screenshot comes first in the card (left on desktop, top on phones).
+    const shot = within(ironfort).getByRole("img", { name: /^IronFort homepage/ });
+    expect(
+      shot.compareDocumentPosition(within(ironfort).getByRole("heading", { name: "IronFort" })) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    const site = screen.getByRole("link", { name: /^goironfort\.com: IronFort product site/ });
+    expect(site).toHaveAttribute("href", "https://goironfort.com/");
+    expect(site).toHaveAttribute("rel", "noopener noreferrer");
+  });
+});
+
+describe("CaseStudies", () => {
+  it("lists client work first, then open-source projects, each with a pinned-panel entry", () => {
+    const studies = buildCaseStudies();
+    expect(studies.map((study) => study.id)).toEqual([
+      ...publishedClientWork.map((work) => work.id),
+      ...projects.map((project) => project.id),
+    ]);
+    const { container } = render(<CaseStudies studies={studies} />);
+    // One panel entry per project; the first is active before any scrolling.
+    const panels = [...container.querySelectorAll(".case-panel-item")];
+    expect(panels.map((panel) => panel.getAttribute("aria-label"))).toEqual(
+      studies.map((study) => study.name),
+    );
+    expect(panels.filter((panel) => panel.hasAttribute("data-active"))).toHaveLength(1);
+    expect(panels[0]).toHaveAttribute("data-active");
+    // A decorative progress ruler: one tick per project, the first one active.
+    const ruler = container.querySelector(".case-ruler")!;
+    expect(ruler).toHaveAttribute("aria-hidden", "true");
+    const ticks = [...ruler.querySelectorAll("li")];
+    expect(ticks).toHaveLength(studies.length);
+    expect(ticks.findIndex((tick) => tick.hasAttribute("data-active"))).toBe(0);
+    // Each preview card opens with its tagline above the image and stays a mouse-only shortcut.
+    const stages = [...container.querySelectorAll(".case-stage")];
+    stages.forEach((stage, index) => {
+      expect(stage).toHaveAttribute("aria-hidden", "true");
+      expect(stage).toHaveAttribute("tabindex", "-1");
+      expect(stage.querySelector("p")).toHaveTextContent(studies[index]!.tagline);
+    });
+    const estoePanel = within(container.querySelector<HTMLElement>("#case-panel-estoe")!);
+    expect(estoePanel.getByRole("link", { name: "Read case study: estoe" })).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^\/projects\/estoe\/?$/),
+    );
+    expect(estoePanel.getByRole("link", { name: /^estoe on PyPI/ })).toHaveAttribute(
+      "rel",
+      "noopener noreferrer",
+    );
+  });
+
+  it("activates a panel when one of its links receives keyboard focus", async () => {
+    const user = userEvent.setup();
+    const studies = buildCaseStudies();
+    const { container } = render(<CaseStudies studies={studies} />);
+    const estoePanel = container.querySelector<HTMLElement>("#case-panel-estoe")!;
+    expect(estoePanel).not.toHaveAttribute("data-active");
+    within(estoePanel).getByRole("link", { name: "Read case study: estoe" }).focus();
+    await user.keyboard("{Shift>}{Tab}{/Shift}{Tab}");
+    expect(estoePanel).toHaveAttribute("data-active");
+  });
+
+  it("falls back to the architecture flow when a project has no screenshot", () => {
+    const studies = buildCaseStudies();
+    const { container } = render(<CaseStudies studies={studies} />);
+    const estoeStage = container.querySelector("#case-study-estoe .case-stage")!;
+    expect(estoeStage).toHaveTextContent("preflight");
+    if (publishedClientWork.length) {
+      const ironfortStage = container.querySelector("#case-study-ironfort .case-stage")!;
+      expect(ironfortStage.querySelector("img")).not.toBeNull();
+      expect(
+        within(container.querySelector<HTMLElement>("#case-panel-ironfort")!).getByRole("link", {
+          name: /^Visit site: IronFort/,
+        }),
+      ).toHaveAttribute("href", "https://goironfort.com/");
+    }
+  });
+});
+
+describe("All projects page", () => {
+  it("frames the collection with a header panel and a GitHub strip", () => {
+    render(<ProjectsPage />);
+    expect(screen.getByRole("heading", { level: 1, name: "All projects" })).toBeInTheDocument();
+    // Open-source projects plus any published client work.
+    expect(screen.getAllByRole("article")).toHaveLength(
+      projects.length + publishedClientWork.length,
+    );
+    expect(screen.getByText("4 projects")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /^Browse every repository on GitHub/ }),
+    ).toHaveAttribute("href", "https://github.com/alibacelonia");
   });
 });
 

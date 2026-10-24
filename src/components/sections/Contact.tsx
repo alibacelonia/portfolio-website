@@ -1,6 +1,7 @@
 import { site } from "@/lib/site";
 import { ExternalLink } from "@/components/ui/Links";
 import { SectionFrame } from "@/components/ui/SectionFrame";
+import { stagger } from "@/lib/motion";
 import { ContactForm } from "./ContactForm";
 
 const channels = [
@@ -21,8 +22,11 @@ export function Contact() {
       aria-labelledby="contact-title"
       className="bg-bg py-16 sm:py-20 lg:py-24"
     >
-      <div className="container-fluid grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
-        <div data-reveal className="section-panel p-5 sm:p-7 lg:col-span-5">
+      <div
+        data-reveal-group
+        className="container-fluid grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5"
+      >
+        <div style={stagger(0)} className="section-panel p-5 sm:p-7 lg:col-span-5">
           <p className="mb-3 type-eyebrow">
             <span aria-hidden="true">06 / </span>Contact
           </p>
@@ -66,7 +70,7 @@ export function Contact() {
           </dl>
         </div>
 
-        <div data-reveal className="section-panel p-5 sm:p-7 lg:col-span-7">
+        <div style={stagger(1)} className="section-panel p-5 sm:p-7 lg:col-span-7">
           <ContactForm />
         </div>
       </div>

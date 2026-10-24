@@ -2,6 +2,7 @@ import { skills } from "@/data/skills";
 import { disciplineDot } from "@/lib/disciplines";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
+import { stagger } from "@/lib/motion";
 
 function Legend() {
   return (
@@ -35,11 +36,11 @@ export function Skills() {
       }
       aside={<Legend />}
     >
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
-        {skills.map((discipline) => (
+      <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
+        {skills.map((discipline, index) => (
           <article
             key={discipline.id}
-            data-reveal
+            style={stagger(index)}
             aria-labelledby={`skills-${discipline.id}`}
             className="card"
           >
@@ -59,9 +60,9 @@ export function Skills() {
               {discipline.groups.map((group) => (
                 <div key={group.label}>
                   <h4 className="type-label text-muted">{group.label}</h4>
-                  <ul className="mt-2 flex flex-wrap gap-1.5">
-                    {group.skills.map((skill) => (
-                      <Tag key={skill.name} level={skill.level}>
+                  <ul data-reveal-group="ripple" className="mt-2 flex flex-wrap gap-1.5">
+                    {group.skills.map((skill, tagIndex) => (
+                      <Tag key={skill.name} level={skill.level} index={tagIndex}>
                         {skill.name}
                       </Tag>
                     ))}

@@ -1,4 +1,4 @@
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, MapPin } from "lucide-react";
 import Image from "next/image";
 import { site } from "@/lib/site";
 import { ExternalLink } from "@/components/ui/Links";
@@ -15,9 +15,13 @@ export function Hero() {
       aria-labelledby="home-title"
       className="section-frame--hero relative isolate flex min-h-viewport flex-col bg-bg pt-[calc(var(--nav-offset)+24px)]"
     >
-      <div className="container-fluid flex flex-1 items-center pt-6 pb-14 sm:py-20 lg:py-16">
+      <div className="container-fluid flex flex-1 items-center pt-4 pb-14 sm:pt-14 sm:pb-20 lg:pt-10 lg:pb-16">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-12 gap-y-10 lg:grid-cols-[auto_minmax(0,1fr)] xl:gap-x-16">
-          <div className="min-w-0 text-center lg:col-start-2 lg:row-start-1 lg:text-left">
+          <div className="hero-sequence min-w-0 text-center lg:col-start-2 lg:row-start-1 lg:text-left">
+            <p className="mb-5 flex items-center justify-center gap-1.5 type-small text-muted lg:justify-start">
+              <MapPin aria-hidden="true" className="size-3.5 shrink-0" />
+              Based in {site.basedIn}
+            </p>
             <h1
               id="home-title"
               className="font-mono text-[clamp(1.875rem,1rem+2.2vw,3rem)] leading-[1.1] font-medium tracking-tight text-balance text-fg"

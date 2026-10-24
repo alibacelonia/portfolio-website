@@ -10,6 +10,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
   return (
     <li
       id={`role-${role.id}`}
+      data-reveal="slide"
       className="relative grid grid-cols-[2.75rem_minmax(0,1fr)] gap-y-2 md:grid-cols-[11rem_3.5rem_minmax(0,1fr)] md:gap-y-0"
     >
       {/* Dates stay pinned beside the card while it scrolls past (tablet and up). */}
@@ -96,7 +97,7 @@ export function Experience() {
       title="Experience"
       lead="More than seven years across enterprise applications, government systems and cloud engineering, moving steadily from building software to automating how it is delivered and run."
     >
-      <ol data-reveal className="exp-timeline relative grid grid-cols-1">
+      <ol className="exp-timeline relative grid grid-cols-1">
         {experience.map((role, index) => (
           <RoleItem key={role.id} role={role} next={experience[index + 1]} />
         ))}

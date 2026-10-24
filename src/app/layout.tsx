@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { Instrument_Serif } from "next/font/google";
 import { site, siteHost } from "@/lib/site";
 import { DEFAULT_THEME, themeBootstrapScript } from "@/lib/theme";
 import { buildPersonJsonLd } from "@/lib/structured-data";
@@ -10,6 +11,16 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { RevealObserver } from "@/components/ui/RevealObserver";
 import "./globals.css";
+
+// Display serif for case-study titles. Downloaded at build time and self-hosted by next/font;
+// not preloaded because it is only used below the fold.
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+  variable: "--font-instrument-serif",
+});
 
 const title = `${site.name} — Full-Stack, DevOps & AI Engineer`;
 
@@ -58,7 +69,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="en"
       data-theme={DEFAULT_THEME}
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />

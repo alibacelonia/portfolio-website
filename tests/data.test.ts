@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { clientWork, publishedClientWork } from "@/data/clientWork";
 import { getProject, projects } from "@/data/projects";
 import {
   experience,
@@ -61,6 +64,22 @@ describe("projects data", () => {
   it("never ships a screenshot that is not a local asset", () => {
     for (const project of projects) {
       if (project.screenshot) expect(project.screenshot.src).toMatch(/^\/projects\//);
+    }
+  });
+});
+
+describe("client work data", () => {
+  it("renders only entries marked published, and links only over https", () => {
+    // Publishing IronFort requires the client's confirmation (docs/requirements.md).
+    expect(publishedClientWork).toEqual(clientWork.filter((work) => work.published));
+    for (const work of clientWork) {
+      expect(work.link.href).toMatch(/^https:\/\//);
+      expect(work.tech.length).toBeGreaterThan(0);
+      if (work.screenshot) {
+        expect(work.screenshot.src).toMatch(/^\/projects\/[a-z0-9-]+\.webp$/);
+        expect(existsSync(join(process.cwd(), "public", work.screenshot.src))).toBe(true);
+        expect(work.screenshot.alt.length).toBeGreaterThan(20);
+      }
     }
   });
 });

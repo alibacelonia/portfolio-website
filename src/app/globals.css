@@ -112,6 +112,7 @@
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
 
   --shadow-card: var(--shadow-sm);
   --shadow-raised: var(--shadow-md);
@@ -207,6 +208,16 @@
   font-size: 0.9375rem;
   line-height: 1.65;
   color: var(--muted);
+}
+
+/* Case-study titles: Instrument Serif has a single (regular) weight, so never bold it. */
+@utility type-display-serif {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(2rem, 1.6rem + 1.5vw, 2.75rem);
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--fg);
 }
 
 @utility type-card-title {
@@ -479,9 +490,12 @@
 }
 
 .section-frame--hero::before,
+.section-frame--top::before,
 .section-frame--footer::before,
 .section-frame--hero > .section-guides::before,
-.section-frame--hero > .section-guides::after {
+.section-frame--hero > .section-guides::after,
+.section-frame--top > .section-guides::before,
+.section-frame--top > .section-guides::after {
   display: none;
 }
 
@@ -536,19 +550,116 @@
     stroke 200ms var(--ease) !important;
 }
 
-/* Section entrance: applied only when JS is running (html.js), so content is visible without it. */
-@media (prefers-reduced-motion: no-preference) {
-  .js [data-reveal] {
+/* ---------- Motion: entrances (docs/design-system.md) ----------
+   Content is hidden only under html.js with motion allowed, so without JS or with reduced motion
+   everything is simply visible. Entrances are animations with fill-mode `backwards`: they style an
+   element only while entering, then hand control back to hover transitions and transforms.
+
+   - [data-reveal]           one element; values: (default) rise · "slide" from the right · "pop"
+   - [data-reveal-group]     children cascade by --i (set inline); values: (default) rise · "pop"
+                             · "ripple" (quick fade for dense lists such as skill tags)
+   - .hero-sequence          the page-load moment: hero text, then the overview strip           */
+@keyframes reveal-rise {
+  from {
     opacity: 0;
-    transform: translateY(10px);
-    transition:
-      opacity 500ms var(--ease),
-      transform 500ms var(--ease);
+    transform: translateY(16px);
   }
-  .js [data-reveal][data-revealed="true"] {
-    opacity: 1;
-    transform: none;
+}
+
+@keyframes reveal-slide {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
   }
+}
+
+@keyframes reveal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* An aperture opening, with no opacity fade: the portrait is the mobile LCP element, and Chrome
+   only counts an element once it is visible, so a fade-in would delay LCP. */
+@keyframes portrait-in {
+  from {
+    clip-path: inset(14% 14% 14% 14%);
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Waiting to enter. */
+  .js [data-reveal]:not([data-revealed]),
+  .js [data-reveal-group]:not([data-revealed]) > * {
+    opacity: 0;
+  }
+
+  /* Single elements. */
+  .js [data-reveal][data-revealed] {
+    animation: reveal-rise 700ms var(--ease) backwards;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+  .js [data-reveal="slide"][data-revealed] {
+    animation-name: reveal-slide;
+  }
+  .js [data-reveal="pop"][data-revealed] {
+    animation-name: reveal-pop;
+  }
+
+  /* Cascades: each child waits a little longer than the previous one (capped). */
+  .js [data-reveal-group][data-revealed] > * {
+    animation: reveal-rise 700ms var(--ease) backwards;
+    animation-delay: calc(min(var(--i, 0), 8) * 90ms);
+  }
+  .js [data-reveal-group="pop"][data-revealed] > * {
+    animation-name: reveal-pop;
+    animation-duration: 650ms;
+    animation-delay: calc(min(var(--i, 0), 8) * 120ms);
+  }
+  .js [data-reveal-group="ripple"][data-revealed] > * {
+    animation: reveal-fade 450ms var(--ease) backwards;
+    animation-delay: calc(150ms + min(var(--i, 0), 24) * 22ms);
+  }
+
+  /* Hero: one orchestrated page-load sequence (no scroll trigger; it is above the fold). */
+  .js .section-frame--hero .hero-portrait {
+    animation: portrait-in 1100ms var(--ease) backwards;
+  }
+  .js .hero-sequence > * {
+    animation: reveal-rise 800ms var(--ease) backwards;
+    animation-delay: calc(80ms + var(--i, 0) * 90ms);
+  }
+  .js :is(.section-frame--hero, .section-frame--top) .hero-overview-cell {
+    animation: reveal-rise 700ms var(--ease) backwards;
+    animation-delay: calc(650ms + var(--i, 0) * 90ms);
+  }
+}
+
+.hero-sequence > :nth-child(2),
+.hero-overview-cell:nth-child(2) {
+  --i: 1;
+}
+.hero-sequence > :nth-child(3),
+.hero-overview-cell:nth-child(3) {
+  --i: 2;
+}
+.hero-sequence > :nth-child(4),
+.hero-overview-cell:nth-child(4) {
+  --i: 3;
+}
+.hero-sequence > :nth-child(5) {
+  --i: 4;
+}
+.hero-sequence > :nth-child(6) {
+  --i: 5;
 }
 
 @media (min-width: 640px) {
@@ -557,7 +668,242 @@
   }
 }
 
-/* Square monochrome portrait with a fine halftone texture. */
+/* ---------- Case studies (home Projects) ----------
+   Desktop: preview cards (tagline, then image) on the left, 100px apart, and one pinned details
+   panel on the right, centered on screen, showing the project whose image is at least 25% in the
+   upper half of the viewport. The cards sit in a hatched well, like the section dividers, and a
+   ruler of ticks beside the title shows which project is active.
+   Phones: each image is followed by its own details, 100px between projects. */
+.case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.case-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6.25rem;
+}
+
+@media (min-width: 1024px) {
+  /* The layout spans the section rails (.section-guides), framed top and bottom; a vertical line
+     splits the hatched card column from the details. --case-edge is the distance from a rail to
+     the content edge, so cards and details still line up with the section header. */
+  .case-layout {
+    --case-edge: calc(var(--gutter) - var(--frame-inset));
+    --case-split: clamp(2.5rem, 4vw, 4.5rem);
+    grid-template-columns: minmax(0, 13fr) minmax(0, 7fr);
+    align-items: start;
+    margin-inline: calc(var(--frame-inset) - var(--gutter));
+    border-block: 1px solid var(--frame-line);
+  }
+
+  /* The cards sit on the section-divider hatch; each keeps a thin bezel line 6px out, so it reads
+     as set into the frame. Stretched so the hatch and divider run the full height. */
+  .case-list {
+    align-self: stretch;
+    padding: var(--case-edge);
+    border-right: 1px solid var(--frame-line);
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 4px,
+      var(--frame-hatch) 4px 5px
+    );
+  }
+
+  /* "View all projects" closes the frame: its top line is the layout's bottom border. */
+  .section-frame:has(.case-layout) > .section-action {
+    margin-top: 0;
+    border-top: 0;
+  }
+
+  .case-stage {
+    outline: 1px solid var(--frame-line);
+    outline-offset: 6px;
+  }
+
+  /* Starts level with the top of the first project (inside the well), then pins at the vertical
+     center of the viewport (never under the dock). --case-panel-h is measured in CaseStudies. */
+  .case-panel {
+    position: sticky;
+    top: max(calc(var(--nav-offset) + 16px), calc((100svh - var(--case-panel-h, 0px)) / 2));
+    margin-top: var(--case-edge);
+    padding-inline: var(--case-split) var(--case-edge);
+  }
+}
+
+/* Progress ruler: one tick per project between the divider and the title. The list slides so
+   the active tick stays level with the active title (--ruler-y, measured in CaseStudies); ticks
+   shrink and fade with distance from it. Decorative: the order is also in the document. */
+.case-ruler {
+  --tick-pitch: 12px;
+  position: absolute;
+  top: var(--ruler-y, 1.4rem);
+  left: calc(var(--case-split) - 30px);
+  width: 20px;
+  translate: 0 calc((var(--active) + 0.5) * var(--tick-pitch) * -1);
+  transition:
+    top 600ms var(--ease),
+    translate 600ms var(--ease);
+}
+
+.case-ruler li {
+  display: flex;
+  height: var(--tick-pitch);
+  align-items: center;
+}
+
+.case-ruler span {
+  height: 2px;
+  width: 100%;
+  border-radius: 9999px;
+  background: var(--muted);
+  opacity: var(--tick-alpha);
+  scale: var(--tick-scale) 1;
+  transform-origin: left;
+  transition:
+    scale 600ms var(--ease),
+    opacity 600ms var(--ease),
+    background-color 600ms var(--ease);
+}
+
+.case-ruler [data-active] span {
+  background: var(--tick);
+  filter: drop-shadow(0 0 6px var(--tick));
+}
+
+html:not(.js) .case-ruler {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-ruler,
+  .case-ruler span {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .case-ruler span {
+    background: CanvasText;
+  }
+
+  .case-ruler [data-active] span {
+    background: Highlight;
+  }
+}
+
+/* All panels share one cell sized to the tallest; each is centered in it, so the visible details
+   are centered on screen whichever project is active. They stay in the accessibility tree so
+   every project can be read, and focusing a link in one makes it active. */
+.case-panel-stack {
+  display: grid;
+  align-items: center;
+}
+
+.case-panel-item {
+  grid-area: 1 / 1;
+  transition:
+    opacity 300ms var(--ease),
+    translate 300ms var(--ease);
+}
+
+.js .case-panel-item:not([data-active]) {
+  opacity: 0;
+  translate: 0 8px;
+  pointer-events: none;
+}
+
+/* Without JavaScript nothing switches panels, so they stack in order instead. */
+html:not(.js) .case-panel {
+  position: static;
+}
+
+html:not(.js) .case-panel-item {
+  grid-area: auto;
+  padding-bottom: 2.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-panel-item {
+    transition: none;
+  }
+}
+
+/* A stage tinted with the project's discipline color (pastel, low saturation): tagline and arrow
+   at the top, then the screenshot (or the flow window that stands in for one) rising from the
+   bottom edge. */
+.case-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background:
+    radial-gradient(
+      120% 90% at 50% 0%,
+      color-mix(in srgb, var(--stage, var(--sage)) 24%, transparent),
+      transparent 68%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--stage, var(--sage)) 9%, var(--surface)),
+      var(--surface)
+    );
+  box-shadow: var(--shadow-md);
+  transition: border-color 300ms var(--ease);
+}
+
+/* Tall 4:3 cards from sm; on phones the card grows with the tagline instead. */
+@media (min-width: 640px) {
+  .case-stage {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.case-stage:hover {
+  border-color: var(--border-strong);
+}
+
+/* The preview fills the space under the tagline. `margin-top: auto` sits a short image flush on
+   the bottom edge, while a taller one starts at the top and is cropped at the bottom, so its
+   navigation and headline are never cut. */
+.case-media {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  padding-inline: 8%;
+}
+
+@media (max-width: 639px) {
+  .case-media {
+    height: 42vw;
+    flex: none;
+  }
+}
+
+.case-media-inner {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto;
+  border-radius: 0.75rem 0.75rem 0 0;
+  box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+  transition: translate 500ms var(--ease);
+}
+
+.case-stage:hover .case-media-inner {
+  translate: 0 -6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-media-inner {
+    transition: none;
+  }
+}
+
 /* ---------- Experience timeline ----------
    Rail geometry is shared through custom properties so nodes, segments and the concurrency bracket
    line up on every breakpoint. --exp-node-c is the vertical center of a node within its row. */
@@ -681,6 +1027,7 @@
   }
 }
 
+/* Square monochrome portrait with a fine halftone texture. */
 .hero-portrait {
   isolation: isolate;
 }

@@ -8,6 +8,14 @@ export const projects: Project[] = [
     id: "cloud-incident-service",
     name: "cloud-incident-service",
     category: "AI Engineering · Cloud Operations",
+    kind: "AI service",
+    tagline: "An AI agent that investigates AWS incidents and cites the evidence for every claim",
+    highlights: [
+      "Bounded agent: 8 tool calls, 6 turns, 60 seconds",
+      "Every statement cites evidence a tool returned",
+      "Remediation always requires human approval",
+      "Offline evaluation across ten scenarios",
+    ],
     discipline: "ai",
     status: "MVP · synthetic data",
     summary:
@@ -90,6 +98,14 @@ export const projects: Project[] = [
     id: "estoe",
     name: "estoe",
     category: "DevOps Tooling · CLI",
+    kind: "CLI",
+    tagline: "One cloud secret in, one local .env file out, without copying values by hand",
+    highlights: [
+      "AWS, Azure and Google Cloud secret managers",
+      "Refuses tracked or unsafe destinations before fetching",
+      "Private, atomic writes with explicit overwrite",
+      "Published to PyPI with Trusted Publishing",
+    ],
     discipline: "devops",
     status: "v0.2.0 · PyPI",
     summary:
@@ -168,6 +184,14 @@ export const projects: Project[] = [
     id: "ai-project-factory",
     name: "ai-project-factory",
     category: "Developer Tooling · AI-assisted Development",
+    kind: "Generator",
+    tagline: "Small, runnable projects with tests, CI and AI-agent instructions already aligned",
+    highlights: [
+      "Python CLI, web SaaS and AI service starters",
+      "Validated configuration; never overwrites a path",
+      "22 UI presets with light and dark tokens",
+      "cloud-incident-service was generated from it",
+    ],
     discipline: "ai",
     status: "Open source · MIT",
     summary:
@@ -244,6 +268,15 @@ export const projects: Project[] = [
     id: "website-portfolio",
     name: "Website Portfolio",
     category: "Personal Website / Full-Stack & DevOps Portfolio",
+    kind: "Website",
+    tagline:
+      "This site: a static Next.js portfolio served from a private S3 bucket through CloudFront",
+    highlights: [
+      "Static export with no server runtime",
+      "Terraform and GitHub OIDC, with no stored AWS keys",
+      "Deploys gated on tests and accessibility checks",
+      "CSS-first motion that respects reduced motion",
+    ],
     discipline: "devops",
     status: "This site",
     summary:

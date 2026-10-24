@@ -1,12 +1,18 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { projects } from "@/data/projects";
 import { site } from "@/lib/site";
-import type { Project } from "@/types/content";
+import type { ClientWork, Project } from "@/types/content";
+import { publishedClientWork } from "@/data/clientWork";
 import { disciplineDot } from "@/lib/disciplines";
+import { stagger } from "@/lib/motion";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
+import { ActionStrip } from "@/components/ui/ActionStrip";
+import { CaseStudies } from "./CaseStudies";
+import { buildCaseStudies } from "@/lib/caseStudies";
 
 export function projectHref(project: Pick<Project, "id">): string {
   return `/projects/${project.id}/`;
@@ -20,16 +26,19 @@ export function projectLinks(project: Project) {
 export function ProjectCard({
   project,
   headingLevel = 3,
+  index = 0,
 }: {
   project: Project;
-  headingLevel?: 2 | 3;
+  headingLevel?: 2 | 3 | 4;
+  /** Position in the grid's entrance cascade. */
+  index?: number;
 }) {
   const headingId = `project-${project.id}`;
-  const Heading = headingLevel === 2 ? "h2" : "h3";
+  const Heading = `h${headingLevel}` as "h2" | "h3" | "h4";
   return (
     <article
       aria-labelledby={headingId}
-      data-reveal
+      style={stagger(index)}
       className="flex h-full min-w-0 flex-col card transition-[border-color,box-shadow,transform] duration-300 ease-out-soft hover:-translate-y-0.5 hover:border-border-strong hover:shadow-raised"
     >
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
@@ -82,12 +91,187 @@ export function ProjectCard({
   );
 }
 
-export function ProjectGrid({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+export function ProjectGrid({ headingLevel = 3 }: { headingLevel?: 2 | 3 | 4 }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5 2xl:grid-cols-4">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} headingLevel={headingLevel} />
+    <div
+      data-reveal-group
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5 2xl:grid-cols-4"
+    >
+      {projects.map((project, index) => (
+        <ProjectCard key={project.id} project={project} headingLevel={headingLevel} index={index} />
       ))}
+    </div>
+  );
+}
+
+/**
+ * A wide card for commercial client work. With a screenshot: the image on the left and every
+ * detail on the right. Without one: details on the left, contributions and technologies right.
+ */
+export function ClientWorkCard({
+  work,
+  headingLevel = 4,
+}: {
+  work: ClientWork;
+  headingLevel?: 3 | 4;
+}) {
+  const headingId = `client-${work.id}`;
+  const Heading = `h${headingLevel}` as "h3" | "h4";
+  const contributions = work.contributions ?? [];
+
+  const header = (
+    <>
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
+        <p className="inline-flex items-center gap-2 text-xs text-fg-soft">
+          <span
+            aria-hidden="true"
+            className={`size-1.5 shrink-0 rounded-full ${disciplineDot[work.discipline]}`}
+          />
+          {work.category}
+        </p>
+        <p className="type-label text-muted">Client work</p>
+      </div>
+      <Heading id={headingId} className="mt-4 type-card-title">
+        {work.name}
+      </Heading>
+      <p className="mt-2 type-body text-muted">{work.summary}</p>
+      <dl className="mt-4 space-y-1">
+        <div>
+          <dt className="sr-only">Role</dt>
+          <dd className="type-body text-fg-soft">{work.role}</dd>
+        </div>
+        <div>
+          <dt className="sr-only">Period</dt>
+          <dd className="type-mono text-muted">{work.period}</dd>
+        </div>
+      </dl>
+    </>
+  );
+
+  const contributionList = contributions.length ? (
+    <>
+      <p className="type-label text-muted">What I built</p>
+      <ul className="mt-3 space-y-2.5 type-body text-fg-soft">
+        {contributions.map((item) => (
+          <li key={item} className="flex gap-2.5">
+            <span aria-hidden="true" className="mt-[11px] h-px w-2.5 shrink-0 bg-sage" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  ) : null;
+
+  const technologies = (
+    <>
+      <p className="mb-3 type-label text-muted">Technologies</p>
+      <ul aria-label="Technologies" className="flex flex-wrap gap-1.5">
+        {work.tech.map((tech) => (
+          <Tag key={tech}>{tech}</Tag>
+        ))}
+      </ul>
+    </>
+  );
+
+  // The wrapper's padding keeps a gap above the divider even when pushed down with mt-auto.
+  const productLink = (
+    <div className="pt-5 lg:mt-auto">
+      <div className="border-t border-border pt-4 type-action">
+        <ExternalLink
+          href={work.link.href}
+          className="min-h-8 text-fg hover:underline"
+          aria-label={`${work.link.label}: ${work.name} product site (opens in a new tab)`}
+        >
+          {work.link.label}
+        </ExternalLink>
+      </div>
+    </div>
+  );
+
+  if (work.screenshot) {
+    return (
+      <article
+        aria-labelledby={headingId}
+        data-reveal
+        className="grid grid-cols-1 gap-6 card lg:grid-cols-12 lg:gap-8"
+      >
+        {/* Centered beside the details when they run taller than the image (around 1024px). */}
+        <div className="min-w-0 lg:col-span-7 lg:self-center">
+          <Image
+            src={work.screenshot.src}
+            alt={work.screenshot.alt}
+            width={work.screenshot.width}
+            height={work.screenshot.height}
+            sizes="(min-width: 1024px) 58vw, 100vw"
+            className="h-auto w-full rounded-lg border border-border"
+          />
+        </div>
+        <div className="flex min-w-0 flex-col lg:col-span-5">
+          {header}
+          {contributionList ? <div className="mt-5">{contributionList}</div> : null}
+          <div className="mt-5">{technologies}</div>
+          {productLink}
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article
+      aria-labelledby={headingId}
+      data-reveal
+      className="grid grid-cols-1 gap-6 card lg:grid-cols-12 lg:gap-10"
+    >
+      <div
+        className={`flex min-w-0 flex-col ${contributions.length ? "lg:col-span-5" : "lg:col-span-7"}`}
+      >
+        {header}
+        {productLink}
+      </div>
+      <div className={`min-w-0 ${contributions.length ? "lg:col-span-7" : "lg:col-span-5"}`}>
+        {contributionList ? <div className="mb-5">{contributionList}</div> : null}
+        {technologies}
+      </div>
+    </article>
+  );
+}
+
+function GroupHeading({ level, children }: { level: 2 | 3; children: string }) {
+  const Heading = `h${level}` as "h2" | "h3";
+  return (
+    <Heading className="mb-4 flex items-center gap-3 type-mono text-muted after:h-px after:flex-1 after:bg-border lg:mb-5">
+      {children}
+    </Heading>
+  );
+}
+
+/**
+ * Projects, optionally preceded by published client work. Without client work this is just the
+ * open-source grid at `level`; with it, group headings take `level` and cards move one below.
+ */
+export function ProjectCollection({
+  level,
+  work = publishedClientWork,
+}: {
+  level: 2 | 3;
+  work?: ClientWork[];
+}) {
+  if (work.length === 0) return <ProjectGrid headingLevel={level} />;
+  const cardLevel = (level + 1) as 3 | 4;
+  return (
+    <div className="space-y-10 sm:space-y-12">
+      <div>
+        <GroupHeading level={level}>Professional work</GroupHeading>
+        <div className="space-y-4 lg:space-y-5">
+          {work.map((item) => (
+            <ClientWorkCard key={item.id} work={item} headingLevel={cardLevel} />
+          ))}
+        </div>
+      </div>
+      <div>
+        <GroupHeading level={level}>Open source</GroupHeading>
+        <ProjectGrid headingLevel={cardLevel} />
+      </div>
     </div>
   );
 }
@@ -98,28 +282,19 @@ export function Projects() {
       id="projects"
       index="02"
       title="Projects"
-      lead="Open-source work across application development, cloud delivery and applied AI. Each project page covers the problem, the solution, the stack and how it is built and shipped."
+      lead={
+        publishedClientWork.length > 0
+          ? "Client work and open-source projects across application development, cloud delivery and applied AI. Each open-source project page covers the problem, the solution, the stack and how it is built and shipped."
+          : "Open-source work across application development, cloud delivery and applied AI. Each project page covers the problem, the solution, the stack and how it is built and shipped."
+      }
       aside={
         <ExternalLink href={site.github} className="type-mono text-muted hover:text-fg">
           github.com/alibacelonia
         </ExternalLink>
       }
-      footer={
-        <div className="section-action mt-10 sm:mt-12">
-          <div aria-hidden="true" className="section-action-guides" />
-          <Link
-            href="/projects/"
-            className="group inline-flex min-h-11 items-center gap-2 px-4 type-action text-muted transition-colors hover:text-fg"
-          >
-            View all projects
-            <span className="flex size-7 items-center justify-center rounded-full bg-fg/5 transition-colors group-hover:bg-fg/10">
-              <ArrowRight aria-hidden="true" className="size-3.5" />
-            </span>
-          </Link>
-        </div>
-      }
+      footer={<ActionStrip href="/projects/">View all projects</ActionStrip>}
     >
-      <ProjectGrid />
+      <CaseStudies studies={buildCaseStudies()} />
     </Section>
   );
 }

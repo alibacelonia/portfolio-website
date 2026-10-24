@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
+import { projects } from "../src/data/projects";
+import { publishedClientWork } from "../src/data/clientWork";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "contact"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -13,6 +15,13 @@ function collectErrors(page: Page) {
   return errors;
 }
 
+/** Asserts the single canonical link in a page's static HTML (what crawlers receive). */
+async function expectCanonical(page: Page, path: string, expected: string) {
+  const html = await (await page.request.get(path)).text();
+  const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/g)].map((m) => m[1]);
+  expect(canonicals).toEqual([expected]);
+}
+
 test("renders the six sections in order with a single h1", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("/");
@@ -20,6 +29,7 @@ test("renders the six sections in order with a single h1", async ({ page }) => {
   expect(ids).toEqual(SECTIONS);
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.locator("h1")).toHaveText("Mohammed Ali B. Abdullah");
+  await expect(page.locator("#home").getByText("Based in the Philippines")).toBeVisible();
   await expect(page.getByText("Full-Stack Developer")).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -256,17 +266,19 @@ test("hero email copies on desktop and retains mailto on mobile", async ({
 
 test("project cards open static detail pages and lead back", async ({ page }) => {
   await page.goto("/#projects");
-  await expect(page.getByRole("heading", { name: "Website Portfolio" })).toBeVisible();
-  await page.getByRole("link", { name: "View details about estoe" }).click();
+  // Like a visitor: bring estoe's image into view so its details take over the pinned panel.
+  await page
+    .locator("#case-study-estoe .case-stage")
+    .evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await page.getByRole("link", { name: "Read case study: estoe" }).click();
   await expect(page).toHaveURL(/\/projects\/estoe\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("estoe");
   await expect(
     page.getByRole("heading", { level: 2, name: "Infrastructure & architecture" }),
   ).toBeVisible();
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://alibacelonia.dev/projects/estoe/",
-  );
+  // Crawlers load each URL directly, so check the canonical in the static HTML. After client-side
+  // navigation Next.js streams the new <head> separately, so it can briefly hold both canonicals.
+  await expectCanonical(page, "/projects/estoe/", "https://alibacelonia.dev/projects/estoe/");
   await page.getByRole("link", { name: "All projects" }).click();
   await expect(page).toHaveURL(/\/projects\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("All projects");
@@ -301,12 +313,10 @@ test("view all projects opens the collection and cards remain visible after goin
   await page.getByRole("link", { name: "View all projects" }).click();
   await expect(page).toHaveURL(/\/projects\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("All projects");
-  await expect(page.locator("main article")).toHaveCount(4);
-  await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://alibacelonia.dev/projects/",
+  await expect(page.locator("main article")).toHaveCount(
+    projects.length + publishedClientWork.length,
   );
+  await expectCanonical(page, "/projects/", "https://alibacelonia.dev/projects/");
   await page.getByRole("link", { name: "View details about estoe" }).click();
   await expect(page).toHaveURL(/\/projects\/estoe\/$/);
   await page.goBack();
@@ -379,6 +389,8 @@ test("contact form validates with the keyboard", async ({ page }) => {
 test("publishes SEO metadata, robots and sitemap", async ({ page, request }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/Mohammed Ali B\. Abdullah/);
+  // During client-side navigation the old and new canonical briefly coexist.
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     /^https:\/\/[^/]+\/$/,
@@ -411,4 +423,122 @@ test("experience dates stay beside their card while scrolling", async ({ page },
   // Scroll partway through the card: the dates should remain visible within the row.
   await page.mouse.wheel(0, box.height / 2);
   await expect(dates).toBeInViewport();
+});
+
+test("project pages use the home page's framed bands and dividers", async ({ page }) => {
+  const divider = (id: string) =>
+    page.evaluate((el) => getComputedStyle(document.getElementById(el)!, "::before").display, id);
+  await page.goto("/projects/estoe/");
+  // The first band sits under the dock like the hero, so it has no divider above it.
+  await expect(page.locator("#project")).toHaveClass(/section-frame--top/);
+  expect(await divider("project")).toBe("none");
+  // Overview starts flush against the at-a-glance strip; later bands draw the hatched divider.
+  expect(await divider("overview")).toBe("none");
+  expect(await divider("solution")).toBe("block");
+  expect(await divider("infrastructure")).toBe("block");
+  await expect(page.locator("#infrastructure .section-action")).toContainText("Next project");
+
+  await page.goto("/projects/");
+  await expect(page.locator("#all-projects")).toHaveClass(/section-frame/);
+  await expect(page.locator("#all-projects .section-action")).toContainText(
+    "Browse every repository on GitHub",
+  );
+});
+
+test("all-projects client work card shows its screenshot left of the details, stacked on phones", async ({
+  page,
+}, testInfo) => {
+  test.skip(publishedClientWork.length === 0, "No client work is published");
+  await page.goto("/projects/");
+  const card = page.getByRole("article", { name: "IronFort" });
+  await card.scrollIntoViewIfNeeded();
+  const image = (await card.getByRole("img").boundingBox())!;
+  const title = (await card.getByRole("heading", { name: "IronFort" }).boundingBox())!;
+  if (testInfo.project.name === "desktop") {
+    expect(image.x + image.width).toBeLessThanOrEqual(title.x);
+  } else {
+    expect(image.y + image.height).toBeLessThanOrEqual(title.y);
+  }
+  await expect(card.getByRole("img")).toHaveJSProperty("complete", true);
+});
+
+test("case studies: preview cards 100px apart, with a pinned panel that switches at 25%", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const items = page.locator(".case-item");
+  await expect(items).toHaveCount(projects.length + publishedClientWork.length);
+  // 100px (6.25rem) between projects at every breakpoint.
+  const gaps = await page.evaluate(() => {
+    const boxes = [...document.querySelectorAll(".case-item")].map((e) =>
+      e.getBoundingClientRect(),
+    );
+    return boxes.slice(1).map((box, i) => Math.round(box.top - boxes[i]!.bottom));
+  });
+  for (const gap of gaps) expect(gap).toBe(100);
+
+  if (testInfo.project.name !== "desktop") {
+    // Phones: no pinned panel; each image is followed by its own details.
+    await expect(page.locator(".case-panel")).toBeHidden();
+    const study = page.locator("#case-study-estoe");
+    const stage = (await study.locator(".case-stage").boundingBox())!;
+    const heading = (await study.getByRole("heading", { name: "estoe" }).boundingBox())!;
+    expect(stage.y + stage.height).toBeLessThanOrEqual(heading.y);
+    return;
+  }
+
+  const active = () =>
+    page.evaluate(() =>
+      document.querySelector(".case-panel-item[data-active]")?.getAttribute("aria-label"),
+    );
+  const panelTop = () =>
+    page.evaluate(() =>
+      Math.round(document.querySelector(".case-panel")!.getBoundingClientRect().top),
+    );
+  // Scroll so that `share` of a stage sits in the upper half of the viewport.
+  const showShare = (id: string, share: number) =>
+    page.evaluate(
+      ([selector, s]) => {
+        const r = document.querySelector(selector)!.getBoundingClientRect();
+        window.scrollBy(0, r.top - (innerHeight / 2 - r.height * s));
+      },
+      [`#case-study-${id} .case-stage`, share] as const,
+    );
+
+  const first = (await page.locator(".case-panel-item").first().getAttribute("aria-label"))!;
+  await showShare("estoe", 0.15);
+  await expect.poll(active).not.toBe("estoe");
+  const pinned = await panelTop();
+  await showShare("estoe", 0.4);
+  await expect.poll(active).toBe("estoe");
+  // The panel keeps the same position while scrolling, like the Experience dates.
+  expect(Math.abs((await panelTop()) - pinned)).toBeLessThanOrEqual(1);
+  // While pinned, the visible details sit at the vertical center of the viewport (polled: the
+  // newly active panel finishes a short 8px fade-in slide first).
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const r = document.querySelector(".case-panel-item[data-active]")!.getBoundingClientRect();
+        return Math.abs(r.top + r.height / 2 - innerHeight / 2);
+      }),
+    )
+    .toBeLessThanOrEqual(2);
+  // The progress ruler's active tick sits level with the active title, left of it.
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const title = document
+          .querySelector(".case-panel-item[data-active] [data-case-title]")!
+          .getBoundingClientRect();
+        const tick = document
+          .querySelector(".case-ruler [data-active] span")!
+          .getBoundingClientRect();
+        if (tick.right > title.left) return Infinity;
+        return Math.abs(tick.top + tick.height / 2 - (title.top + title.height / 2));
+      }),
+    )
+    .toBeLessThanOrEqual(2);
+  // Scrolling back up hands the panel back.
+  await page.evaluate(() => document.querySelector(".case-list")!.scrollIntoView());
+  await expect.poll(active).toBe(first);
 });

@@ -19,6 +19,10 @@ Checkpoint commit before edits: `d204d1254f7b9a031c40bc904e541697026717f6`.
 
 Fixed along the way: screen-reader names missing a space (“View detailsabout estoe”) in six `sr-only` spans; project pages lost `og:image` because page-level `openGraph` replaces the root object; pipeline transitions ran under reduced motion.
 
+## Case studies (2026-10-24, uncommitted)
+
+Home Projects follows the owner's “curated work” reference: preview cards (tagline above the screenshot) in a 65/35 split with one pinned, centered details panel that switches at 25% (D-34, D-35); on desktop the layout spans the section rails, split by a divider into a hatched card column and the details with a progress ruler that marks the active project (D-36). Lint, types, format and build pass; Vitest 63/63; Playwright 55 pass, 5 intentionally skipped, axe 0 violations. IronFort is shown for preview only until the client confirms permission.
+
 ## Completed (Phases 0–8)
 
 All tasks P0-1 … P8-10 in `docs/development-plan.md`.
