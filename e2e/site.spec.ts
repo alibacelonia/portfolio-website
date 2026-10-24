@@ -602,6 +602,25 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
   await expect.poll(active).toBe(first);
 });
 
+test("case screenshots are framed in their card's own background", async ({ page }) => {
+  await page.goto("/");
+  const frames = await page.locator(".case-stage").evaluateAll((stages) =>
+    stages.flatMap((stage) => {
+      const img = stage.querySelector<HTMLImageElement>(".case-media img");
+      if (!img) return [];
+      const card = getComputedStyle(stage).backgroundImage;
+      const frame = getComputedStyle(img);
+      return [{ card, frame: frame.backgroundImage, width: frame.borderTopWidth }];
+    }),
+  );
+  expect(frames.length).toBeGreaterThan(0);
+  for (const { card, frame, width } of frames) {
+    expect(card).toContain("gradient");
+    expect(frame).toBe(card);
+    expect(width).toBe("2px");
+  }
+});
+
 test("project cards show the custom cursor for a mouse only", async ({ page }, testInfo) => {
   await page.goto("/");
   const cursor = page.locator(".project-cursor");

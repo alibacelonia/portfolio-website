@@ -971,14 +971,16 @@ html:not(.js) .case-panel-item {
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
-  /* A card can set its own corners (--stage-from / --stage-to), holding the start color up to
-     --stage-hold so a light end never reaches the tagline; otherwise the discipline tint. */
-  background: linear-gradient(
+  /* The card's background, shared with its screenshot frame so the two always match. A card can
+     set its own corners (--stage-from / --stage-to), holding the start color up to --stage-hold
+     so a light end never reaches the tagline; otherwise the discipline tint. */
+  --stage-bg: linear-gradient(
     to bottom right,
     var(--stage-from, color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg))) 0%
       var(--stage-hold, 0%),
     var(--stage-to, color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top)))
   );
+  background: var(--stage-bg);
   box-shadow: var(--clay-card-shadow);
   transition: box-shadow 300ms var(--ease);
 }
@@ -1021,11 +1023,13 @@ html:not(.js) .case-panel-item {
   }
 }
 
-/* The screenshot is framed in the card's own discipline color; it runs off the bottom edge, so
-   that side has no border. */
+/* Rule: the screenshot's frame is always the card's own background (--stage-bg, whatever it is),
+   painted through a transparent 2px border; the opaque image covers the rest. It runs off the
+   bottom edge, so that side has no border. */
 .case-media img.case-media-inner {
-  border: 2px solid var(--stage, var(--sage));
+  border: 2px solid transparent;
   border-bottom: 0;
+  background: var(--stage-bg) border-box;
 }
 
 .case-media-inner {
