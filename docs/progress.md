@@ -53,6 +53,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
 - 2026-10-24: Website Portfolio updated for the live system: key stack, overview, stack (contact API services, Cloudflare DNS), infrastructure rows (no planned items left) and a Deploy / Serve / Contact architecture graph on its project page (D-49).
+- 2026-10-24: IronFort screenshot replaced with the owner-supplied homepage image (5 × 3.5 in, 1600 × 1120 WebP).
 - 2026-10-24: Website Portfolio case study shows the owner-supplied screenshot of this site (1600 × 1120 WebP) instead of the architecture flow.
 - 2026-10-24: Dark surfaces, borders, text greys and frame lines shifted from blue-greys to the zinc family so every neutral matches `#0D0D0F` (D-47).
 - 2026-10-24: Navigation dock restyled from frosted glass to claymorphism in near-`#0D0D0F` greys, with a raised clay pill for the active link; mobile menu button and panel match (D-46).
