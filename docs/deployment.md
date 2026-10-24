@@ -156,7 +156,7 @@ Limits (variables in the module): 5 messages per IP per hour, 50 per day overall
 
 Set the GitHub **repository** variable `CAL_LINK` (e.g. `alibacelonia/30min` or the full `https://cal.com/…` link) to show the **Book a call** tab on `/connect/`. Without it the tab is hidden in production.
 
-The tab uses Cal.com's inline embed (`embed.js`, loaded only on `/connect/`, preconnected and preloaded from the static HTML): a transparent calendar in the site's colors, no event-details panel, height that follows the calendar, and a skeleton until Cal.com reports it's ready. If the script is blocked (e.g. a CSP without `https://app.cal.com`) or not ready within 15 s, the plain Cal.com iframe is shown instead. The "Cal.com" mark below the calendar is Cal.com's free-plan branding; it can only be removed in Cal.com (paid plan), not from the site.
+The tab uses Cal.com's inline embed (`embed.js`, loaded only on `/connect/`, preconnected and preloaded from the static HTML), matching the owner's reference (aayushbharti.in/contact): Cal.com's own dark theme with the event details, month view and time slots, full width (1040px) with no surrounding box, height that follows the calendar, and a skeleton until Cal.com reports it's ready. If the script is blocked (e.g. a CSP without `https://app.cal.com`) or not ready within 15 s, the plain Cal.com iframe is shown instead. The "Cal.com" mark below the calendar is Cal.com's free-plan branding; it can only be removed in Cal.com (paid plan), not from the site.
 
 ## Rollback
 
