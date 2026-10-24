@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, m } from "motion/react";
 import { BadgeCheck, BriefcaseBusiness, CodeXml, FolderKanban, House, Mail, X } from "lucide-react";
 import { navigation } from "@/lib/site";
+import { dockProps } from "@/lib/dock";
 
 interface MobileMenuPanelProps {
   open: boolean;
@@ -53,7 +54,9 @@ export default function MobileMenuPanel({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.18 }}
-          className="clay pointer-events-auto fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-[60] mx-auto max-w-sm rounded-3xl p-2 sm:hidden"
+          {...dockProps(
+            "pointer-events-auto fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-[60] mx-auto max-w-sm rounded-3xl p-2 sm:hidden",
+          )}
         >
           <nav aria-label="Sections">
             <div className="flex items-center justify-between pl-3">

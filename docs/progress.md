@@ -61,6 +61,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - 2026-10-25: IronFort card trial: dark bluish grey to white diagonal gradient (per-card `stageGradient`, D-53).
 - 2026-10-25: Case cards shade from dark top left to lighter bottom right; screenshots get a 2 px border in the card's discipline color (D-52).
 - 2026-10-25: Case-study preview cards made claymorphic like the dock; the hatched background behind them is unchanged (D-51).
+- 2026-10-24: Reusable dock: clay (default), glass or neo, chosen with `NEXT_PUBLIC_DOCK_STYLE` / GitHub variable `DOCK_STYLE` (D-48).
 - 2026-10-24: Website Portfolio updated for the live system: key stack, overview, stack (contact API services, Cloudflare DNS), infrastructure rows (no planned items left) and a Deploy / Serve / Contact architecture graph on its project page (D-49).
 - 2026-10-24: IronFort screenshot replaced with the owner-supplied homepage image (5 × 3.5 in, 1600 × 1120 WebP).
 - 2026-10-24: Website Portfolio case study shows the owner-supplied screenshot of this site (1600 × 1120 WebP) instead of the architecture flow.
