@@ -85,6 +85,17 @@ variable "github_repository" {
   }
 }
 
+variable "github_oidc_subject_prefix" {
+  description = "Prefix of the GitHub OIDC `sub` claim. With immutable subject claims enabled it includes IDs: check `gh api repos/OWNER/REPO/actions/oidc/customization/sub` (sub_claim_prefix). Empty = legacy repo:OWNER/REPO."
+  type        = string
+  default     = "repo:alibacelonia@40453136/portfolio-website@1426645559"
+
+  validation {
+    condition     = var.github_oidc_subject_prefix == "" || can(regex("^repo:[^:]+$", var.github_oidc_subject_prefix))
+    error_message = "github_oidc_subject_prefix must look like repo:owner@id/name@id (or be empty)."
+  }
+}
+
 variable "github_environment" {
   description = "GitHub Actions environment whose jobs may assume the deploy role."
   type        = string
