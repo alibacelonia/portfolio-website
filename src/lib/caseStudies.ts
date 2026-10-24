@@ -1,6 +1,6 @@
 import { projects } from "@/data/projects";
 import { publishedClientWork } from "@/data/clientWork";
-import type { Discipline, ProjectLink } from "@/types/content";
+import type { Discipline, ProjectLink, StageGradient } from "@/types/content";
 
 /** One entry in the home page's case-study list, built from a project or from client work. */
 export interface CaseStudy {
@@ -15,6 +15,8 @@ export interface CaseStudy {
   /** Role and period, for client work. */
   role?: string;
   screenshot?: { src: string; alt: string; width: number; height: number };
+  /** Card background; the discipline tint is used when absent. */
+  stageGradient?: StageGradient;
   /** Architecture flow, shown on the stage until a screenshot exists. */
   flow?: string[];
   primary: { label: string; href: string; external: boolean };
@@ -34,6 +36,7 @@ export function buildCaseStudies(): CaseStudy[] {
     discipline: work.discipline,
     role: `${work.role} · ${work.period}`,
     screenshot: work.screenshot,
+    stageGradient: work.stageGradient,
     primary: { label: "Visit site", href: work.link.href, external: true },
     secondary: [],
   }));
@@ -47,6 +50,7 @@ export function buildCaseStudies(): CaseStudy[] {
     highlights: project.highlights,
     discipline: project.discipline,
     screenshot: project.screenshot,
+    stageGradient: project.stageGradient,
     flow: project.infrastructure.diagram,
     primary: { label: "Read case study", href: `/projects/${project.id}/`, external: false },
     secondary: [project.repository, ...(project.demo ? [project.demo] : []), ...project.links],

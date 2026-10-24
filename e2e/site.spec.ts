@@ -3,6 +3,8 @@ import { expect, openMessageTab, stubThirdParty, test } from "./fixtures";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
+import { buildCaseStudies } from "../src/lib/caseStudies";
+import { stageFrame, stageGradientFor } from "../src/lib/stage";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -600,6 +602,90 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
   // Scrolling back up hands the panel back.
   await page.evaluate(() => document.querySelector(".case-list")!.scrollIntoView());
   await expect.poll(active).toBe(first);
+});
+
+test("case screenshots are framed in the second-lightest color of their card's gradient", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const studies = buildCaseStudies().filter((study) => study.screenshot);
+  expect(studies.length).toBeGreaterThan(0);
+  for (const study of studies) {
+    const stage = page.locator(`#case-study-${study.id} .case-stage`);
+    await stage.scrollIntoViewIfNeeded();
+    const { card, color, width, bottom, bottomColor, bottomInside } = await stage.evaluate((el) => {
+      const shot = el.querySelector<HTMLElement>(".case-media img")!;
+      const img = getComputedStyle(shot);
+      return {
+        card: getComputedStyle(el).backgroundImage,
+        color: img.borderTopColor,
+        width: img.borderTopWidth,
+        bottom: img.borderBottomWidth,
+        bottomColor: img.borderBottomColor,
+        // The frame is closed at the bottom, and that edge stays inside the card.
+        bottomInside:
+          shot.getBoundingClientRect().bottom <= el.getBoundingClientRect().bottom + 0.5,
+      };
+    });
+    const frame = stageFrame(stageGradientFor(study));
+    const rgb = [1, 3, 5].map((i) => parseInt(frame.slice(i, i + 2), 16)).join(", ");
+    expect(card, study.id).toContain(`rgb(${rgb})`);
+    expect(color, study.id).toBe(`rgb(${rgb})`);
+    expect(width, study.id).toBe("2px");
+    // The bottom edge keeps its width but only shows on hover.
+    expect(bottom, study.id).toBe("2px");
+    expect(bottomColor, study.id).toBe("rgba(0, 0, 0, 0)");
+    expect(bottomInside, study.id).toBe(true);
+  }
+});
+
+test("case screenshots tip back in perspective on desktop hover", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Hover effect is desktop only");
+  await page.goto("/");
+  const stage = page.locator(".case-stage:has(.case-media img)").first();
+  await stage.scrollIntoViewIfNeeded();
+  const shot = stage.locator(".case-media img");
+  await page.mouse.move(0, 0);
+  await expect.poll(() => shot.evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+  expect(await shot.evaluate((el) => getComputedStyle(el).translate)).toBe("0px 20px");
+  await stage.hover();
+  await expect
+    .poll(() => shot.evaluate((el) => getComputedStyle(el).transform))
+    .toMatch(/^matrix3d/);
+  // The frame closes at the bottom only while hovered, in the same color as the other sides.
+  await expect
+    .poll(() =>
+      shot.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return style.borderBottomColor === style.borderTopColor;
+      }),
+    )
+    .toBe(true);
+});
+
+test("case cards are dimmed until hovered (background only), for a mouse only", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const stage = page.locator(".case-stage").first();
+  const veil = () => stage.evaluate((el) => getComputedStyle(el, "::before"));
+  if (testInfo.project.name === "mobile") {
+    // Touch screens have no hover, so cards are never dimmed there.
+    expect((await veil()).content).toBe("none");
+    return;
+  }
+  await stage.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  await expect.poll(async () => (await veil()).opacity).toBe("1");
+  expect((await veil()).backgroundColor).toBe("rgba(0, 0, 0, 0.3)");
+  // The overlay sits under the tagline and the screenshot, so the image is never darkened.
+  const layers = await stage.evaluate((el) => ({
+    veil: Number(getComputedStyle(el, "::before").zIndex),
+    content: [...el.children].map((child) => Number(getComputedStyle(child).zIndex)),
+  }));
+  for (const z of layers.content) expect(z).toBeGreaterThan(layers.veil);
+  await stage.hover();
+  await expect.poll(async () => (await veil()).opacity).toBe("0");
 });
 
 test("project cards show the custom cursor for a mouse only", async ({ page }, testInfo) => {

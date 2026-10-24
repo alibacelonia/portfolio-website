@@ -169,9 +169,18 @@ describe("ProjectDetail", () => {
     expect(repo).toHaveAttribute("href", "https://github.com/alibacelonia/portfolio-website");
     expect(repo).toHaveAttribute("rel", "noopener noreferrer");
 
-    expect(screen.getAllByText("planned")).toHaveLength(2);
-    const flow = screen.getByRole("list", { name: "Website Portfolio flow" });
-    expect(within(flow).getAllByRole("listitem")).toHaveLength(6);
+    expect(screen.queryAllByText("planned")).toHaveLength(0);
+    // The cloud architecture graph replaces the one-line flow: three lanes of five services.
+    const graph = screen.getByRole("figure", { name: "Website Portfolio cloud architecture" });
+    const lanes = within(graph).getAllByRole("list");
+    expect(lanes.map((lane) => lane.getAttribute("aria-label")?.split(":")[0])).toEqual([
+      "Deploy",
+      "Serve",
+      "Contact",
+    ]);
+    for (const lane of lanes) expect(within(lane).getAllByRole("listitem")).toHaveLength(5);
+    expect(within(lanes[2]!).getByText("Amazon SES")).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Website Portfolio flow" })).toBeNull();
     expect(screen.getByRole("link", { name: "All projects" })).toHaveAttribute(
       "href",
       expect.stringMatching(/^\/projects\/?$/),
@@ -270,6 +279,8 @@ describe("CaseStudies", () => {
     const { container } = render(<CaseStudies studies={studies} />);
     const estoeStage = container.querySelector("#case-study-estoe .case-stage")!;
     expect(estoeStage).toHaveTextContent("preflight");
+    const portfolioStage = container.querySelector("#case-study-website-portfolio .case-stage")!;
+    expect(portfolioStage.querySelector('img[src*="website-portfolio"]')).not.toBeNull();
     if (publishedClientWork.length) {
       const ironfortStage = container.querySelector("#case-study-ironfort .case-stage")!;
       expect(ironfortStage.querySelector("img")).not.toBeNull();

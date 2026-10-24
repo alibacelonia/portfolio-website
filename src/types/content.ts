@@ -18,6 +18,30 @@ export interface InfrastructureItem {
   status?: "planned";
 }
 
+/** One service in an architecture lane, with a short note on what it does there. */
+export interface ArchitectureNode {
+  name: string;
+  note?: string;
+}
+
+/** A path through the system (e.g. deploy, serve, contact), read left to right. */
+export interface ArchitectureLane {
+  label: string;
+  /** One sentence for assistive technology, e.g. "how a push reaches production". */
+  summary: string;
+  /** Accent dot: sage for DevOps, blue for serving, lavender for application paths. */
+  accent: "sage" | "blue" | "lavender";
+  nodes: ArchitectureNode[];
+}
+
+/** A case card's background: a linear gradient as an angle plus color stops (dark to light). */
+export interface StageGradient {
+  /** CSS angle in degrees, e.g. 145. */
+  angle: number;
+  /** Color stops, `at` in percent along the gradient. */
+  stops: { color: string; at: number }[];
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -59,10 +83,14 @@ export interface Project {
     items: InfrastructureItem[];
     /** Simplified data or delivery flow, rendered as a small diagram. */
     diagram?: string[];
+    /** Cloud architecture as lanes of services; shown instead of the flow on the project page. */
+    graph?: ArchitectureLane[];
   };
 
   /** Only a genuine screenshot under /public/projects. */
   screenshot?: { src: string; alt: string; width: number; height: number };
+  /** Case-card background; its second-lightest stop frames the screenshot. */
+  stageGradient?: StageGradient;
   /** Where the content was verified, for maintainers. Not rendered. */
   source: string;
 }
@@ -91,6 +119,8 @@ export interface ClientWork {
   link: ProjectLink;
   /** A genuine product screenshot under /public/projects, shown on the left of the card. */
   screenshot?: { src: string; alt: string; width: number; height: number };
+  /** Case-card background; its second-lightest stop frames the screenshot. */
+  stageGradient?: StageGradient;
   /**
    * Publish only after the client has confirmed the product may be named and described.
    * Unpublished entries are never rendered.

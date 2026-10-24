@@ -34,6 +34,10 @@
   /* Clay navigation: an opaque, softly inflated surface (lit top lip, shaded underside, deep drop). */
   --clay-top: #ffffff;
   --clay-bottom: #eef0f4;
+  /* The same clay at card size: broader lit lip and underside, longer drop. */
+  --clay-card-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 1), inset 0 -18px 32px -14px rgb(15 23 42 / 0.08),
+    0 30px 50px -24px rgb(15 23 42 / 0.3), 0 6px 12px rgb(15 23 42 / 0.06);
   --clay-shadow:
     inset 0 2px 0 rgb(255 255 255 / 1), inset 0 -6px 12px -4px rgb(15 23 42 / 0.08),
     0 14px 28px -12px rgb(15 23 42 / 0.25), 0 3px 6px rgb(15 23 42 / 0.06);
@@ -41,6 +45,19 @@
   --clay-active-bottom: #f1f3f7;
   --clay-active-shadow:
     inset 0 2px 0 #fff, inset 0 -3px 6px rgb(15 23 42 / 0.06), 0 4px 10px -3px rgb(15 23 42 / 0.18);
+  /* Glass navigation: translucent, blurred, with a fine rim and top sheen. */
+  --glass-bg: rgb(255 255 255 / 0.62);
+  --glass-border: rgb(255 255 255 / 0.8);
+  --glass-sheen: rgb(255 255 255 / 0.65);
+  --glass-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9), 0 0 0 1px rgb(15 23 42 / 0.06),
+    0 8px 24px -8px rgb(15 23 42 / 0.16);
+  --glass-active-bg: rgb(255 255 255 / 0.9);
+  --glass-active-border: rgb(15 23 42 / 0.08);
+  --glass-active-shadow: inset 0 1px 0 #fff, 0 2px 5px rgb(15 23 42 / 0.1);
+  /* Neumorphic navigation: the page color, extruded by a light and a dark shadow. */
+  --neo-light: rgb(255 255 255 / 0.9);
+  --neo-dark: rgb(15 23 42 / 0.12);
 
   --gutter: clamp(32px, 7.5vw, 120px);
   --frame-inset: clamp(16px, 5vw, 80px);
@@ -49,7 +66,7 @@
     calc(1600px + 2 * (var(--gutter) - var(--frame-inset)))
   );
   --section-action-h: clamp(96px, 8vw, 136px);
-  /* Sticky clay navigation: bar height + gap above it. --nav-offset is the space it covers. */
+  /* Sticky navigation dock: bar height + gap above it. --nav-offset is the space it covers. */
   --nav-h: 50px;
   --nav-top: 12px;
   --nav-offset: calc(var(--nav-h) + var(--nav-top));
@@ -85,6 +102,10 @@
   /* Clay in the page's near-black (#0d0d0f), a few steps lighter so it reads as raised. */
   --clay-top: #1c1c20;
   --clay-bottom: #141417;
+  --clay-card-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.07), inset 0 28px 44px -28px rgb(255 255 255 / 0.06),
+    inset 0 -20px 36px -16px rgb(0 0 0 / 0.6), 0 32px 56px -22px rgb(0 0 0 / 0.9),
+    0 6px 14px rgb(0 0 0 / 0.5);
   --clay-shadow:
     inset 0 1.5px 0 rgb(255 255 255 / 0.08), inset 0 10px 16px -10px rgb(255 255 255 / 0.06),
     inset 0 -8px 14px -6px rgb(0 0 0 / 0.65), 0 16px 30px -10px rgb(0 0 0 / 0.9),
@@ -94,6 +115,17 @@
   --clay-active-shadow:
     inset 0 1.5px 0 rgb(255 255 255 / 0.12), inset 0 -4px 8px -2px rgb(0 0 0 / 0.5),
     0 6px 12px -4px rgb(0 0 0 / 0.75), 0 1px 2px rgb(0 0 0 / 0.5);
+  --glass-bg: rgb(30 30 34 / 0.62);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-sheen: rgb(255 255 255 / 0.07);
+  --glass-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 0 1px rgb(0 0 0 / 0.2),
+    0 10px 28px -8px rgb(0 0 0 / 0.6);
+  --glass-active-bg: rgb(255 255 255 / 0.1);
+  --glass-active-border: rgb(255 255 255 / 0.14);
+  --glass-active-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 2px 5px rgb(0 0 0 / 0.35);
+  --neo-light: rgb(255 255 255 / 0.05);
+  --neo-dark: rgb(0 0 0 / 0.75);
 }
 
 @theme inline {
@@ -953,29 +985,26 @@ html:not(.js) .case-panel-item {
   }
 }
 
-/* A stage tinted with the project's discipline color (pastel, low saturation): tagline and arrow
-   at the top, then the screenshot (or the flow window that stands in for one) rising from the
-   bottom edge. */
+/* A claymorphic stage (same clay as the dock, at card size) tinted with the project's discipline
+   color (pastel, low saturation), shading diagonally from dark at the top left to lighter at the
+   bottom right: tagline and arrow at the top, then the screenshot (or the flow window that stands
+   in for one) rising from the bottom edge. */
 .case-stage {
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background:
-    radial-gradient(
-      120% 90% at 50% 0%,
-      color-mix(in srgb, var(--stage, var(--sage)) 24%, transparent),
-      transparent 68%
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--stage, var(--sage)) 9%, var(--surface)),
-      var(--surface)
-    );
-  box-shadow: var(--shadow-md);
-  transition: border-color 300ms var(--ease);
+  border-radius: 1.25rem;
+  /* The card's background: a per-card gradient (--stage-bg, set from the data), or by default a
+     diagonal discipline tint from dark top left to lighter bottom right. */
+  --stage-bg: linear-gradient(
+    to bottom right,
+    color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg)),
+    color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top))
+  );
+  background: var(--stage-bg);
+  box-shadow: var(--clay-card-shadow);
+  transition: box-shadow 300ms var(--ease);
 }
 
 /* Tall 4:3 cards from sm; on phones the card grows with the tagline instead. */
@@ -986,7 +1015,54 @@ html:not(.js) .case-panel-item {
 }
 
 .case-stage:hover {
-  border-color: var(--border-strong);
+  box-shadow:
+    var(--clay-card-shadow),
+    0 0 0 1px var(--border-strong);
+}
+
+/* Card content (tagline row, screenshot) sits above the card's own overlay. */
+.case-stage {
+  isolation: isolate;
+}
+.case-stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* A dark veil over the card's background only (below the tagline and screenshot, which are never
+   darkened), until the card is hovered; then it fades away so the card brightens. Mouse only:
+   touch screens have no hover, so there the cards stay at full brightness. */
+@media (hover: hover) and (pointer: fine) {
+  .case-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: rgb(0 0 0 / 0.3);
+    pointer-events: none;
+    transition: opacity 400ms var(--ease);
+  }
+
+  .case-stage:hover::before {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-stage::before {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .case-stage {
+    border: 1px solid CanvasText;
+  }
+
+  .case-stage::before {
+    display: none;
+  }
 }
 
 /* The preview fills the space under the tagline. `margin-top: auto` sits a short image flush on
@@ -1005,6 +1081,75 @@ html:not(.js) .case-panel-item {
   .case-media {
     height: 42vw;
     flex: none;
+  }
+}
+
+/* The screenshot, after the owner's reference card: framed on all four sides (rule: the frame is
+   the second-lightest color of the card's gradient, --stage-frame), as wide as the media column
+   (85% of the card), resting 20px low so its bottom edge sits on the card's edge, tilted 1deg below
+   lg. On desktop hover it tips back in perspective, lifts and grows from the bottom. */
+.case-media:has(> .case-shot) {
+  align-items: center;
+  /* The 20px rest offset, plus room for the 1deg tilt below lg so the bottom frame stays visible. */
+  padding-bottom: calc(1.25rem + 6px);
+}
+
+/* Phones: the card already grows with its content, so show the whole screenshot at full width. */
+@media (max-width: 639px) {
+  .case-media:has(> .case-shot) {
+    height: auto;
+  }
+}
+
+.case-shot {
+  /* A definite width and the screenshots' fixed 5 × 3.5 in (10:7) ratio reserve the space before
+     the lazy image loads, so nothing below it shifts. */
+  width: 100%;
+  height: auto;
+  aspect-ratio: 10 / 7;
+  max-height: 100%;
+  margin-top: auto;
+  object-fit: cover;
+  border: 2px solid var(--stage-frame, var(--stage, var(--sage)));
+  /* The bottom edge of the frame appears only on hover; transparent (not removed) at rest, so the
+     image never shifts. */
+  border-bottom-color: transparent;
+  border-radius: 0.375rem 0.375rem 0 0;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.25),
+    0 4px 16px rgb(0 0 0 / 0.35),
+    0 18px 50px -8px rgb(0 0 0 / 0.5);
+  transform-origin: bottom;
+  translate: 0 1.25rem;
+  rotate: 1deg;
+  transition-property: transform, translate, rotate, scale, border-bottom-color;
+  transition-duration: 450ms;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.case-stage:hover .case-shot {
+  border-bottom-color: var(--stage-frame, var(--stage, var(--sage)));
+}
+
+@media (min-width: 1024px) {
+  .case-media:has(> .case-shot) {
+    padding-bottom: 1.25rem;
+  }
+
+  .case-shot {
+    rotate: 0deg;
+  }
+
+  .case-stage:hover .case-shot {
+    transform: perspective(1200px) rotateX(6deg) translateY(-0.5rem) rotate(1deg) scale(1.045);
+    transition-duration: 700ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-shot {
+    transition: none;
   }
 }
 
@@ -1166,20 +1311,56 @@ html:not(.js) .case-panel-item {
   pointer-events: none;
 }
 
-/* Claymorphic navigation: opaque and puffy, shaped only by its inner light and shadow. */
-.clay {
+/*
+ * Navigation dock surfaces, chosen with data-dock (NEXT_PUBLIC_DOCK_STYLE, see src/lib/dock.ts).
+ * Each style also shapes the active-link .nav-indicator inside it.
+ */
+
+/* Clay: opaque and puffy, shaped by inner light and shadow; the active link is a raised lump. */
+.dock[data-dock="clay"] {
   background: linear-gradient(180deg, var(--clay-top), var(--clay-bottom));
   box-shadow: var(--clay-shadow);
 }
-
-/* The active link: a smaller, lighter lump of the same clay, raised off the dock. */
-.nav-indicator {
+.dock[data-dock="clay"] .nav-indicator {
   background: linear-gradient(180deg, var(--clay-active-top), var(--clay-active-bottom));
   box-shadow: var(--clay-active-shadow);
 }
 
+/* Glass: frosted and translucent with a fine rim; opaque fallback without backdrop-filter. */
+.dock[data-dock="glass"] {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dock[data-dock="glass"] {
+    background: linear-gradient(180deg, var(--glass-sheen), transparent), var(--glass-bg);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+  }
+}
+.dock[data-dock="glass"] .nav-indicator {
+  background: var(--glass-active-bg);
+  border: 1px solid var(--glass-active-border);
+  box-shadow: var(--glass-active-shadow);
+}
+
+/* Neumorphism: the page color pushed out by a light and a dark shadow; the active link is pressed in. */
+.dock[data-dock="neo"] {
+  background: var(--bg);
+  box-shadow:
+    -5px -5px 12px var(--neo-light),
+    6px 6px 14px var(--neo-dark);
+}
+.dock[data-dock="neo"] .nav-indicator {
+  background: var(--bg);
+  box-shadow:
+    inset 3px 3px 7px var(--neo-dark),
+    inset -3px -3px 7px var(--neo-light);
+}
+
 @media (forced-colors: active) {
-  .clay,
+  .dock,
   .nav-indicator {
     background: Canvas;
     border: 1px solid CanvasText;

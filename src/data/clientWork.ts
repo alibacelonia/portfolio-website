@@ -38,13 +38,22 @@ export const clientWork: ClientWork[] = [
       "IAM",
     ],
     link: { label: "goironfort.com", href: "https://goironfort.com/" },
-    // Genuine capture of the public homepage (1512×858 viewport at 2×, cookie banner dismissed,
-    // announcement bar omitted to match the owner's screenshot), 2026-10-24.
+    // Homepage screenshot supplied by the owner (4688×3281 PNG, resized to 1600px WebP), 2026-10-24.
     screenshot: {
       src: "/projects/ironfort.webp",
       alt: "IronFort homepage: “Compliance. Automated. Audit-Ready.” beside a form to book a strategy call",
       width: 1600,
-      height: 908,
+      height: 1120,
+    },
+    // Case-card gradient picked to complement the screenshot's navy and IronFort blue (#3c64d3).
+    stageGradient: {
+      angle: 145,
+      stops: [
+        { color: "#0b1530", at: 0 },
+        { color: "#1e3a8a", at: 40 },
+        { color: "#3c64d3", at: 75 },
+        { color: "#a5b8f0", at: 100 },
+      ],
     },
     published: true,
     source: "goironfort.com (product facts, 2026-10-24); technologies from the owner (2026-10-24)",

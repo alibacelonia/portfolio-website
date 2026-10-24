@@ -8,6 +8,7 @@ import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
 import { ProjectCursor } from "@/components/ui/ProjectCursor";
+import { stageBackground, stageFrame, stageGradientFor } from "@/lib/stage";
 
 const stageTint: Record<CaseStudy["discipline"], string> = {
   "full-stack": "var(--blue)",
@@ -115,7 +116,7 @@ function Stage({
             width={study.screenshot.width}
             height={study.screenshot.height}
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className="case-media-inner h-auto border border-b-0 border-border-strong"
+            className="case-shot"
           />
         ) : study.flow ? (
           <FlowWindow steps={study.flow} name={study.name} />
@@ -123,10 +124,15 @@ function Stage({
       </div>
     </>
   );
+  const gradient = stageGradientFor(study);
   const shared = {
     ref: stageRef,
     className: "case-stage group",
-    style: { "--stage": stageTint[study.discipline] } as CSSProperties,
+    style: {
+      "--stage": stageTint[study.discipline],
+      "--stage-bg": stageBackground(gradient),
+      "--stage-frame": stageFrame(gradient),
+    } as CSSProperties,
     tabIndex: -1,
     "aria-hidden": true,
     "data-reveal": true,

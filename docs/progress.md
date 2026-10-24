@@ -52,6 +52,19 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: The screenshot's bottom border now appears only on hover (D-59).
+- 2026-10-25: Case screenshots framed on all four sides, resting 20 px low and tipping back in perspective on desktop hover, per the owner's reference class (D-58).
+- 2026-10-25: Case gradients now complement each screenshot (IronFort blue, portfolio sage); image-less cards use the neutral grey; the overlay dims only the card background (D-57).
+- 2026-10-25: Case cards dimmed by a 30 % overlay that fades on hover (mouse only) (D-56).
+- 2026-10-25: Case cards use the owner's gradients (pink, blue, grey, purple, pink); screenshot frames use each gradient's second-lightest stop (D-55).
+- 2026-10-25: Screenshot frames now use their card's own background (`--stage-bg`), enforced by an E2E test (D-54).
+- 2026-10-25: IronFort card trial: dark bluish grey to white diagonal gradient (per-card `stageGradient`, D-53).
+- 2026-10-25: Case cards shade from dark top left to lighter bottom right; screenshots get a 2 px border in the card's discipline color (D-52).
+- 2026-10-25: Case-study preview cards made claymorphic like the dock; the hatched background behind them is unchanged (D-51).
+- 2026-10-24: Reusable dock: clay (default), glass or neo, chosen with `NEXT_PUBLIC_DOCK_STYLE` / GitHub variable `DOCK_STYLE` (D-48).
+- 2026-10-24: Website Portfolio updated for the live system: key stack, overview, stack (contact API services, Cloudflare DNS), infrastructure rows (no planned items left) and a Deploy / Serve / Contact architecture graph on its project page (D-49).
+- 2026-10-24: IronFort screenshot replaced with the owner-supplied homepage image (5 × 3.5 in, 1600 × 1120 WebP).
+- 2026-10-24: Website Portfolio case study shows the owner-supplied screenshot of this site (1600 × 1120 WebP) instead of the architecture flow.
 - 2026-10-24: Dark surfaces, borders, text greys and frame lines shifted from blue-greys to the zinc family so every neutral matches `#0D0D0F` (D-47).
 - 2026-10-24: Navigation dock restyled from frosted glass to claymorphism in near-`#0D0D0F` greys, with a raised clay pill for the active link; mobile menu button and panel match (D-46).
 - 2026-10-24: Dark background changed from `#090C10` to `#0D0D0F` (owner request, same as the reference site); browser theme color updated to match.
@@ -67,11 +80,10 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 
 ## Remaining / blocked (owner actions)
 
-1. Push this repository to `github.com/alibacelonia/portfolio-website` (currently empty) and update its description.
+1. ~~Push this repository~~ — done (2026-10-24). Its GitHub description still says “Python Lambda”; update it (the Lambda is Node.js 22).
 2. ~~Resume privacy~~ — resolved: replaced with the public resume (no address or phone).
-3. Contact API: Turnstile widget and SSM secret, approve `enable_contact_api`, SES DKIM records, then set `CONTACT_API_URL` and `TURNSTILE_SITE_KEY` (see `docs/deployment.md`).
-4. Approve AWS provisioning: Terraform state bucket, `terraform apply` (see `docs/deployment.md`).
-5. Configure the GitHub `production` environment and variables.
-6. DNS cutover on Cloudflare (replaces the current Vercel site at alibacelonia.dev).
-   Afterwards remove `status: "planned"` from the Website Portfolio infrastructure items in `src/data/projects.ts`.
+3. ~~Contact API~~ — done: live and sending (2026-10-24).
+4. ~~AWS provisioning~~ — done. Still to apply: the CSP change that allows `https://app.cal.com` (D-44).
+5. ~~GitHub `production` environment and variables~~ — done.
+6. ~~DNS cutover on Cloudflare~~ — done: alibacelonia.dev serves from CloudFront. The Website Portfolio project no longer lists planned items.
 7. After going live: run Lighthouse against production (security headers and caching only exist on CloudFront).
