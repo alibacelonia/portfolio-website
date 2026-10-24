@@ -21,7 +21,7 @@ Fixed along the way: screen-reader names missing a space (“View detailsabout e
 
 ## Case studies (2026-10-24)
 
-Home Projects follows the owner's “curated work” reference: preview cards (tagline above the screenshot) in a 65/35 split with one pinned, centered details panel that switches at 25% (D-34, D-35); on desktop the layout spans the section rails, split by a divider into a hatched card column and the details with a progress ruler that marks the active project (D-36). The details start and stop 40 px below the top of the first and last images (D-37). A custom “VIEW · EXPLORE · DISCOVER” cursor appears over the cards for a mouse (D-38). Lint, types, format and build pass; Vitest 63/63; Playwright 55 pass, 5 intentionally skipped, axe 0 violations. IronFort is shown for preview only until the client confirms permission.
+Home Projects follows the owner's “curated work” reference: preview cards (tagline above the screenshot) in a 65/35 split with one pinned, centered details panel that switches at 25% (D-34, D-35); on desktop the layout spans the section rails, split by a divider into a hatched card column and the details with a progress ruler that marks the active project (D-36). The details start and stop 40 px below the top of the first and last images (D-37). A custom “VIEW · EXPLORE · DISCOVER” cursor appears over the cards for a mouse (D-38). Lint, types, format and build pass; Vitest 63/63; Playwright 55 pass, 5 intentionally skipped, axe 0 violations.
 
 ## Completed (Phases 0–8)
 

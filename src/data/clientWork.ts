@@ -1,8 +1,7 @@
 import type { ClientWork } from "@/types/content";
 
-// Commercial client work. Keep `published: false` until the client confirms the product may be
-// named and described; unpublished entries are never rendered. Product facts come from the
-// product's public website; the technology list was provided by the owner (2026-10-24).
+// Commercial client work. Entries with `published: false` are never rendered. Product facts come
+// from the product's public website; the technology list was provided by the owner (2026-10-24).
 export const clientWork: ClientWork[] = [
   {
     id: "ironfort",
