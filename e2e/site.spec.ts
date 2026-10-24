@@ -632,8 +632,9 @@ test("case screenshots are framed in the second-lightest color of their card's g
     expect(card, study.id).toContain(`rgb(${rgb})`);
     expect(color, study.id).toBe(`rgb(${rgb})`);
     expect(width, study.id).toBe("2px");
+    // The bottom edge keeps its width but only shows on hover.
     expect(bottom, study.id).toBe("2px");
-    expect(bottomColor, study.id).toBe(`rgb(${rgb})`);
+    expect(bottomColor, study.id).toBe("rgba(0, 0, 0, 0)");
     expect(bottomInside, study.id).toBe(true);
   }
 });
@@ -651,6 +652,15 @@ test("case screenshots tip back in perspective on desktop hover", async ({ page 
   await expect
     .poll(() => shot.evaluate((el) => getComputedStyle(el).transform))
     .toMatch(/^matrix3d/);
+  // The frame closes at the bottom only while hovered, in the same color as the other sides.
+  await expect
+    .poll(() =>
+      shot.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return style.borderBottomColor === style.borderTopColor;
+      }),
+    )
+    .toBe(true);
 });
 
 test("case cards are dimmed until hovered (background only), for a mouse only", async ({
