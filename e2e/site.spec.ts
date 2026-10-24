@@ -612,12 +612,19 @@ test("case screenshots are framed in the second-lightest color of their card's g
   expect(studies.length).toBeGreaterThan(0);
   for (const study of studies) {
     const stage = page.locator(`#case-study-${study.id} .case-stage`);
-    const { card, color, width } = await stage.evaluate((el) => {
-      const img = getComputedStyle(el.querySelector(".case-media img")!);
+    await stage.scrollIntoViewIfNeeded();
+    const { card, color, width, bottom, bottomColor, bottomInside } = await stage.evaluate((el) => {
+      const shot = el.querySelector<HTMLElement>(".case-media img")!;
+      const img = getComputedStyle(shot);
       return {
         card: getComputedStyle(el).backgroundImage,
         color: img.borderTopColor,
         width: img.borderTopWidth,
+        bottom: img.borderBottomWidth,
+        bottomColor: img.borderBottomColor,
+        // The frame is closed at the bottom, and that edge stays inside the card.
+        bottomInside:
+          shot.getBoundingClientRect().bottom <= el.getBoundingClientRect().bottom + 0.5,
       };
     });
     const frame = stageFrame(stageGradientFor(study));
@@ -625,7 +632,25 @@ test("case screenshots are framed in the second-lightest color of their card's g
     expect(card, study.id).toContain(`rgb(${rgb})`);
     expect(color, study.id).toBe(`rgb(${rgb})`);
     expect(width, study.id).toBe("2px");
+    expect(bottom, study.id).toBe("2px");
+    expect(bottomColor, study.id).toBe(`rgb(${rgb})`);
+    expect(bottomInside, study.id).toBe(true);
   }
+});
+
+test("case screenshots tip back in perspective on desktop hover", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Hover effect is desktop only");
+  await page.goto("/");
+  const stage = page.locator(".case-stage:has(.case-media img)").first();
+  await stage.scrollIntoViewIfNeeded();
+  const shot = stage.locator(".case-media img");
+  await page.mouse.move(0, 0);
+  await expect.poll(() => shot.evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+  expect(await shot.evaluate((el) => getComputedStyle(el).translate)).toBe("0px 20px");
+  await stage.hover();
+  await expect
+    .poll(() => shot.evaluate((el) => getComputedStyle(el).transform))
+    .toMatch(/^matrix3d/);
 });
 
 test("case cards are dimmed until hovered (background only), for a mouse only", async ({

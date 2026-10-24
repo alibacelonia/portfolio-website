@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: Case screenshots framed on all four sides, resting 20 px low and tipping back in perspective on desktop hover, per the owner's reference class (D-58).
 - 2026-10-25: Case gradients now complement each screenshot (IronFort blue, portfolio sage); image-less cards use the neutral grey; the overlay dims only the card background (D-57).
 - 2026-10-25: Case cards dimmed by a 30 % overlay that fades on hover (mouse only) (D-56).
 - 2026-10-25: Case cards use the owner's gradients (pink, blue, grey, purple, pink); screenshot frames use each gradient's second-lightest stop (D-55).
