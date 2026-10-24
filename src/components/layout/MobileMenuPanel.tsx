@@ -41,7 +41,8 @@ export default function MobileMenuPanel({
     }
   }, [open, panelRef]);
 
-  // Portaling escapes the top dock's backdrop-filter, which otherwise contains fixed children.
+  // Portaled to <body> so the fixed panel sits outside the sticky header (its stacking context
+  // and pointer-events: none).
   return createPortal(
     <AnimatePresence>
       {open ? (
@@ -52,7 +53,7 @@ export default function MobileMenuPanel({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.18 }}
-          className="glass pointer-events-auto fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-[60] mx-auto max-w-sm rounded-3xl p-2 sm:hidden"
+          className="clay pointer-events-auto fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-[60] mx-auto max-w-sm rounded-3xl p-2 sm:hidden"
         >
           <nav aria-label="Sections">
             <div className="flex items-center justify-between pl-3">

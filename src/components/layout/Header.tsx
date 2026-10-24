@@ -10,7 +10,7 @@ const sectionIds = navigation.map((item) => item.id);
 const noSections: string[] = [];
 
 /**
- * The single primary navigation: a sticky, floating glass bar. It overlaps the top of the page
+ * The single primary navigation: a sticky, floating clay dock. It overlaps the top of the page
  * (negative bottom margin) so the hero background runs behind it; content offsets use --nav-offset.
  */
 export function Header() {
@@ -26,7 +26,7 @@ export function Header() {
   return (
     <header className="pointer-events-none sticky top-0 z-50 -mb-[var(--nav-offset)] pt-[var(--nav-top)]">
       <div className="flex justify-end px-4 sm:justify-center">
-        <div className="glass pointer-events-auto relative flex h-[var(--nav-h)] w-[var(--nav-h)] max-w-full items-center justify-between gap-2 rounded-full p-1 sm:w-auto">
+        <div className="clay pointer-events-auto relative flex h-[var(--nav-h)] w-[var(--nav-h)] max-w-full items-center justify-between gap-2 rounded-full p-1 sm:w-auto">
           <SectionNav active={active} className="hidden sm:block" />
           <MobileMenu active={active} />
         </div>

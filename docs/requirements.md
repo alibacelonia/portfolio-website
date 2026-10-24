@@ -7,7 +7,7 @@ Source briefs: the original portfolio brief and the UI/branding refinement brief
 | ID    | Requirement                                                                                                                                                                                           |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | FR-1  | Single page with six sections in order: Hero, Projects, Experience, Skills, Certifications, Contact.                                                                                                  |
-| FR-2  | Sticky glass navigation bar: A/B logo, section links, theme toggle, resume; mobile menu below `lg`.                                                                                                   |
+| FR-2  | Sticky clay navigation dock: A/B logo, section links, theme toggle, resume; mobile menu below `lg`.                                                                                                   |
 | FR-3  | One navigation system only (the bottom dock was removed).                                                                                                                                             |
 | FR-4  | Hero with name, roles, supporting text, two actions, four-stage pipeline (Code → Build → Deploy → Monitor).                                                                                           |
 | FR-5b | Each project has a static detail page: overview, problem, solution, stack, infrastructure (implemented vs planned), links.                                                                            |
