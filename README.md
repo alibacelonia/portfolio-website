@@ -41,7 +41,7 @@ npm run dev        # http://localhost:3000
 
 ## Site structure
 
-- `/`: Hero, Projects, Experience, Skills, Certifications, Contact. A sticky glass navigation bar sits at the top (links collapse into a menu below 1024 px).
+- `/`: Hero, Projects, Experience, Skills, Certifications, Contact. A sticky clay navigation dock sits at the top (links collapse into a menu below 1024 px).
 - `/projects/<id>/`: one statically generated page per project (overview, problem, solution, stack, infrastructure, links).
 
 ## Editing content
