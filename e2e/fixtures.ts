@@ -26,7 +26,8 @@ export async function stubThirdParty(context: BrowserContext) {
 
 /**
  * Stand-in for Cal.com's embed.js: replays the queued calls like the real script, rendering an
- * iframe for "inline" and reporting "linkReady" once it loads.
+ * iframe for "inline" and reporting "linkReady" once it loads. Like the real script, it also
+ * takes namespaces initialised later (a fresh calendar after "Book another time").
  */
 const CAL_EMBED_STUB = `(() => {
   const cal = window.Cal;
@@ -45,6 +46,12 @@ const CAL_EMBED_STUB = `(() => {
     Array.from(api.q).forEach(run);
     cal.ns[name] = (...args) => run(args);
   }
+  window.Cal = Object.assign(
+    (...args) => {
+      if (args[0] === "init" && typeof args[1] === "string") cal.ns[args[1]] = (...a) => run(a);
+    },
+    { ns: cal.ns, q: [], loaded: true, ready: cal.ready },
+  );
 })();`;
 
 /** Shows the contact form whether or not the build has a booking tab (NEXT_PUBLIC_CAL_LINK). */
