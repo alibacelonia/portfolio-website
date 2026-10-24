@@ -47,7 +47,7 @@ describe("projects data", () => {
     }
   });
 
-  it("documents the portfolio's real delivery path and marks unfinished steps as planned", () => {
+  it("documents the portfolio's live delivery path and cloud architecture", () => {
     const portfolio = getProject("website-portfolio")!;
     expect(portfolio.infrastructure.diagram).toEqual([
       "GitHub",
@@ -57,8 +57,21 @@ describe("projects data", () => {
       "Amazon CloudFront",
       "alibacelonia.dev",
     ]);
-    const planned = portfolio.infrastructure.items.filter((i) => i.status === "planned");
-    expect(planned.map((i) => i.label)).toEqual(["AWS provisioning", "Custom domain"]);
+    // Deployed and live since 2026-10-24, so nothing is left as planned.
+    expect(portfolio.infrastructure.items.filter((i) => i.status === "planned")).toEqual([]);
+    expect(portfolio.infrastructure.graph?.map((lane) => lane.label)).toEqual([
+      "Deploy",
+      "Serve",
+      "Contact",
+    ]);
+    expect(portfolio.keyTech).toEqual([
+      "Next.js",
+      "TypeScript",
+      "Terraform",
+      "CloudFront",
+      "Lambda",
+      "GitHub Actions",
+    ]);
   });
 
   it("never ships a screenshot that is not a local asset", () => {

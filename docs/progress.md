@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-24: Website Portfolio updated for the live system: key stack, overview, stack (contact API services, Cloudflare DNS), infrastructure rows (no planned items left) and a Deploy / Serve / Contact architecture graph on its project page (D-49).
 - 2026-10-24: Website Portfolio case study shows the owner-supplied screenshot of this site (1600 × 1120 WebP) instead of the architecture flow.
 - 2026-10-24: Dark surfaces, borders, text greys and frame lines shifted from blue-greys to the zinc family so every neutral matches `#0D0D0F` (D-47).
 - 2026-10-24: Navigation dock restyled from frosted glass to claymorphism in near-`#0D0D0F` greys, with a raised clay pill for the active link; mobile menu button and panel match (D-46).
@@ -68,11 +69,10 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 
 ## Remaining / blocked (owner actions)
 
-1. Push this repository to `github.com/alibacelonia/portfolio-website` (currently empty) and update its description.
+1. ~~Push this repository~~ — done (2026-10-24). Its GitHub description still says “Python Lambda”; update it (the Lambda is Node.js 22).
 2. ~~Resume privacy~~ — resolved: replaced with the public resume (no address or phone).
-3. Contact API: Turnstile widget and SSM secret, approve `enable_contact_api`, SES DKIM records, then set `CONTACT_API_URL` and `TURNSTILE_SITE_KEY` (see `docs/deployment.md`).
-4. Approve AWS provisioning: Terraform state bucket, `terraform apply` (see `docs/deployment.md`).
-5. Configure the GitHub `production` environment and variables.
-6. DNS cutover on Cloudflare (replaces the current Vercel site at alibacelonia.dev).
-   Afterwards remove `status: "planned"` from the Website Portfolio infrastructure items in `src/data/projects.ts`.
+3. ~~Contact API~~ — done: live and sending (2026-10-24).
+4. ~~AWS provisioning~~ — done. Still to apply: the CSP change that allows `https://app.cal.com` (D-44).
+5. ~~GitHub `production` environment and variables~~ — done.
+6. ~~DNS cutover on Cloudflare~~ — done: alibacelonia.dev serves from CloudFront. The Website Portfolio project no longer lists planned items.
 7. After going live: run Lighthouse against production (security headers and caching only exist on CloudFront).

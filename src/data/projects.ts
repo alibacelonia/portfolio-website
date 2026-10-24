@@ -280,8 +280,8 @@ export const projects: Project[] = [
     discipline: "devops",
     status: "This site",
     summary:
-      "This website: a statically exported Next.js site built for Amazon S3 and CloudFront, with infrastructure defined in Terraform and deployments through GitHub Actions.",
-    keyTech: ["Next.js", "TypeScript", "Tailwind CSS", "Terraform", "AWS"],
+      "This website: a statically exported Next.js site on Amazon S3 and CloudFront, with a serverless contact API (API Gateway, Lambda, DynamoDB and SES), infrastructure defined in Terraform and deployments through GitHub Actions.",
+    keyTech: ["Next.js", "TypeScript", "Terraform", "CloudFront", "Lambda", "GitHub Actions"],
     // Screenshot of this site's hero, supplied by the owner (4688×3281 PNG, resized), 2026-10-24.
     screenshot: {
       src: "/projects/website-portfolio.webp",
@@ -300,8 +300,8 @@ export const projects: Project[] = [
     },
     links: [],
     overview: [
-      "A single-page portfolio with light and dark themes, a CI/CD pipeline illustration, detailed project pages, an experience timeline, grouped skills, verifiable certifications and a contact form.",
-      "It is exported as static files at build time, with no server runtime, so it can be served from object storage behind a CDN.",
+      "A portfolio with a home page of framed sections, detailed project pages, an experience timeline, grouped skills, verifiable certifications, and a Connect page to book a call or send a message.",
+      "The site is exported as static files at build time, with no server runtime, and served from object storage behind a CDN. The only dynamic part, the contact form, posts to a small serverless API.",
     ],
     problem:
       "To create a professional online presence that showcases my full-stack engineering, DevOps, cloud infrastructure and AI engineering experience, with every claim verifiable against my resume and public repositories.",
@@ -322,6 +322,7 @@ export const projects: Project[] = [
           "TypeScript",
           "Tailwind CSS",
           "Motion for React",
+          "Lenis",
         ],
       },
       {
@@ -331,13 +332,28 @@ export const projects: Project[] = [
       { group: "DevOps", items: ["GitHub Actions", "Terraform"] },
       {
         group: "Cloud services",
-        items: ["Amazon S3", "Amazon CloudFront", "AWS Certificate Manager", "AWS IAM (OIDC)"],
+        items: [
+          "Amazon S3",
+          "Amazon CloudFront",
+          "CloudFront Functions",
+          "AWS Certificate Manager",
+          "AWS IAM (OIDC)",
+          "Amazon API Gateway",
+          "AWS Lambda",
+          "Amazon DynamoDB",
+          "Amazon SES",
+          "AWS Systems Manager Parameter Store",
+          "Amazon CloudWatch Logs",
+        ],
       },
-      { group: "Integrations", items: ["Cloudflare Turnstile", "Cal.com (booking)"] },
+      {
+        group: "Integrations",
+        items: ["Cloudflare DNS", "Cloudflare Turnstile", "Cal.com (booking)"],
+      },
     ],
     infrastructure: {
       summary:
-        "The infrastructure and delivery pipeline are implemented as code and validated in CI. Provisioning in AWS and pointing alibacelonia.dev at CloudFront are the remaining steps.",
+        "Live at alibacelonia.dev. The hosting, the contact API and the deploy role are defined in Terraform, validated in CI and running in AWS; DNS is on Cloudflare.",
       items: [
         {
           label: "Hosting",
@@ -347,12 +363,17 @@ export const projects: Project[] = [
         {
           label: "CDN & TLS",
           detail:
-            "CloudFront with HTTPS redirect, HTTP/2 and HTTP/3, security headers (CSP, HSTS) and an ACM certificate in us-east-1.",
+            "CloudFront with HTTPS redirect, HTTP/2 and HTTP/3, security headers (CSP, HSTS) and an ACM certificate in us-east-1. A CloudFront Function serves directory indexes and redirects www to the apex domain.",
+        },
+        {
+          label: "Contact API",
+          detail:
+            "API Gateway HTTP API (throttled) in front of a Node.js 22 Lambda on arm64. It verifies Cloudflare Turnstile, enforces per-IP, duplicate and daily limits in DynamoDB (expiring with TTL), and sends through SES from the verified domain. The Turnstile secret lives in SSM Parameter Store.",
         },
         {
           label: "Infrastructure as code",
           detail:
-            "Terraform for S3, CloudFront, ACM, an index-rewrite function and the deploy role, validated in CI.",
+            "Terraform for S3, CloudFront, ACM, the viewer-request function, the GitHub deploy role and the contact API module, validated in CI.",
         },
         {
           label: "CI/CD",
@@ -362,17 +383,50 @@ export const projects: Project[] = [
         {
           label: "Security",
           detail:
-            "GitHub OIDC federation into a role limited to one bucket and one distribution, so there are no long-lived AWS keys.",
+            "GitHub OIDC federation into a role limited to one bucket and one distribution, so there are no long-lived AWS keys. The contact Lambda's role is limited to its log group, its table, one parameter and sending from the site's domain.",
         },
         {
-          label: "AWS provisioning",
-          detail: "terraform apply in the production AWS account.",
-          status: "planned",
+          label: "Domain & DNS",
+          detail:
+            "alibacelonia.dev on Cloudflare DNS (DNS only, not proxied), pointed at CloudFront; www redirects to the apex.",
+        },
+      ],
+      graph: [
+        {
+          label: "Deploy",
+          summary: "how a push to main reaches production",
+          accent: "sage",
+          nodes: [
+            { name: "GitHub", note: "push to main" },
+            { name: "GitHub Actions", note: "lint, types, tests, axe, build" },
+            { name: "AWS IAM", note: "OIDC role, no stored keys" },
+            { name: "Amazon S3", note: "sync with cache headers" },
+            { name: "CloudFront", note: "cache invalidation" },
+          ],
         },
         {
-          label: "Custom domain",
-          detail: "alibacelonia.dev pointed at CloudFront through Cloudflare DNS.",
-          status: "planned",
+          label: "Serve",
+          summary: "how a visitor's request is answered",
+          accent: "blue",
+          nodes: [
+            { name: "Visitor", note: "alibacelonia.dev" },
+            { name: "Cloudflare DNS", note: "DNS only" },
+            { name: "CloudFront", note: "ACM TLS, HTTP/3, security headers" },
+            { name: "CloudFront Function", note: "index rewrite, www to apex" },
+            { name: "Amazon S3", note: "private, Origin Access Control" },
+          ],
+        },
+        {
+          label: "Contact",
+          summary: "how a message from the Connect page reaches my inbox",
+          accent: "lavender",
+          nodes: [
+            { name: "Connect form", note: "Turnstile token" },
+            { name: "API Gateway", note: "HTTP API, throttled" },
+            { name: "AWS Lambda", note: "verifies Turnstile (secret in SSM)" },
+            { name: "DynamoDB", note: "rate limits and duplicates" },
+            { name: "Amazon SES", note: "email to my inbox" },
+          ],
         },
       ],
       diagram: [
@@ -385,7 +439,7 @@ export const projects: Project[] = [
       ],
     },
     source:
-      "This repository: next.config.ts, infra/terraform, .github/workflows, scripts/deploy.sh",
+      "This repository: next.config.ts, infra/terraform (incl. modules/contact-api, functions/viewer-request.js), infra/lambda/contact, .github/workflows, scripts/deploy.sh; live headers and DNS checked 2026-10-24",
   },
 ];
 

@@ -10,6 +10,7 @@ import { OverviewStrip } from "@/components/ui/OverviewStrip";
 import { disciplineDot, disciplineLabel } from "@/lib/disciplines";
 import { stagger } from "@/lib/motion";
 import { projectHref, projectLinks } from "./Projects";
+import { ArchitectureGraph } from "./ArchitectureGraph";
 
 /** A small left-to-right flow; wraps on narrow screens. */
 export function FlowDiagram({ steps, label }: { steps: string[]; label: string }) {
@@ -175,7 +176,12 @@ export function ProjectDetail({ project }: { project: Project }) {
         }
       >
         <div data-reveal className="space-y-4 lg:space-y-5">
-          {project.infrastructure.diagram ? (
+          {project.infrastructure.graph ? (
+            <ArchitectureGraph
+              lanes={project.infrastructure.graph}
+              label={`${project.name} cloud architecture`}
+            />
+          ) : project.infrastructure.diagram ? (
             <FlowDiagram steps={project.infrastructure.diagram} label={`${project.name} flow`} />
           ) : null}
           <dl className="divide-y divide-border overflow-hidden card-shell type-body">
