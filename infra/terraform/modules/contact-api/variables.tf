@@ -58,6 +58,17 @@ variable "throttle_burst" {
   default     = 5
 }
 
+variable "reserved_concurrency" {
+  description = "Reserved Lambda concurrency as a cost cap; -1 reserves none. Needs an account concurrency limit above 10 + this value."
+  type        = number
+  default     = -1
+
+  validation {
+    condition     = var.reserved_concurrency == -1 || var.reserved_concurrency >= 1
+    error_message = "Use -1 (no reservation) or a positive number."
+  }
+}
+
 variable "log_retention_days" {
   description = "CloudWatch log retention for the function and API access logs."
   type        = number

@@ -150,7 +150,7 @@ Everything is in `infra/terraform/modules/contact-api`, created only when `enabl
 
 The CloudFront CSP already allows `challenges.cloudflare.com` (Turnstile) and `https://cal.com` (booking embed), and adds the API origin automatically when the module is enabled.
 
-Limits (variables in the module): 5 messages per IP per hour, 50 per day overall, identical messages from the same address rejected for 24 hours, Lambda concurrency capped at 5. Logs contain no names, emails, messages or raw IPs.
+Limits (variables in the module): 5 messages per IP per hour, 50 per day overall, identical messages from the same address rejected for 24 hours, API Gateway throttled to 2 requests/second (burst 5). Reserved Lambda concurrency is off by default (`reserved_concurrency = -1`) because new AWS accounts have a concurrency limit of 10, all of which must stay unreserved. Logs contain no names, emails, messages or raw IPs.
 
 ## Booking (Cal.com)
 
