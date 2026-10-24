@@ -45,8 +45,16 @@ export const clientWork: ClientWork[] = [
       width: 1600,
       height: 1120,
     },
-    // Trial (owner, 2026-10-25): dark bluish grey to white instead of the DevOps tint.
-    stageGradient: { from: "#1e2530", to: "#ffffff" },
+    // Case-card background chosen by the owner (2026-10-25).
+    stageGradient: {
+      angle: 145,
+      stops: [
+        { color: "#831843", at: 0 },
+        { color: "#DB2777", at: 40 },
+        { color: "#f472b6", at: 75 },
+        { color: "#fbcfe8", at: 100 },
+      ],
+    },
     published: true,
     source: "goironfort.com (product facts, 2026-10-24); technologies from the owner (2026-10-24)",
   },

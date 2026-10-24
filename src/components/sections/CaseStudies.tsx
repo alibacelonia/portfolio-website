@@ -8,6 +8,7 @@ import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
 import { ProjectCursor } from "@/components/ui/ProjectCursor";
+import { stageBackground, stageFrame } from "@/lib/stage";
 
 const stageTint: Record<CaseStudy["discipline"], string> = {
   "full-stack": "var(--blue)",
@@ -130,10 +131,8 @@ function Stage({
       "--stage": stageTint[study.discipline],
       ...(study.stageGradient
         ? {
-            "--stage-from": study.stageGradient.from,
-            "--stage-to": study.stageGradient.to,
-            // The top-right corner sits halfway along the diagonal: keep it (and the tagline) dark.
-            "--stage-hold": "50%",
+            "--stage-bg": stageBackground(study.stageGradient),
+            "--stage-frame": stageFrame(study.stageGradient),
           }
         : {}),
     } as CSSProperties,

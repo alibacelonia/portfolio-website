@@ -3,6 +3,8 @@ import { expect, openMessageTab, stubThirdParty, test } from "./fixtures";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
+import { buildCaseStudies } from "../src/lib/caseStudies";
+import { stageFrame } from "../src/lib/stage";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -602,22 +604,27 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
   await expect.poll(active).toBe(first);
 });
 
-test("case screenshots are framed in their card's own background", async ({ page }) => {
+test("case screenshots are framed in the second-lightest color of their card's gradient", async ({
+  page,
+}) => {
   await page.goto("/");
-  const frames = await page.locator(".case-stage").evaluateAll((stages) =>
-    stages.flatMap((stage) => {
-      const img = stage.querySelector<HTMLImageElement>(".case-media img");
-      if (!img) return [];
-      const card = getComputedStyle(stage).backgroundImage;
-      const frame = getComputedStyle(img);
-      return [{ card, frame: frame.backgroundImage, width: frame.borderTopWidth }];
-    }),
-  );
-  expect(frames.length).toBeGreaterThan(0);
-  for (const { card, frame, width } of frames) {
-    expect(card).toContain("gradient");
-    expect(frame).toBe(card);
-    expect(width).toBe("2px");
+  const studies = buildCaseStudies().filter((study) => study.screenshot);
+  expect(studies.length).toBeGreaterThan(0);
+  for (const study of studies) {
+    const stage = page.locator(`#case-study-${study.id} .case-stage`);
+    const { card, color, width } = await stage.evaluate((el) => {
+      const img = getComputedStyle(el.querySelector(".case-media img")!);
+      return {
+        card: getComputedStyle(el).backgroundImage,
+        color: img.borderTopColor,
+        width: img.borderTopWidth,
+      };
+    });
+    const frame = stageFrame(study.stageGradient!);
+    const rgb = [1, 3, 5].map((i) => parseInt(frame.slice(i, i + 2), 16)).join(", ");
+    expect(card, study.id).toContain(`rgb(${rgb})`);
+    expect(color, study.id).toBe(`rgb(${rgb})`);
+    expect(width, study.id).toBe("2px");
   }
 });
 

@@ -15,7 +15,7 @@ export interface CaseStudy {
   /** Role and period, for client work. */
   role?: string;
   screenshot?: { src: string; alt: string; width: number; height: number };
-  /** Card gradient override; the discipline tint is used when absent. */
+  /** Card background; the discipline tint is used when absent. */
   stageGradient?: StageGradient;
   /** Architecture flow, shown on the stage until a screenshot exists. */
   flow?: string[];
@@ -50,6 +50,7 @@ export function buildCaseStudies(): CaseStudy[] {
     highlights: project.highlights,
     discipline: project.discipline,
     screenshot: project.screenshot,
+    stageGradient: project.stageGradient,
     flow: project.infrastructure.diagram,
     primary: { label: "Read case study", href: `/projects/${project.id}/`, external: false },
     secondary: [project.repository, ...(project.demo ? [project.demo] : []), ...project.links],

@@ -971,14 +971,12 @@ html:not(.js) .case-panel-item {
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
-  /* The card's background, shared with its screenshot frame so the two always match. A card can
-     set its own corners (--stage-from / --stage-to), holding the start color up to --stage-hold
-     so a light end never reaches the tagline; otherwise the discipline tint. */
+  /* The card's background: a per-card gradient (--stage-bg, set from the data), or by default a
+     diagonal discipline tint from dark top left to lighter bottom right. */
   --stage-bg: linear-gradient(
     to bottom right,
-    var(--stage-from, color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg))) 0%
-      var(--stage-hold, 0%),
-    var(--stage-to, color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top)))
+    color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg)),
+    color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top))
   );
   background: var(--stage-bg);
   box-shadow: var(--clay-card-shadow);
@@ -1023,13 +1021,11 @@ html:not(.js) .case-panel-item {
   }
 }
 
-/* Rule: the screenshot's frame is always the card's own background (--stage-bg, whatever it is),
-   painted through a transparent 2px border; the opaque image covers the rest. It runs off the
-   bottom edge, so that side has no border. */
+/* Rule: the screenshot's 2px frame is the second-lightest color of its card's gradient
+   (--stage-frame, from src/lib/stage.ts). It runs off the bottom edge, so that side is open. */
 .case-media img.case-media-inner {
-  border: 2px solid transparent;
+  border: 2px solid var(--stage-frame, var(--stage, var(--sage)));
   border-bottom: 0;
-  background: var(--stage-bg) border-box;
 }
 
 .case-media-inner {

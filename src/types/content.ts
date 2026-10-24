@@ -34,10 +34,12 @@ export interface ArchitectureLane {
   nodes: ArchitectureNode[];
 }
 
-/** Colors for a case card's diagonal gradient, from the top-left corner to the bottom-right one. */
+/** A case card's background: a linear gradient as an angle plus color stops (dark to light). */
 export interface StageGradient {
-  from: string;
-  to: string;
+  /** CSS angle in degrees, e.g. 145. */
+  angle: number;
+  /** Color stops, `at` in percent along the gradient. */
+  stops: { color: string; at: number }[];
 }
 
 export interface Project {
@@ -87,6 +89,8 @@ export interface Project {
 
   /** Only a genuine screenshot under /public/projects. */
   screenshot?: { src: string; alt: string; width: number; height: number };
+  /** Case-card background; its second-lightest stop frames the screenshot. */
+  stageGradient?: StageGradient;
   /** Where the content was verified, for maintainers. Not rendered. */
   source: string;
 }
@@ -115,7 +119,7 @@ export interface ClientWork {
   link: ProjectLink;
   /** A genuine product screenshot under /public/projects, shown on the left of the card. */
   screenshot?: { src: string; alt: string; width: number; height: number };
-  /** Optional case-card gradient (top left → bottom right) instead of the discipline tint. */
+  /** Case-card background; its second-lightest stop frames the screenshot. */
   stageGradient?: StageGradient;
   /**
    * Publish only after the client has confirmed the product may be named and described.
