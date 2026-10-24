@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: IronFort card trial: dark bluish grey to white diagonal gradient (per-card `stageGradient`, D-53).
 - 2026-10-25: Case cards shade from dark top left to lighter bottom right; screenshots get a 2 px border in the card's discipline color (D-52).
 - 2026-10-25: Case-study preview cards made claymorphic like the dock; the hatched background behind them is unchanged (D-51).
 - 2026-10-24: Website Portfolio updated for the live system: key stack, overview, stack (contact API services, Cloudflare DNS), infrastructure rows (no planned items left) and a Deploy / Serve / Contact architecture graph on its project page (D-49).

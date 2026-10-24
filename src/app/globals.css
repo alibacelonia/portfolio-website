@@ -971,10 +971,13 @@ html:not(.js) .case-panel-item {
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
+  /* A card can set its own corners (--stage-from / --stage-to), holding the start color up to
+     --stage-hold so a light end never reaches the tagline; otherwise the discipline tint. */
   background: linear-gradient(
     to bottom right,
-    color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg)),
-    color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top))
+    var(--stage-from, color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg))) 0%
+      var(--stage-hold, 0%),
+    var(--stage-to, color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top)))
   );
   box-shadow: var(--clay-card-shadow);
   transition: box-shadow 300ms var(--ease);

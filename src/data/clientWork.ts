@@ -45,6 +45,8 @@ export const clientWork: ClientWork[] = [
       width: 1600,
       height: 1120,
     },
+    // Trial (owner, 2026-10-25): dark bluish grey to white instead of the DevOps tint.
+    stageGradient: { from: "#1e2530", to: "#ffffff" },
     published: true,
     source: "goironfort.com (product facts, 2026-10-24); technologies from the owner (2026-10-24)",
   },

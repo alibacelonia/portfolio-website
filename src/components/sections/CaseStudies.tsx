@@ -126,7 +126,17 @@ function Stage({
   const shared = {
     ref: stageRef,
     className: "case-stage group",
-    style: { "--stage": stageTint[study.discipline] } as CSSProperties,
+    style: {
+      "--stage": stageTint[study.discipline],
+      ...(study.stageGradient
+        ? {
+            "--stage-from": study.stageGradient.from,
+            "--stage-to": study.stageGradient.to,
+            // The top-right corner sits halfway along the diagonal: keep it (and the tagline) dark.
+            "--stage-hold": "50%",
+          }
+        : {}),
+    } as CSSProperties,
     tabIndex: -1,
     "aria-hidden": true,
     "data-reveal": true,

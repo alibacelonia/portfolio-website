@@ -34,6 +34,12 @@ export interface ArchitectureLane {
   nodes: ArchitectureNode[];
 }
 
+/** Colors for a case card's diagonal gradient, from the top-left corner to the bottom-right one. */
+export interface StageGradient {
+  from: string;
+  to: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -109,6 +115,8 @@ export interface ClientWork {
   link: ProjectLink;
   /** A genuine product screenshot under /public/projects, shown on the left of the card. */
   screenshot?: { src: string; alt: string; width: number; height: number };
+  /** Optional case-card gradient (top left → bottom right) instead of the discipline tint. */
+  stageGradient?: StageGradient;
   /**
    * Publish only after the client has confirmed the product may be named and described.
    * Unpublished entries are never rendered.
