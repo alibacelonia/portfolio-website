@@ -14,11 +14,12 @@ locals {
   contact_api     = var.enable_contact_api ? module.contact_api[0].api_origin : ""
 
   # The base policy plus the third parties the Connect page uses: Cloudflare Turnstile (script,
-  # frame, verification calls), the Cal.com booking embed, and the contact API when enabled.
+  # frame, verification calls), the Cal.com booking embed (embed script and frame, plus the
+  # plain-iframe fallback origin), and the contact API when enabled.
   content_security_policy = replace(replace(replace(var.content_security_policy,
-    "script-src 'self' 'unsafe-inline'", "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com"),
+    "script-src 'self' 'unsafe-inline'", "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com ${var.cal_embed_origin}"),
     "connect-src 'self'", trimspace("connect-src 'self' https://challenges.cloudflare.com ${local.contact_api}")),
-  "frame-ancestors 'none'", "frame-src https://challenges.cloudflare.com ${var.cal_origin}; frame-ancestors 'none'")
+  "frame-ancestors 'none'", "frame-src https://challenges.cloudflare.com ${var.cal_embed_origin} ${var.cal_origin}; frame-ancestors 'none'")
 
   tags = {
     Project     = var.project

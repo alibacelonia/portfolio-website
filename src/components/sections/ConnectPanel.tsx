@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
+import { preconnect, preload } from "react-dom";
 import { CalendarDays, Check, Copy, FileText, MessageSquare } from "lucide-react";
 import { site } from "@/lib/site";
+import { CalEmbed, CAL_EMBED_ORIGIN, CAL_EMBED_SCRIPT } from "@/components/ui/CalEmbed";
 import { ContactForm } from "./ContactForm";
 
 export const intents = [
@@ -133,24 +135,17 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 
 /** Cal.com's inline booking page, loaded only when its tab is opened. */
-function BookingCalendar({ link }: { link: string }) {
-  const src = `https://cal.com/${link}?embed=true&layout=month_view&theme=dark`;
-  return (
-    <iframe
-      src={src}
-      title="Book a call with Mohammed Ali (Cal.com)"
-      loading="lazy"
-      className="block h-[720px] w-full rounded-xl border border-border-strong bg-surface"
-    />
-  );
-}
-
 /**
  * Book a call / Send a message, like the reference. The booking tab only exists once a Cal.com
  * link is configured (NEXT_PUBLIC_CAL_LINK); in development it shows how to set one up.
  */
 function ConnectTabs({ subject }: { subject?: string }) {
   const showCall = Boolean(site.calLink) || process.env.NODE_ENV !== "production";
+  if (site.calLink) {
+    // Emitted into the static HTML, so the embed starts downloading before hydration.
+    preconnect(CAL_EMBED_ORIGIN);
+    preload(CAL_EMBED_SCRIPT, { as: "script" });
+  }
   const [tab, setTab] = useState<TabId>(showCall ? "call" : "message");
   const refs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
   const visible = tabs.filter((item) => item.id !== "call" || showCall);
@@ -205,8 +200,9 @@ function ConnectTabs({ subject }: { subject?: string }) {
           hidden={tab !== "call"}
           className="mt-6"
         >
-          {tab === "call" && site.calLink ? (
-            <BookingCalendar link={site.calLink} />
+          {/* Stays mounted while hidden, so switching tabs doesn't reload the calendar. */}
+          {site.calLink ? (
+            <CalEmbed link={site.calLink} title="Book a call with Mohammed Ali (Cal.com)" />
           ) : (
             <div className="section-panel p-6 text-center type-body text-muted">
               Booking isn&apos;t set up yet. Set{" "}

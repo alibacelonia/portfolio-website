@@ -148,13 +148,15 @@ Everything is in `infra/terraform/modules/contact-api`, created only when `enabl
 5. **Leave the SES sandbox:** request production access in the SES console. In the sandbox, only verified addresses can receive mail (the recipient is verified in step 3, so the form works for you either way).
 6. **GitHub variables:** `CONTACT_API_URL` = `contact_api_endpoint` output, `TURNSTILE_SITE_KEY` = the site key. Redeploy. The form then sends through the API; until `CONTACT_API_URL` is set it tells visitors sending isn't available and shows the email address.
 
-The CloudFront CSP already allows `challenges.cloudflare.com` (Turnstile) and `https://cal.com` (booking embed), and adds the API origin automatically when the module is enabled.
+The CloudFront CSP already allows `challenges.cloudflare.com` (Turnstile) and Cal.com (`https://app.cal.com` for the embed script and frame, `https://cal.com` for the plain-iframe fallback), and adds the API origin automatically when the module is enabled.
 
 Limits (variables in the module): 5 messages per IP per hour, 50 per day overall, identical messages from the same address rejected for 24 hours, API Gateway throttled to 2 requests/second (burst 5). Reserved Lambda concurrency is off by default (`reserved_concurrency = -1`) because new AWS accounts have a concurrency limit of 10, all of which must stay unreserved. Logs contain no names, emails, messages or raw IPs.
 
 ## Booking (Cal.com)
 
-Set the GitHub variable `CAL_LINK` (e.g. `alibacelonia/30min`) to show the **Book a call** tab on `/connect/`; it embeds Cal.com in an iframe. Without it the tab is hidden in production.
+Set the GitHub **repository** variable `CAL_LINK` (e.g. `alibacelonia/30min` or the full `https://cal.com/…` link) to show the **Book a call** tab on `/connect/`. Without it the tab is hidden in production.
+
+The tab uses Cal.com's inline embed (`embed.js`, loaded only on `/connect/`, preconnected and preloaded from the static HTML): a transparent calendar in the site's colors, no event-details panel, height that follows the calendar, and a skeleton until Cal.com reports it's ready. If the script is blocked (e.g. a CSP without `https://app.cal.com`) or not ready within 15 s, the plain Cal.com iframe is shown instead. The "Cal.com" mark below the calendar is Cal.com's free-plan branding; it can only be removed in Cal.com (paid plan), not from the site.
 
 ## Rollback
 
