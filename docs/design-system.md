@@ -10,7 +10,7 @@ The site currently uses dark mode only, including static HTML and first paint. L
 
 | Token                          | Light                 | Dark                  | Use                                     |
 | ------------------------------ | --------------------- | --------------------- | --------------------------------------- |
-| `--bg`                         | `#FAFBFC`             | `#090C10`             | Page and alternating section background |
+| `--bg`                         | `#FAFBFC`             | `#0D0D0F`             | Page and alternating section background |
 | `--surface`                    | `#FFFFFF`             | `#11151B`             | Cards, alternating section surface      |
 | `--surface-2`                  | `#F3F5F8`             | `#181C23`             | Insets, tags, code                      |
 | `--fg`                         | `#111827`             | `#F3F4F6`             | Primary text                            |
