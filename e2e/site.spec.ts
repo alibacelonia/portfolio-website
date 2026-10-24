@@ -491,10 +491,12 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
     page.evaluate(() =>
       document.querySelector(".case-panel-item[data-active]")?.getAttribute("aria-label"),
     );
-  const panelTop = () =>
-    page.evaluate(() =>
-      Math.round(document.querySelector(".case-panel")!.getBoundingClientRect().top),
-    );
+  // The panel is as tall as the active details, so its center (not its top) stays put.
+  const panelCenter = () =>
+    page.evaluate(() => {
+      const r = document.querySelector(".case-panel")!.getBoundingClientRect();
+      return Math.round(r.top + r.height / 2);
+    });
   // Scroll so that `share` of a stage sits in the upper half of the viewport.
   const showShare = (id: string, share: number) =>
     page.evaluate(
@@ -505,14 +507,28 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
       [`#case-study-${id} .case-stage`, share] as const,
     );
 
+  // Details top minus the top of the given project's image (the panel's start and end stops).
+  const detailsOffset = (item: string) =>
+    page.evaluate((selector) => {
+      const details = document.querySelector(".case-panel-item[data-active]")!;
+      const card = document.querySelector(selector)!;
+      return Math.round(details.getBoundingClientRect().top - card.getBoundingClientRect().top);
+    }, item);
+
   const first = (await page.locator(".case-panel-item").first().getAttribute("aria-label"))!;
+  // Before pinning, the first project's details start 40px below the top of its image.
+  await page.evaluate(() => {
+    document.querySelector(".case-layout")!.scrollIntoView();
+    window.scrollBy(0, -150);
+  });
+  await expect.poll(() => detailsOffset(".case-item:first-child")).toBe(40);
   await showShare("estoe", 0.15);
   await expect.poll(active).not.toBe("estoe");
-  const pinned = await panelTop();
+  const pinned = await panelCenter();
   await showShare("estoe", 0.4);
   await expect.poll(active).toBe("estoe");
   // The panel keeps the same position while scrolling, like the Experience dates.
-  expect(Math.abs((await panelTop()) - pinned)).toBeLessThanOrEqual(1);
+  await expect.poll(async () => Math.abs((await panelCenter()) - pinned)).toBeLessThanOrEqual(1);
   // While pinned, the visible details sit at the vertical center of the viewport (polled: the
   // newly active panel finishes a short 8px fade-in slide first).
   await expect
@@ -538,7 +554,54 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
       }),
     )
     .toBeLessThanOrEqual(2);
+  // After the last project, the details stop 40px below the top of its image and scroll away
+  // with it.
+  const last = (await page.locator(".case-panel-item").last().getAttribute("aria-label"))!;
+  for (const top of [120, -80]) {
+    await page.evaluate((t) => {
+      const card = document.querySelector(".case-item:last-child")!.getBoundingClientRect();
+      window.scrollBy(0, card.top - t);
+    }, top);
+    await expect.poll(active).toBe(last);
+    await expect
+      .poll(async () => Math.abs((await detailsOffset(".case-item:last-child")) - 40))
+      .toBeLessThanOrEqual(1);
+  }
   // Scrolling back up hands the panel back.
   await page.evaluate(() => document.querySelector(".case-list")!.scrollIntoView());
   await expect.poll(active).toBe(first);
+});
+
+test("project cards show the custom cursor for a mouse only", async ({ page }, testInfo) => {
+  await page.goto("/");
+  const cursor = page.locator(".project-cursor");
+  await expect(cursor).toHaveAttribute("aria-hidden", "true");
+  const stage = page.locator(".case-stage").first();
+  await stage.scrollIntoViewIfNeeded();
+
+  if (testInfo.project.name !== "desktop") {
+    // Touch devices keep the native behavior: the native cursor is never hidden and the disc
+    // never shows (a tap would open the card's link, so none is made).
+    await expect(page.locator("html")).not.toHaveAttribute("data-project-cursor", "");
+    await expect(cursor).not.toHaveAttribute("data-visible", "");
+    return;
+  }
+
+  await expect(page.locator("html")).toHaveAttribute("data-project-cursor", "");
+  expect(await stage.evaluate((el) => getComputedStyle(el).cursor)).toBe("none");
+  const box = (await stage.boundingBox())!;
+  const target = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  await page.mouse.move(target.x - 80, target.y - 60);
+  await page.mouse.move(target.x, target.y, { steps: 6 });
+  await expect(cursor).toHaveAttribute("data-visible", "");
+  // It settles centered on the pointer.
+  await expect
+    .poll(async () => {
+      const r = (await cursor.boundingBox())!;
+      return Math.round(Math.hypot(r.x + r.width / 2 - target.x, r.y + r.height / 2 - target.y));
+    })
+    .toBeLessThanOrEqual(1);
+  // Leaving the card restores the native cursor.
+  await page.mouse.move(box.x + box.width + 120, target.y, { steps: 3 });
+  await expect(cursor).not.toHaveAttribute("data-visible", "");
 });

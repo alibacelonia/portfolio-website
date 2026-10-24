@@ -7,6 +7,7 @@ import { ArrowRight, ArrowUpRight, Plus } from "lucide-react";
 import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
+import { ProjectCursor } from "@/components/ui/ProjectCursor";
 
 const stageTint: Record<CaseStudy["discipline"], string> = {
   "full-stack": "var(--blue)",
@@ -221,16 +222,25 @@ export function CaseStudies({
 }) {
   const [active, setActive] = useState(0);
   const stages = useRef<(HTMLElement | null)[]>([]);
+  const list = useRef<HTMLOListElement>(null);
+  const track = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const stack = useRef<HTMLDivElement>(null);
 
-  // The pinned panel centers itself on screen: expose its height to the sticky offset, and keep
-  // the ruler level with the active title (panels differ in height, so titles sit at different
-  // depths). Measured from layout offsets so the panels' fade-in slide does not skew it.
+  // The pinned panel centers itself on screen: expose its height (the active project's details)
+  // to the sticky offset, and keep the ruler level with the active title. Measured from layout
+  // offsets so the panels' fade-in slide does not skew it.
+  //
+  // The panel sticks inside a track that runs from the first project to the last, sized so the
+  // first project's details start level with the top of its image and the last project's details
+  // stop level with the top of its image, then scroll away with it. CSS shifts the whole track
+  // down by --case-drop, so both stops sit that far below the image tops.
   useEffect(() => {
     const target = stack.current;
     const host = panel.current;
-    if (!target || !host) return;
+    const rail = track.current;
+    const items = list.current;
+    if (!target || !host || !rail || !items) return;
     const alignRuler = () => {
       const article = target.children[active] as HTMLElement | undefined;
       const title = article?.querySelector<HTMLElement>("[data-case-title]");
@@ -241,13 +251,30 @@ export function CaseStudies({
         `${Math.round(article.offsetTop + offset + title.offsetHeight / 2)}px`,
       );
     };
+    const fitTrack = () => {
+      const last = target.lastElementChild as HTMLElement | null;
+      const cards = [...items.children] as HTMLElement[];
+      if (!last || cards.length === 0) return;
+      const listTop = items.getBoundingClientRect().top;
+      const firstTop = cards[0]!.getBoundingClientRect().top - listTop;
+      const lastTop = cards.at(-1)!.getBoundingClientRect().top - listTop;
+      host.style.setProperty("--case-panel-h", `${Math.round(target.offsetHeight)}px`);
+      rail.style.setProperty("--case-track-top", `${Math.round(firstTop)}px`);
+      // Ends where the last project's details end once they are the active panel.
+      rail.style.setProperty(
+        "--case-track-h",
+        `${Math.round(lastTop - firstTop + last.offsetHeight)}px`,
+      );
+    };
     alignRuler();
+    fitTrack();
     if (!("ResizeObserver" in window)) return;
-    const observer = new ResizeObserver(([entry]) => {
-      host.style.setProperty("--case-panel-h", `${Math.round(entry!.contentRect.height)}px`);
+    const observer = new ResizeObserver(() => {
+      fitTrack();
       alignRuler();
     });
     observer.observe(target);
+    observer.observe(items);
     return () => observer.disconnect();
   }, [active]);
 
@@ -278,7 +305,8 @@ export function CaseStudies({
 
   return (
     <div className="case-layout">
-      <ol className="case-list">
+      <ProjectCursor selector=".case-stage" />
+      <ol ref={list} className="case-list">
         {studies.map((study, index) => (
           <li key={study.id} id={`case-study-${study.id}`} className="case-item">
             <Stage
@@ -296,21 +324,23 @@ export function CaseStudies({
       </ol>
 
       {/* Desktop: one pinned panel; the active project's details are the only visible ones. */}
-      <div ref={panel} className="case-panel hidden lg:block">
-        <Ruler studies={studies} active={active} />
-        <div ref={stack} className="case-panel-stack">
-          {studies.map((study, index) => (
-            <article
-              key={study.id}
-              id={`case-panel-${study.id}`}
-              aria-label={study.name}
-              data-active={index === active || undefined}
-              onFocusCapture={() => setActive(index)}
-              className="case-panel-item"
-            >
-              <Details study={study} headingLevel={headingLevel} />
-            </article>
-          ))}
+      <div ref={track} className="case-panel-track hidden lg:block">
+        <div ref={panel} className="case-panel">
+          <Ruler studies={studies} active={active} />
+          <div ref={stack} className="case-panel-stack">
+            {studies.map((study, index) => (
+              <article
+                key={study.id}
+                id={`case-panel-${study.id}`}
+                aria-label={study.name}
+                data-active={index === active || undefined}
+                onFocusCapture={() => setActive(index)}
+                className="case-panel-item"
+              >
+                <Details study={study} headingLevel={headingLevel} />
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </div>
