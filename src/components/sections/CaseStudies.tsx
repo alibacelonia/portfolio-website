@@ -115,7 +115,7 @@ function Stage({
             width={study.screenshot.width}
             height={study.screenshot.height}
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className="case-media-inner h-auto border border-b-0 border-border-strong"
+            className="case-media-inner h-auto"
           />
         ) : study.flow ? (
           <FlowWindow steps={study.flow} name={study.name} />

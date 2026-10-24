@@ -962,25 +962,20 @@ html:not(.js) .case-panel-item {
 }
 
 /* A claymorphic stage (same clay as the dock, at card size) tinted with the project's discipline
-   color (pastel, low saturation): tagline and arrow at the top, then the screenshot (or the flow
-   window that stands in for one) rising from the bottom edge. */
+   color (pastel, low saturation), shading diagonally from dark at the top left to lighter at the
+   bottom right: tagline and arrow at the top, then the screenshot (or the flow window that stands
+   in for one) rising from the bottom edge. */
 .case-stage {
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
-  background:
-    radial-gradient(
-      120% 90% at 50% 0%,
-      color-mix(in srgb, var(--stage, var(--sage)) 24%, transparent),
-      transparent 68%
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--stage, var(--sage)) 9%, var(--clay-top)),
-      var(--clay-bottom)
-    );
+  background: linear-gradient(
+    to bottom right,
+    color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg)),
+    color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top))
+  );
   box-shadow: var(--clay-card-shadow);
   transition: box-shadow 300ms var(--ease);
 }
@@ -1021,6 +1016,13 @@ html:not(.js) .case-panel-item {
     height: 42vw;
     flex: none;
   }
+}
+
+/* The screenshot is framed in the card's own discipline color; it runs off the bottom edge, so
+   that side has no border. */
+.case-media img.case-media-inner {
+  border: 2px solid var(--stage, var(--sage));
+  border-bottom: 0;
 }
 
 .case-media-inner {
