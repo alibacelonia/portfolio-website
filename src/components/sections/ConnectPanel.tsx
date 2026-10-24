@@ -160,7 +160,7 @@ function ConnectTabs({ subject }: { subject?: string }) {
   };
 
   return (
-    <div data-reveal className="mx-auto mt-14 max-w-5xl">
+    <div data-reveal className="mx-auto mt-14 max-w-[65rem]">
       {visible.length > 1 ? (
         <div className="flex justify-center">
           <div

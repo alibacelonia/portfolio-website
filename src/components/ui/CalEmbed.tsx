@@ -64,23 +64,10 @@ function loadCal(): { cal: CalGlobal; ready: Promise<void> } {
   return { cal: window.Cal, ready: loading };
 }
 
-/** Site tokens for Cal.com's theme variables, so the calendar reads as part of the page. */
-function themeVars() {
-  const css = getComputedStyle(document.documentElement);
-  const token = (name: string) => css.getPropertyValue(name).trim();
-  return {
-    "cal-bg": token("--surface"),
-    "cal-bg-muted": token("--surface"),
-    "cal-border": token("--border-strong"),
-    "cal-border-subtle": token("--border"),
-    "cal-brand": token("--fg"),
-  };
-}
-
 /**
- * Inline Cal.com booking calendar: transparent background in the site's colors, no event-details
- * panel, and a height that follows the calendar. A skeleton shows until Cal.com reports the link
- * is ready; if the embed script is blocked or slow, the plain booking iframe is used instead.
+ * Inline Cal.com booking calendar in Cal.com's own dark theme (event details, month view, time
+ * slots), sized to its content with no surrounding box. A skeleton shows until Cal.com reports the
+ * link is ready; if the embed script is blocked or slow, the plain booking iframe is used instead.
  */
 export function CalEmbed({ link, title }: { link: string; title: string }) {
   const container = useRef<HTMLDivElement>(null);
@@ -108,12 +95,7 @@ export function CalEmbed({ link, title }: { link: string; title: string }) {
       calLink: link,
       config: { layout: "month_view", theme: "dark" },
     });
-    api("ui", {
-      theme: "dark",
-      layout: "month_view",
-      hideEventTypeDetails: true,
-      cssVarsPerTheme: { dark: themeVars() },
-    });
+    api("ui", { theme: "dark", layout: "month_view" });
     api("on", {
       action: "linkReady",
       callback: () => {
@@ -154,15 +136,26 @@ export function CalEmbed({ link, title }: { link: string; title: string }) {
   );
 }
 
-/** Calendar-shaped placeholder sized like Cal.com's desktop month view (760 × 571px), so nothing jumps. */
+/**
+ * Placeholder in the shape of Cal.com's desktop month view (event details, calendar, time slots;
+ * 570px tall), so nothing jumps when the calendar appears. Phones show the calendar part only.
+ */
 function CalendarSkeleton() {
   const bar = "rounded-md bg-surface-2 animate-pulse motion-reduce:animate-none";
   return (
     <div
       role="status"
       aria-label="Loading the booking calendar"
-      className="mx-auto flex min-h-[571px] max-w-[760px] overflow-hidden rounded-md border border-border-strong bg-surface"
+      className="flex min-h-[570px] overflow-hidden rounded-md border border-border-strong bg-surface"
     >
+      <div className="hidden w-[17.5rem] shrink-0 flex-col gap-3 border-r border-border-strong p-6 lg:flex">
+        <span className={`size-6 rounded-full ${bar}`} />
+        <span className={`h-4 w-28 ${bar}`} />
+        <span className={`h-6 w-44 ${bar}`} />
+        {Array.from({ length: 3 }, (_, i) => (
+          <span key={i} className={`h-4 w-32 ${bar}`} />
+        ))}
+      </div>
       <div className="flex-1 p-5">
         <div className="flex items-center justify-between">
           <span className={`h-5 w-32 ${bar}`} />
@@ -176,7 +169,7 @@ function CalendarSkeleton() {
       </div>
       <div className="hidden w-[17.5rem] shrink-0 flex-col gap-2 border-l border-border-strong p-5 md:flex">
         <span className={`mb-2 h-5 w-24 ${bar}`} />
-        {Array.from({ length: 8 }, (_, i) => (
+        {Array.from({ length: 9 }, (_, i) => (
           <span key={i} className={`h-9 ${bar}`} />
         ))}
       </div>
