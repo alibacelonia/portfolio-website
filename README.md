@@ -17,16 +17,17 @@ cp .env.example .env.local   # optional
 npm run dev        # http://localhost:3000
 ```
 
-| Command                                       | Purpose                                                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `npm run lint` / `typecheck` / `format:check` | Static checks                                                                              |
-| `npm test`                                    | Unit and component tests (Vitest)                                                          |
-| `npm run build`                               | Static export to `out/`                                                                    |
-| `npm run preview`                             | Serve `out/` at http://localhost:4173                                                      |
-| `npm run test:e2e`                            | Playwright + axe against `out/` (build first; `npx playwright install chromium` once)      |
-| `npm run validate`                            | Lint, typecheck, format, unit tests, build                                                 |
-| `node scripts/screenshots.mjs <dir>`          | Screenshots at 8 widths × 2 themes, fails on horizontal overflow (needs `preview` running) |
-| `npm run tf:fmt` / `tf:validate`              | Terraform checks                                                                           |
+| Command                                       | Purpose                                                                                      |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `npm run lint` / `typecheck` / `format:check` | Static checks                                                                                |
+| `npm test`                                    | Unit and component tests (Vitest)                                                            |
+| `npm run build`                               | Static export to `out/`                                                                      |
+| `npm run preview`                             | Serve `out/` at http://localhost:4173                                                        |
+| `npm run test:e2e`                            | Playwright + axe against `out/` (build first; `npx playwright install chromium` once)        |
+| `npm run test:e2e:configured`                 | Builds with placeholder contact/booking variables (as CI does with real ones), then runs E2E |
+| `npm run validate`                            | Lint, typecheck, format, unit tests, build                                                   |
+| `node scripts/screenshots.mjs <dir>`          | Screenshots at 8 widths × 2 themes, fails on horizontal overflow (needs `preview` running)   |
+| `npm run tf:fmt` / `tf:validate`              | Terraform checks                                                                             |
 
 ## Configuration
 
