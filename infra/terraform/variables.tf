@@ -153,7 +153,13 @@ variable "turnstile_secret_parameter" {
 }
 
 variable "cal_origin" {
-  description = "Booking embed origin allowed in frame-src (Cal.com)."
+  description = "Cal.com origin of the plain booking iframe (the fallback when the embed script can't load), allowed in frame-src."
   type        = string
   default     = "https://cal.com"
+}
+
+variable "cal_embed_origin" {
+  description = "Cal.com embed origin (embed.js and its iframe), allowed in script-src and frame-src."
+  type        = string
+  default     = "https://app.cal.com"
 }

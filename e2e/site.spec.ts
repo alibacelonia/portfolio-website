@@ -404,12 +404,16 @@ test("connect page: the booking tab embeds the calendar and arrow keys switch ta
   const call = page.getByRole("tab", { name: "Book a call" });
   test.skip((await call.count()) === 0, "Build has no NEXT_PUBLIC_CAL_LINK");
   await expect(call).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator('iframe[src*="cal.com"]')).toBeVisible();
+  // Cal.com's embed replaces the loading skeleton once the calendar is ready.
+  const calendar = page.locator('iframe[src*="cal.com"]');
+  await expect(calendar).toBeVisible();
+  await expect(calendar).toHaveAttribute("title", /Book a call/);
+  await expect(page.getByRole("status", { name: "Loading the booking calendar" })).toHaveCount(0);
   await call.focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("tab", { name: "Send a message" })).toBeFocused();
   await expect(page.locator("#connect form")).toBeVisible();
-  await expect(page.locator('iframe[src*="cal.com"]')).toHaveCount(0);
+  await expect(page.locator('iframe[src*="cal.com"]')).toBeHidden();
 });
 
 test("publishes SEO metadata, robots and sitemap", async ({ page, request }) => {
