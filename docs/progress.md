@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-24: Dark background changed from `#090C10` to `#0D0D0F` (owner request, same as the reference site); browser theme color updated to match.
 - 2026-10-24: Booking calendar matched to the owner's reference: Cal.com's default dark theme with event details, 1040px wide, three-column skeleton (D-45).
 - 2026-10-24: Book a call looked boxed and loaded blank. It now uses Cal.com's inline embed (transparent, site colors, no details panel, auto height) with a skeleton and a plain-iframe fallback (D-44). Measured locally: calendar ready in about 1.6 s with zero CSP violations under the new policy; with the current policy the fallback shows immediately.
 - 2026-10-24: CI E2E failed once `CAL_LINK` was set: the default Book a call tab hid the form, and axe scanned the live Cal.com iframe. Tests now stub third-party services, open the message tab when present, check both tabs with axe, and pass with the variables set or unset (D-43).

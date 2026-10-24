@@ -58,7 +58,7 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #090c10;
+  --bg: #0d0d0f;
   --surface: #11151b;
   --surface-2: #181c23;
   --fg: #f3f4f6;
