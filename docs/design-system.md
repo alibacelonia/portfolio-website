@@ -11,14 +11,16 @@ The site currently uses dark mode only, including static HTML and first paint. L
 | Token                          | Light                 | Dark                  | Use                                     |
 | ------------------------------ | --------------------- | --------------------- | --------------------------------------- |
 | `--bg`                         | `#FAFBFC`             | `#0D0D0F`             | Page and alternating section background |
-| `--surface`                    | `#FFFFFF`             | `#11151B`             | Cards, alternating section surface      |
-| `--surface-2`                  | `#F3F5F8`             | `#181C23`             | Insets, tags, code                      |
-| `--fg`                         | `#111827`             | `#F3F4F6`             | Primary text                            |
-| `--muted`                      | `#64748B`             | `#9CA3AF`             | Secondary text                          |
-| `--border`                     | `#E5E7EB`             | `#30363D`             | Hairlines                               |
+| `--surface`                    | `#FFFFFF`             | `#151518`             | Cards, alternating section surface      |
+| `--surface-2`                  | `#F3F5F8`             | `#1C1C20`             | Insets, tags, code                      |
+| `--fg`                         | `#111827`             | `#F4F4F5`             | Primary text                            |
+| `--muted`                      | `#64748B`             | `#A1A1AA`             | Secondary text                          |
+| `--border`                     | `#E5E7EB`             | `#303036`             | Hairlines                               |
 | `--blue` / `--blue-fg`         | `#A9C4E8` / `#335C8F` | `#7FA3D1` / `#A9C6EE` | Full-Stack, links, focus                |
 | `--sage` / `--sage-fg`         | `#B4CDB6` / `#3F6B49` | `#8DAF92` / `#B4D3B8` | DevOps / Cloud, pipeline success        |
 | `--lavender` / `--lavender-fg` | `#C9BFE6` / `#5D4E8E` | `#A496CF` / `#CABFEF` | AI Engineering                          |
+
+Dark-theme neutrals (background, surfaces, borders, text greys, frame lines and the clay dock) are one family, zinc, whose faint cool cast matches `#0D0D0F`; only the pastel accents carry hue. `--fg-soft` is `#D4D4D8`, `--border-strong` `#3F3F46`.
 
 `*-fg` variants are the only accent colors allowed on text; each meets 4.5:1 against `--bg` and `--surface` in its theme. Fill variants are used only for dots, lines and soft tints (`color-mix` at ≤ 18 %).
 
