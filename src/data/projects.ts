@@ -282,6 +282,13 @@ export const projects: Project[] = [
     summary:
       "This website: a statically exported Next.js site built for Amazon S3 and CloudFront, with infrastructure defined in Terraform and deployments through GitHub Actions.",
     keyTech: ["Next.js", "TypeScript", "Tailwind CSS", "Terraform", "AWS"],
+    // Screenshot of this site's hero, supplied by the owner (4688×3281 PNG, resized), 2026-10-24.
+    screenshot: {
+      src: "/projects/website-portfolio.webp",
+      alt: "This site's home page: portrait beside the name Mohammed Ali B. Abdullah, roles and introduction, under the navigation dock",
+      width: 1600,
+      height: 1120,
+    },
     // The repository must contain this code before the site is deployed (docs/requirements.md).
     repository: {
       label: "GitHub",

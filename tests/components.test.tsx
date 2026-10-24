@@ -270,6 +270,8 @@ describe("CaseStudies", () => {
     const { container } = render(<CaseStudies studies={studies} />);
     const estoeStage = container.querySelector("#case-study-estoe .case-stage")!;
     expect(estoeStage).toHaveTextContent("preflight");
+    const portfolioStage = container.querySelector("#case-study-website-portfolio .case-stage")!;
+    expect(portfolioStage.querySelector('img[src*="website-portfolio"]')).not.toBeNull();
     if (publishedClientWork.length) {
       const ironfortStage = container.querySelector("#case-study-ironfort .case-stage")!;
       expect(ironfortStage.querySelector("img")).not.toBeNull();
