@@ -129,7 +129,9 @@ test("mobile snackbar stays at the viewport bottom and dismisses accessibly", as
     "location",
   );
   const trigger = page.getByRole("button", { name: /Open menu$/ });
-  await trigger.click();
+  // Playwright's click first scrolls the fixed trigger "into view", which moves the page off
+  // #skills and races the menu's initial focus. A real tap doesn't scroll, so dispatch the click.
+  await trigger.dispatchEvent("click");
   const menu = page.getByRole("navigation", { name: "Sections" });
   await expect(menu.getByRole("link", { name: "Skills" })).toBeFocused();
   const panel = menu.locator("..");

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ContactForm } from "@/components/sections/ContactForm";
 
@@ -64,7 +64,8 @@ describe("ContactForm", () => {
 
     const status = await screen.findByRole("status");
     expect(status).toHaveTextContent("Message sent. Thank you, Ada Lovelace.");
-    expect(status).toHaveFocus();
+    // Focus moves in an effect after the success panel renders.
+    await waitFor(() => expect(status).toHaveFocus());
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
