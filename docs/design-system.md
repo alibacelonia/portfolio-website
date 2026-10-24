@@ -24,6 +24,10 @@ Dark-theme neutrals (background, surfaces, borders, text greys, frame lines and 
 
 `*-fg` variants are the only accent colors allowed on text; each meets 4.5:1 against `--bg` and `--surface` in its theme. Fill variants are used only for dots, lines and soft tints (`color-mix` at ≤ 18 %).
 
+## Project screenshots
+
+Every project and client-work screenshot is **5 × 3.5 in (10:7)**, supplied by the owner and exported as `public/projects/<id>.webp` at 1600 × 1120 (WebP, quality 82). They are shown unaltered: never cropped, re-captured or replaced without the owner's file. `tests/data.test.ts` fails if a declared size is not 10:7 or the file's real size differs.
+
 ## Typography
 
 - Geist Sans (via the `geist` package, self-hosted by `next/font`) for everything; Geist Mono for section indices, pipeline labels, dates and architecture flows.

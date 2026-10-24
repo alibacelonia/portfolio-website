@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { clientWork, publishedClientWork } from "@/data/clientWork";
 import { getProject, projects } from "@/data/projects";
@@ -77,6 +77,39 @@ describe("projects data", () => {
   it("never ships a screenshot that is not a local asset", () => {
     for (const project of projects) {
       if (project.screenshot) expect(project.screenshot.src).toMatch(/^\/projects\//);
+    }
+  });
+});
+
+/** Pixel size from a WebP file header (lossy VP8, lossless VP8L or extended VP8X). */
+function webpSize(file: string): { width: number; height: number } {
+  const b = readFileSync(file);
+  const chunk = b.toString("ascii", 12, 16);
+  if (chunk === "VP8X") {
+    return { width: 1 + b.readUIntLE(24, 3), height: 1 + b.readUIntLE(27, 3) };
+  }
+  if (chunk === "VP8L") {
+    const bits = b.readUInt32LE(21);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+  }
+  return { width: b.readUInt16LE(26) & 0x3fff, height: b.readUInt16LE(28) & 0x3fff };
+}
+
+describe("project screenshots", () => {
+  const shots = [...projects, ...clientWork].flatMap((item) =>
+    item.screenshot ? [{ id: item.id, ...item.screenshot }] : [],
+  );
+
+  it("are all 5 × 3.5 in (10:7), and each file matches its declared size", () => {
+    expect(shots.map((shot) => shot.id)).toEqual(
+      expect.arrayContaining(["ironfort", "website-portfolio"]),
+    );
+    for (const shot of shots) {
+      expect(shot.src, shot.id).toMatch(/^\/projects\/.+\.webp$/);
+      expect(shot.width * 7, `${shot.id} is not 10:7`).toBe(shot.height * 10);
+      const file = join(process.cwd(), "public", shot.src);
+      expect(existsSync(file), shot.src).toBe(true);
+      expect(webpSize(file), shot.src).toEqual({ width: shot.width, height: shot.height });
     }
   });
 });
