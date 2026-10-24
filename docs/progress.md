@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-24: Reusable dock: clay (default), glass or neo, chosen with `NEXT_PUBLIC_DOCK_STYLE` / GitHub variable `DOCK_STYLE` (D-48).
 - 2026-10-24: Dark surfaces, borders, text greys and frame lines shifted from blue-greys to the zinc family so every neutral matches `#0D0D0F` (D-47).
 - 2026-10-24: Navigation dock restyled from frosted glass to claymorphism in near-`#0D0D0F` greys, with a raised clay pill for the active link; mobile menu button and panel match (D-46).
 - 2026-10-24: Dark background changed from `#090C10` to `#0D0D0F` (owner request, same as the reference site); browser theme color updated to match.

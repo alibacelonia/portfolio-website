@@ -38,6 +38,7 @@ npm run dev        # http://localhost:3000
 | `NEXT_PUBLIC_CONTACT_API_URL`    | empty                      | Contact API endpoint; empty = form reports sending unavailable |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | empty                      | Cloudflare Turnstile site key (public)                         |
 | `NEXT_PUBLIC_CAL_LINK`           | empty                      | Cal.com `user/event` for the Book a call tab                   |
+| `NEXT_PUBLIC_DOCK_STYLE`         | `clay`                     | Navigation dock: `clay`, `glass` or `neo` (neumorphism)        |
 
 ## Site structure
 

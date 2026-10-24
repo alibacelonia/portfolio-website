@@ -63,6 +63,7 @@ If the account already has the GitHub OIDC provider (`token.actions.githubuserco
 | `CONTACT_API_URL`            | Contact API endpoint (see Contact API)                             |
 | `TURNSTILE_SITE_KEY`         | Cloudflare Turnstile site key (public)                             |
 | `CAL_LINK`                   | Cal.com `user/event` for the Book a call tab (optional)            |
+| `DOCK_STYLE`                 | Navigation dock: `clay` (default), `glass` or `neo` (optional)     |
 
 The deploy job is **skipped** until `AWS_DEPLOY_ROLE_ARN` is set, so CI stays green before AWS exists.
 

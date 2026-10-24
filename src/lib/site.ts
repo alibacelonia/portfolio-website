@@ -37,6 +37,15 @@ export function normalizeCalLink(value: string | undefined): string | null {
   return link && /^[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)?$/.test(link) ? link : null;
 }
 
+export const DOCK_STYLES = ["clay", "glass", "neo"] as const;
+export type DockStyle = (typeof DOCK_STYLES)[number];
+
+/** Claymorphism, glassmorphism or neumorphism (`neo`); anything else falls back to clay. */
+export function normalizeDockStyle(value: string | undefined): DockStyle {
+  const style = value?.trim().toLowerCase();
+  return DOCK_STYLES.find((option) => option === style) ?? "clay";
+}
+
 export const site = {
   /** Typographic logo text; the drawn mark lives in src/lib/brand.ts. */
   brand: "A/B",
@@ -64,6 +73,8 @@ export const site = {
   turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || null,
   /** Cal.com `user/event` for the Book a call tab. */
   calLink: normalizeCalLink(process.env.NEXT_PUBLIC_CAL_LINK),
+  /** Navigation dock surface: clay (default), glass or neo (see src/lib/dock.ts). */
+  dockStyle: normalizeDockStyle(process.env.NEXT_PUBLIC_DOCK_STYLE),
 } as const;
 
 /** Host name shown as the site name, e.g. "alibacelonia.dev". */

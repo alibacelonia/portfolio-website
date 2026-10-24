@@ -1,6 +1,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { normalizeApiUrl, normalizeCalLink, normalizeSiteUrl, site, siteHost } from "@/lib/site";
+import {
+  normalizeApiUrl,
+  normalizeCalLink,
+  normalizeDockStyle,
+  normalizeSiteUrl,
+  site,
+  siteHost,
+} from "@/lib/site";
+import { dockProps } from "@/lib/dock";
 import { LOGO_PATH } from "@/lib/brand";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 
@@ -65,5 +73,22 @@ describe("contact settings", () => {
     expect(normalizeCalLink("alibacelonia")).toBe("alibacelonia");
     expect(normalizeCalLink("javascript:alert(1)")).toBeNull();
     expect(normalizeCalLink(undefined)).toBeNull();
+  });
+});
+
+describe("dock style", () => {
+  it("accepts clay, glass and neo, case-insensitively, and falls back to clay", () => {
+    expect(normalizeDockStyle("glass")).toBe("glass");
+    expect(normalizeDockStyle(" NEO ")).toBe("neo");
+    expect(normalizeDockStyle("clay")).toBe("clay");
+    expect(normalizeDockStyle("frosted")).toBe("clay");
+    expect(normalizeDockStyle(undefined)).toBe("clay");
+  });
+
+  it("gives the dock class, the chosen style and the caller's classes", () => {
+    expect(dockProps("rounded-full", "neo")).toEqual({
+      "data-dock": "neo",
+      className: "dock rounded-full",
+    });
   });
 });
