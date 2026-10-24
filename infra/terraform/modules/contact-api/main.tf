@@ -116,8 +116,9 @@ resource "aws_lambda_function" "contact" {
   source_code_hash = data.archive_file.contact.output_base64sha256
   memory_size      = 256
   timeout          = 10
-  # Caps concurrent executions as a cost backstop on top of API throttling.
-  reserved_concurrent_executions = 5
+  # Optional cap on concurrent executions (-1 = none). New accounts with a concurrency limit of
+  # 10 cannot reserve any, since AWS keeps 10 unreserved; API throttling still bounds cost.
+  reserved_concurrent_executions = var.reserved_concurrency
 
   environment {
     variables = {
