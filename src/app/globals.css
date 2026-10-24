@@ -996,27 +996,37 @@ html:not(.js) .case-panel-item {
     0 0 0 1px var(--border-strong);
 }
 
-/* A dark veil dims each card until it's hovered, then fades away so the card brightens. Mouse
-   only: touch screens have no hover, so there the cards stay at full brightness. */
+/* Card content (tagline row, screenshot) sits above the card's own overlay. */
+.case-stage {
+  isolation: isolate;
+}
+.case-stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* A dark veil over the card's background only (below the tagline and screenshot, which are never
+   darkened), until the card is hovered; then it fades away so the card brightens. Mouse only:
+   touch screens have no hover, so there the cards stay at full brightness. */
 @media (hover: hover) and (pointer: fine) {
-  .case-stage::after {
+  .case-stage::before {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 0;
     border-radius: inherit;
     background: rgb(0 0 0 / 0.3);
     pointer-events: none;
     transition: opacity 400ms var(--ease);
   }
 
-  .case-stage:hover::after {
+  .case-stage:hover::before {
     opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .case-stage::after {
+  .case-stage::before {
     transition: none;
   }
 }
@@ -1026,7 +1036,7 @@ html:not(.js) .case-panel-item {
     border: 1px solid CanvasText;
   }
 
-  .case-stage::after {
+  .case-stage::before {
     display: none;
   }
 }

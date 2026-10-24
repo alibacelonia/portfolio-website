@@ -21,16 +21,6 @@ export const projects: Project[] = [
     summary:
       "An AI-assisted service that investigates AWS incidents with a bounded, read-only agent and returns evidence-cited reports that keep facts, hypotheses and uncertainty separate.",
     keyTech: ["Python", "FastAPI", "Pydantic", "Amazon Bedrock", "Anthropic API"],
-    // Case-card background chosen by the owner (2026-10-25).
-    stageGradient: {
-      angle: 145,
-      stops: [
-        { color: "#1e2a78", at: 0 },
-        { color: "#2932CB", at: 40 },
-        { color: "#5a6aef", at: 75 },
-        { color: "#a0b0ff", at: 100 },
-      ],
-    },
     repository: {
       label: "GitHub",
       href: "https://github.com/alibacelonia/cloud-incident-service",
@@ -121,16 +111,6 @@ export const projects: Project[] = [
     summary:
       "A command-line tool that turns one cloud secret into a local .env file, so developers stop copying secret values by hand.",
     keyTech: ["Python", "AWS Secrets Manager", "Azure Key Vault", "Google Secret Manager"],
-    // Case-card background chosen by the owner (2026-10-25).
-    stageGradient: {
-      angle: 145,
-      stops: [
-        { color: "#1f2937", at: 0 },
-        { color: "#4b5563", at: 40 },
-        { color: "#9ca3af", at: 75 },
-        { color: "#d1d5db", at: 100 },
-      ],
-    },
     repository: { label: "GitHub", href: "https://github.com/alibacelonia/estoe" },
     docs: {
       label: "Architecture",
@@ -217,16 +197,6 @@ export const projects: Project[] = [
     summary:
       "A project generator that creates small, runnable Python and web starters with requirements, tests, CI and AI-agent instructions already aligned.",
     keyTech: ["Python", "Copier", "Typer", "Pydantic", "GitHub Actions"],
-    // Case-card background chosen by the owner (2026-10-25).
-    stageGradient: {
-      angle: 145,
-      stops: [
-        { color: "#4a1d8e", at: 0 },
-        { color: "#7E22CE", at: 40 },
-        { color: "#a855f7", at: 75 },
-        { color: "#d8b4fe", at: 100 },
-      ],
-    },
     repository: {
       label: "GitHub",
       href: "https://github.com/alibacelonia/ai-project-factory",
@@ -312,14 +282,14 @@ export const projects: Project[] = [
     summary:
       "This website: a statically exported Next.js site on Amazon S3 and CloudFront, with a serverless contact API (API Gateway, Lambda, DynamoDB and SES), infrastructure defined in Terraform and deployments through GitHub Actions.",
     keyTech: ["Next.js", "TypeScript", "Terraform", "CloudFront", "Lambda", "GitHub Actions"],
-    // Case-card background chosen by the owner (2026-10-25).
+    // Case-card gradient picked to complement the black-and-white screenshot: the site's sage.
     stageGradient: {
       angle: 145,
       stops: [
-        { color: "#831843", at: 0 },
-        { color: "#DB2777", at: 40 },
-        { color: "#f472b6", at: 75 },
-        { color: "#fbcfe8", at: 100 },
+        { color: "#142019", at: 0 },
+        { color: "#2f4a37", at: 40 },
+        { color: "#6f9a78", at: 75 },
+        { color: "#b4d3b8", at: 100 },
       ],
     },
     // Screenshot of this site's hero, supplied by the owner (4688×3281 PNG, resized), 2026-10-24.

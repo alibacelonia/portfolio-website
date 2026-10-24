@@ -1,5 +1,27 @@
 import type { StageGradient } from "@/types/content";
 
+/** Case cards without a screenshot all use this neutral grey (owner rule, 2026-10-25). */
+export const NEUTRAL_STAGE: StageGradient = {
+  angle: 145,
+  stops: [
+    { color: "#1f2937", at: 0 },
+    { color: "#4b5563", at: 40 },
+    { color: "#9ca3af", at: 75 },
+    { color: "#d1d5db", at: 100 },
+  ],
+};
+
+/**
+ * The gradient a case card shows: its own (chosen to complement its screenshot) when it has a
+ * screenshot, otherwise the neutral grey.
+ */
+export function stageGradientFor(study: {
+  screenshot?: unknown;
+  stageGradient?: StageGradient;
+}): StageGradient {
+  return study.screenshot && study.stageGradient ? study.stageGradient : NEUTRAL_STAGE;
+}
+
 /** CSS for a case card's gradient background. */
 export function stageBackground({ angle, stops }: StageGradient): string {
   return `linear-gradient(${angle}deg, ${stops.map((s) => `${s.color} ${s.at}%`).join(", ")})`;

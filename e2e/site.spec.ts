@@ -4,7 +4,7 @@ import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
 import { buildCaseStudies } from "../src/lib/caseStudies";
-import { stageFrame } from "../src/lib/stage";
+import { stageFrame, stageGradientFor } from "../src/lib/stage";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -620,7 +620,7 @@ test("case screenshots are framed in the second-lightest color of their card's g
         width: img.borderTopWidth,
       };
     });
-    const frame = stageFrame(study.stageGradient!);
+    const frame = stageFrame(stageGradientFor(study));
     const rgb = [1, 3, 5].map((i) => parseInt(frame.slice(i, i + 2), 16)).join(", ");
     expect(card, study.id).toContain(`rgb(${rgb})`);
     expect(color, study.id).toBe(`rgb(${rgb})`);
@@ -628,19 +628,27 @@ test("case screenshots are framed in the second-lightest color of their card's g
   }
 });
 
-test("case cards are dimmed until hovered, for a mouse only", async ({ page }, testInfo) => {
+test("case cards are dimmed until hovered (background only), for a mouse only", async ({
+  page,
+}, testInfo) => {
   await page.goto("/");
   const stage = page.locator(".case-stage").first();
-  const veil = () => stage.evaluate((el) => getComputedStyle(el, "::after"));
+  const veil = () => stage.evaluate((el) => getComputedStyle(el, "::before"));
   if (testInfo.project.name === "mobile") {
     // Touch screens have no hover, so cards are never dimmed there.
-    expect(await stage.evaluate((el) => getComputedStyle(el, "::after").content)).toBe("none");
+    expect((await veil()).content).toBe("none");
     return;
   }
   await stage.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
   await expect.poll(async () => (await veil()).opacity).toBe("1");
   expect((await veil()).backgroundColor).toBe("rgba(0, 0, 0, 0.3)");
+  // The overlay sits under the tagline and the screenshot, so the image is never darkened.
+  const layers = await stage.evaluate((el) => ({
+    veil: Number(getComputedStyle(el, "::before").zIndex),
+    content: [...el.children].map((child) => Number(getComputedStyle(child).zIndex)),
+  }));
+  for (const z of layers.content) expect(z).toBeGreaterThan(layers.veil);
   await stage.hover();
   await expect.poll(async () => (await veil()).opacity).toBe("0");
 });

@@ -45,14 +45,14 @@ export const clientWork: ClientWork[] = [
       width: 1600,
       height: 1120,
     },
-    // Case-card background chosen by the owner (2026-10-25).
+    // Case-card gradient picked to complement the screenshot's navy and IronFort blue (#3c64d3).
     stageGradient: {
       angle: 145,
       stops: [
-        { color: "#831843", at: 0 },
-        { color: "#DB2777", at: 40 },
-        { color: "#f472b6", at: 75 },
-        { color: "#fbcfe8", at: 100 },
+        { color: "#0b1530", at: 0 },
+        { color: "#1e3a8a", at: 40 },
+        { color: "#3c64d3", at: 75 },
+        { color: "#a5b8f0", at: 100 },
       ],
     },
     published: true,

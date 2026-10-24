@@ -8,7 +8,7 @@ import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
 import { ProjectCursor } from "@/components/ui/ProjectCursor";
-import { stageBackground, stageFrame } from "@/lib/stage";
+import { stageBackground, stageFrame, stageGradientFor } from "@/lib/stage";
 
 const stageTint: Record<CaseStudy["discipline"], string> = {
   "full-stack": "var(--blue)",
@@ -124,17 +124,14 @@ function Stage({
       </div>
     </>
   );
+  const gradient = stageGradientFor(study);
   const shared = {
     ref: stageRef,
     className: "case-stage group",
     style: {
       "--stage": stageTint[study.discipline],
-      ...(study.stageGradient
-        ? {
-            "--stage-bg": stageBackground(study.stageGradient),
-            "--stage-frame": stageFrame(study.stageGradient),
-          }
-        : {}),
+      "--stage-bg": stageBackground(gradient),
+      "--stage-frame": stageFrame(gradient),
     } as CSSProperties,
     tabIndex: -1,
     "aria-hidden": true,
