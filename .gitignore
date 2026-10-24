@@ -43,3 +43,6 @@ PRIVATE-SETUP-GUIDE.md
 *.tfplan
 tfplan
 infra/terraform/tfplan*
+
+# Lambda bundles built by Terraform (archive_file)
+infra/terraform/modules/*/.build/
