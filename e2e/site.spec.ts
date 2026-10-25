@@ -5,6 +5,7 @@ import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
 import { buildCaseStudies } from "../src/lib/caseStudies";
 import { stageFrame, stageGradientFor } from "../src/lib/stage";
+import { navigation } from "../src/lib/site";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -137,7 +138,7 @@ test("mobile snackbar stays at the viewport bottom and dismisses accessibly", as
   // #skills and races the menu's initial focus. A real tap doesn't scroll, so dispatch the click.
   await trigger.dispatchEvent("click");
   const menu = page.getByRole("navigation", { name: "Sections" });
-  await expect(menu.getByRole("link", { name: "Skills" })).toBeFocused();
+  await expect(menu.getByRole("link", { name: "Tech Stack" })).toBeFocused();
   const panel = menu.locator("..");
   await expect(async () => {
     const box = (await panel.boundingBox())!;
@@ -164,6 +165,9 @@ test("mobile snackbar stays at the viewport bottom and dismisses accessibly", as
   await expect(page.getByRole("navigation", { name: "Sections" })).toBeVisible();
 });
 
+/** The nav label for a section id, from the site's own navigation (e.g. skills → "Tech Stack"). */
+const navLabel = (id: string) => navigation.find((item) => item.id === id)!.label;
+
 test("keeps the navigation visible and clear of section headings", async ({ page }, testInfo) => {
   await page.goto("/");
   const bar = page.getByRole("banner");
@@ -171,17 +175,13 @@ test("keeps the navigation visible and clear of section headings", async ({ page
     if (testInfo.project.name === "desktop") {
       await page
         .getByRole("navigation", { name: "Sections" })
-        .getByRole("link", {
-          name: id[0]!.toUpperCase() + id.slice(1),
-        })
+        .getByRole("link", { name: navLabel(id) })
         .click();
     } else {
       await page.getByRole("button", { name: /Open menu$/ }).click();
       await page
         .getByRole("navigation", { name: "Sections" })
-        .getByRole("link", {
-          name: id[0]!.toUpperCase() + id.slice(1),
-        })
+        .getByRole("link", { name: navLabel(id) })
         .click();
     }
     await expect(page).toHaveURL(new RegExp(`#${id}$`));
@@ -283,7 +283,7 @@ test("project cards open static detail pages and lead back", async ({ page }) =>
   await expect(page).toHaveURL(/\/projects\/estoe\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("estoe");
   await expect(
-    page.getByRole("heading", { level: 2, name: "Infrastructure & architecture" }),
+    page.getByRole("heading", { level: 2, name: "How it's built and shipped" }),
   ).toBeVisible();
   // Crawlers load each URL directly, so check the canonical in the static HTML. After client-side
   // navigation Next.js streams the new <head> separately, so it can briefly hold both canonicals.

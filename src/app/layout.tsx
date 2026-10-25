@@ -16,6 +16,7 @@ import "./globals.css";
 // not preloaded because it is only used below the fold.
 const instrumentSerif = Instrument_Serif({
   weight: "400",
+  style: ["normal", "italic"],
   subsets: ["latin"],
   display: "swap",
   preload: false,

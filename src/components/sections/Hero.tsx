@@ -20,7 +20,7 @@ export function Hero() {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-12 gap-y-10 lg:grid-cols-[auto_minmax(0,1fr)] xl:gap-x-16">
           <div className="hero-sequence min-w-0 text-center lg:col-start-2 lg:row-start-1 lg:text-left">
             {/* Numbered like the other sections; the title is the name, so "Home" isn't repeated. */}
-            <p className="mb-3 type-eyebrow">
+            <p className="mb-3 type-overline text-muted">
               <SectionIndex index="01" label="Home" />
             </p>
             <p className="mb-5 flex items-center justify-center gap-1.5 type-small text-muted lg:justify-start">

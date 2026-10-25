@@ -223,6 +223,28 @@
   line-height: 1.5;
 }
 
+/* Section label above a display title: "02 — CASE STUDIES" (after the owner's reference). */
+@utility type-overline {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Section display title in Instrument Serif with a soft glow; its last word is set in italic. */
+@utility type-display {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(2.5rem, 1.55rem + 2.9vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  text-shadow:
+    0 4px 8px rgb(255 255 255 / 0.05),
+    0 8px 30px rgb(255 255 255 / 0.2);
+}
+
 @utility type-section-title {
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
   line-height: 1.25;

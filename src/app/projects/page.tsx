@@ -32,8 +32,8 @@ export default function ProjectsPage() {
       first
       headingLevel={1}
       index="02"
+      label="Case Studies"
       title="All projects"
-      lead={description}
       aside={<p className="type-mono text-muted">{projects.length} projects</p>}
       before={
         <Link

@@ -47,7 +47,7 @@ describe("MobileMenu", () => {
     expect(button).toHaveAttribute("aria-expanded", "true");
     const nav = await screen.findByRole("navigation", { name: "Sections" });
     expect(within(nav).getAllByRole("link")).toHaveLength(6);
-    expect(within(nav).getByRole("link", { name: "Skills" })).toHaveAttribute(
+    expect(within(nav).getByRole("link", { name: "Tech Stack" })).toHaveAttribute(
       "aria-current",
       "location",
     );
@@ -147,9 +147,9 @@ describe("ProjectDetail", () => {
       screen.getByRole("heading", { level: 1, name: "Website Portfolio" }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
-      "Overview",
-      "Solution",
-      "Infrastructure & architecture",
+      "Why it exists",
+      "How it works",
+      "How it's built and shipped",
     ]);
     expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
       "What it does",

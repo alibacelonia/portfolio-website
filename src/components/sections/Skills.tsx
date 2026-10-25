@@ -27,8 +27,8 @@ export function Skills() {
     <Section
       id="skills"
       index="04"
-      title="Skills"
-      lead="Tools from production roles and public projects, grouped by discipline."
+      label="Tech Stack"
+      title="Tools I build with"
       aside={<Legend />}
     >
       <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">

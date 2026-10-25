@@ -10,12 +10,7 @@ import { stagger } from "@/lib/motion";
  */
 export function Certifications() {
   return (
-    <Section
-      id="certifications"
-      index="05"
-      title="Certifications"
-      lead="Three AWS certifications covering solution architecture, cloud fundamentals and AI."
-    >
+    <Section id="certifications" index="05" label="Certifications" title="Credentials I've earned">
       <ul
         data-reveal-group="pop"
         className="grid grid-cols-1 divide-y divide-border overflow-hidden card-shell lg:grid-cols-3 lg:divide-x lg:divide-y-0"

@@ -3,15 +3,16 @@ import { SectionFrame } from "./SectionFrame";
 
 interface SectionProps {
   id: string;
-  /** Section number shown in the eyebrow ("02"). Ignored when `eyebrow` is set. */
+  /** Section number in the overline ("02"). */
   index?: string;
-  /**
-   * Section name after the number ("06 / Connect"), only when the title doesn't already name the
-   * section; otherwise the eyebrow is just the number, so nothing is said twice.
-   */
+  /** Section name in the overline ("Case Studies" → "02 — Case Studies"). */
   label?: string;
-  /** Custom eyebrow content, e.g. a project category. */
+  /**
+   * Custom eyebrow, e.g. a project category. Gives the boxed page-header layout (project pages)
+   * instead of the centered display title used by numbered sections.
+   */
   eyebrow?: ReactNode;
+  /** Display title ("Curated work"); its last word is set in italic. */
   title: string;
   /** Page-level bands render the title as the page's h1. */
   headingLevel?: 1 | 2;
@@ -20,8 +21,9 @@ interface SectionProps {
    * entrance animation so the largest text paints immediately.
    */
   first?: boolean;
+  /** Page-header summary (boxed layout only); numbered sections have no description. */
   lead?: ReactNode;
-  /** Right-aligned header content (legend, counts, links). */
+  /** Header extras (legend, counts): beside the title in the boxed layout, below it otherwise. */
   aside?: ReactNode;
   /** Content above the header panel, e.g. a back link. */
   before?: ReactNode;
@@ -58,26 +60,41 @@ export function Section({
     <SectionFrame id={id} aria-labelledby={headingId} className={`bg-bg ${top} ${bottom}`}>
       <div className="container-fluid">
         {before}
-        <header
-          data-reveal={first ? undefined : true}
-          className={`section-panel flex flex-col gap-5 p-5 sm:p-7 lg:flex-row lg:items-end lg:justify-between ${
-            children || footer ? "mb-10 sm:mb-12" : ""
-          }`}
-        >
-          <div className="min-w-0">
-            <p className="mb-3 type-eyebrow">
-              {eyebrow ?? <SectionIndex index={index} label={label} />}
+        {eyebrow !== undefined ? (
+          <header
+            data-reveal={first ? undefined : true}
+            className={`section-panel flex flex-col gap-5 p-5 sm:p-7 lg:flex-row lg:items-end lg:justify-between ${
+              children || footer ? "mb-10 sm:mb-12" : ""
+            }`}
+          >
+            <div className="min-w-0">
+              <p className="mb-3 type-eyebrow">{eyebrow}</p>
+              <Heading
+                id={headingId}
+                className={headingLevel === 1 ? "type-page-title" : "type-section-title"}
+              >
+                {title}
+              </Heading>
+              {lead ? <p className="mt-3 measure type-lead">{lead}</p> : null}
+            </div>
+            {aside ? <div className="shrink-0">{aside}</div> : null}
+          </header>
+        ) : (
+          <header
+            data-reveal={first ? undefined : true}
+            className={`mx-auto flex max-w-3xl flex-col items-center text-center ${
+              children || footer ? "mb-12 sm:mb-14" : ""
+            }`}
+          >
+            <p className="mb-4 type-overline text-muted">
+              <SectionIndex index={index} label={label} />
             </p>
-            <Heading
-              id={headingId}
-              className={headingLevel === 1 ? "type-page-title" : "type-section-title"}
-            >
-              {title}
+            <Heading id={headingId} className="type-display text-fg">
+              <DisplayTitle text={title} />
             </Heading>
-            {lead ? <p className="mt-3 measure type-lead">{lead}</p> : null}
-          </div>
-          {aside ? <div className="shrink-0">{aside}</div> : null}
-        </header>
+            {aside ? <div className="mt-6">{aside}</div> : null}
+          </header>
+        )}
         {children}
       </div>
       {footer}
@@ -85,15 +102,27 @@ export function Section({
   );
 }
 
-/** "02" or "06 / Connect": the number is decorative for screen readers; the name is read. */
+/** "02 — Case Studies": the number is decorative for screen readers; the name is read. */
 export function SectionIndex({ index, label }: { index?: string; label?: string }) {
   return (
     <>
       <span aria-hidden="true">
         {index}
-        {index && label ? " / " : null}
+        {index && label ? " — " : null}
       </span>
       {label}
+    </>
+  );
+}
+
+/** A display title with its last word in italic ("Curated *work*"), after the reference. */
+function DisplayTitle({ text }: { text: string }) {
+  const split = text.lastIndexOf(" ");
+  if (split < 0) return <em className="italic">{text}</em>;
+  return (
+    <>
+      {text.slice(0, split + 1)}
+      <em className="italic">{text.slice(split + 1)}</em>
     </>
   );
 }

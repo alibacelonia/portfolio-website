@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { projects } from "@/data/projects";
-import { site } from "@/lib/site";
 import type { ClientWork, Project } from "@/types/content";
 import { publishedClientWork } from "@/data/clientWork";
 import { disciplineDot } from "@/lib/disciplines";
@@ -279,17 +278,8 @@ export function Projects() {
     <Section
       id="projects"
       index="02"
-      title="Projects"
-      lead={
-        publishedClientWork.length > 0
-          ? "Client work and open-source projects across application development, cloud delivery and applied AI. Each open-source project page covers the problem, the solution, the stack and how it is built and shipped."
-          : "Open-source work across application development, cloud delivery and applied AI. Each project page covers the problem, the solution, the stack and how it is built and shipped."
-      }
-      aside={
-        <ExternalLink href={site.github} className="type-mono text-muted hover:text-fg">
-          github.com/alibacelonia
-        </ExternalLink>
-      }
+      label="Case Studies"
+      title="Curated work"
       footer={<ActionStrip href="/projects/">View all projects</ActionStrip>}
     >
       <CaseStudies studies={buildCaseStudies()} />
