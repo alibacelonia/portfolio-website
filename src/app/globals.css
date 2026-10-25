@@ -747,8 +747,11 @@
 .aurora-text {
   position: relative;
   display: inline-block;
-  padding-inline: 0.04em 0.12em; /* room for the italic overhang, so the gradient isn't cut */
-  margin-inline: -0.04em -0.12em;
+  /* The gradient only paints inside this box, so it must cover every glyph: room for the italic
+     overhang at the sides, ascenders above, and descenders (g, j, p) below the tight title line
+     height. Equal negative margins keep the layout exactly as if the padding weren't there. */
+  padding: 0.12em 0.12em 0.25em 0.04em;
+  margin: -0.12em -0.12em -0.25em -0.04em;
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;

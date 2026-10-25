@@ -672,6 +672,24 @@ test("certification badges tilt toward the mouse and settle back", async ({ page
   await expect(badge).not.toHaveAttribute("data-tilting");
 });
 
+test("aurora words paint their whole glyphs, descenders included", async ({ page }) => {
+  await page.goto("/");
+  const words = await page.locator(".aurora-text").evaluateAll((els) =>
+    els.map((el) => {
+      // The gradient only paints inside the element's box, so it must reach below the text's own
+      // line box far enough for descenders (g, j, p).
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const text = range.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
+      const em = parseFloat(getComputedStyle(el).fontSize);
+      return { word: el.textContent, extra: (box.bottom - text.bottom) / em };
+    }),
+  );
+  expect(words.map((w) => w.word)).toContain("building");
+  for (const { word, extra } of words) expect(extra, word ?? "").toBeGreaterThanOrEqual(0.1);
+});
+
 test("section titles sit vertically centered in their title band", async ({ page }) => {
   await page.goto("/");
   const gaps = await page.evaluate(() =>
