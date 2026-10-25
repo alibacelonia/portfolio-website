@@ -49,9 +49,11 @@ export function Section({
 }: SectionProps) {
   const headingId = `${id}-title`;
   const Heading = headingLevel === 1 ? "h1" : "h2";
+  // No top spacing: content starts right below the section's divider band. The first band of a
+  // page keeps room for the fixed navigation dock instead.
   const top = first
     ? "section-frame--top pt-[calc(var(--nav-offset)+32px)]"
-    : "pt-16 sm:pt-20 lg:pt-24";
+    : "pt-[var(--frame-divider-h)]";
   const bottom = footer ? "" : "pb-16 sm:pb-20 lg:pb-24";
   return (
     <SectionFrame id={id} aria-labelledby={headingId} className={`bg-bg ${top} ${bottom}`}>
