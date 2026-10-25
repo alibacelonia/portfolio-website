@@ -45,6 +45,10 @@ Sections have no top padding or margin: the title block starts right under the s
 
 Same format as the reference's “Curated work” panels: the project name in Instrument Serif (linking to the case study or site) with its category in 10 px uppercase sans; up to four key technologies as pills (`Tag shape="pill"`: rounded, faint fill, 70 % text); the client role line for client work; highlights in 14 px muted text, each marked with a 20 px four-point sparkle in the card's accent (`stageFrame()`, the gradient's second-lightest stop) with a soft glow; then the main link with a round arrow chip (→ internal, ↗ external) and the secondary links (GitHub, PyPI). The ruler's active tick uses the same accent. No description paragraph (see below).
 
+## Certification badges
+
+With a mouse, each badge leans toward the pointer in 3D (`TiltBadge`: up to 14°, `perspective: 600px`, scale 1.06), following quickly (120 ms) and settling back flat when the pointer leaves (600 ms, `cubic-bezier(0.22, 1, 0.36, 1)`). A soft-light sheen follows the pointer, masked to the badge's own hexagon by its image. Touch, pen and reduced motion leave the badges still. The pointer only sets CSS variables (no re-renders); about 0.4 KB gzipped.
+
 ## No repeated text
 
 Each fact is said once per section: no section descriptions; case-study panels carry the highlights, not the summary; labels that a group heading or a date already convey (“Client work”, “Current role”, the certification issuer) are omitted.

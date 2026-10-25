@@ -644,6 +644,34 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
   await expect.poll(active).toBe(first);
 });
 
+test("certification badges tilt toward the mouse and settle back", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Mouse only");
+  await page.goto("/");
+  const badge = page.locator("#certifications .tilt-badge").first();
+  await badge.scrollIntoViewIfNeeded();
+  // Smooth scrolling keeps easing after the jump; wait until the badge stops moving, or the
+  // pointer lands where the badge was and it slides away again.
+  await expect
+    .poll(async () => {
+      const before = (await badge.boundingBox())!.y;
+      await page.waitForTimeout(150);
+      return Math.abs((await badge.boundingBox())!.y - before);
+    })
+    .toBeLessThan(0.5);
+  const box = (await badge.boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.1, box.y + box.height * 0.1, { steps: 3 });
+  await expect(badge).toHaveAttribute("data-tilting");
+  // Pointer near the top left: the badge leans back on its top edge and toward the left.
+  const [tiltX, tiltY] = await badge.evaluate((el) => [
+    parseFloat(el.style.getPropertyValue("--tilt-x")),
+    parseFloat(el.style.getPropertyValue("--tilt-y")),
+  ]);
+  expect(tiltX).toBeGreaterThan(8);
+  expect(tiltY).toBeLessThan(-8);
+  await page.mouse.move(0, 0);
+  await expect(badge).not.toHaveAttribute("data-tilting");
+});
+
 test("section titles sit vertically centered in their title band", async ({ page }) => {
   await page.goto("/");
   const gaps = await page.evaluate(() =>
