@@ -644,6 +644,30 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
   await expect.poll(active).toBe(first);
 });
 
+test("section titles sit vertically centered in their title band", async ({ page }) => {
+  await page.goto("/");
+  const gaps = await page.evaluate(() =>
+    ["projects", "experience", "skills", "certifications", "connect"].map((id) => {
+      const section = document.getElementById(id)!;
+      const band = section.querySelector(".section-title-band")!;
+      const block = band.firstElementChild!.getBoundingClientRect();
+      const divider = getComputedStyle(section, "::before");
+      // The band's top line: the divider's lower edge, or the section's top edge when a strip
+      // above stands in for the divider.
+      const top =
+        section.getBoundingClientRect().top +
+        (divider.display === "none" ? 0 : parseFloat(divider.height));
+      return {
+        id,
+        above: block.top - top,
+        below: band.getBoundingClientRect().bottom - block.bottom,
+      };
+    }),
+  );
+  for (const { id, above, below } of gaps)
+    expect(Math.abs(above - below), id).toBeLessThanOrEqual(2);
+});
+
 test("case screenshots are framed in the second-lightest color of their card's gradient", async ({
   page,
 }) => {

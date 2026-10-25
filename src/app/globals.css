@@ -550,6 +550,12 @@
   display: none;
 }
 
+/* Without its divider, the section also drops the space reserved for it, so its title band is
+   framed by the strip's border above and its own line below with equal space on both sides. */
+.section-frame:has(> .section-action:last-child) + .section-frame {
+  padding-top: 0;
+}
+
 .section-frame--hero::before,
 .section-frame--top::before,
 .section-frame--footer::before,
