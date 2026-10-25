@@ -152,12 +152,12 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
   const Heading = `h${headingLevel}` as "h3" | "h4";
   return (
     <>
-      <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <Heading data-case-title className="type-display-serif">
           {study.name}
         </Heading>
         <span className="type-label tracking-wide text-muted uppercase">{study.kind}</span>
-      </header>
+      </div>
       <ul aria-label="Technologies" className="mt-4 flex flex-wrap gap-1.5">
         {study.tech.map((tech) => (
           <Tag key={tech}>{tech}</Tag>

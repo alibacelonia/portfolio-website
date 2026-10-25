@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: Section title blocks and case-study detail headers are `div`s instead of `<header>` (D-66).
 - 2026-10-25: Case-study list uses `div`s instead of `ol`/`li` (D-65).
 - 2026-10-25: Section numbers removed; overlines show the section name only, and the hero has none (D-64).
 - 2026-10-25: Section titles redesigned after the reference (overline + serif display title with italic last word, no descriptions); Skills renamed Tech Stack (D-63).

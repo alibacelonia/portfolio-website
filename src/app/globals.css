@@ -232,7 +232,7 @@
   text-transform: uppercase;
 }
 
-/* Section display title in Instrument Serif with a soft glow; its last word is set in italic. */
+/* Section display title in Instrument Serif; its last word is set in italic. */
 @utility type-display {
   font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
   font-size: clamp(2.5rem, 1.55rem + 2.9vw, 3.75rem);
@@ -240,6 +240,10 @@
   line-height: 1.05;
   letter-spacing: -0.01em;
   text-wrap: balance;
+}
+
+/* The soft glow on a section's title block (overline and title together), as on the reference. */
+@utility title-glow {
   text-shadow:
     0 4px 8px rgb(255 255 255 / 0.05),
     0 8px 30px rgb(255 255 255 / 0.2);

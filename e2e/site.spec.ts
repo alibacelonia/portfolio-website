@@ -335,7 +335,10 @@ test("view all projects opens the collection and cards remain visible after goin
   await expect(card).toHaveCSS("opacity", "1");
   await page.getByRole("link", { name: "Back to portfolio" }).click();
   await expect(page).toHaveURL(/\/#projects$/);
-  await expect(page.locator("#projects header[data-reveal]")).toHaveCSS("opacity", "1");
+  await expect(page.locator("#projects [data-reveal]:has(> #projects-title)")).toHaveCSS(
+    "opacity",
+    "1",
+  );
 });
 
 test("uses dark mode only even with a saved light preference", async ({ browser }) => {

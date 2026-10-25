@@ -58,7 +58,7 @@ export function Section({
       <div className="container-fluid">
         {before}
         {eyebrow !== undefined ? (
-          <header
+          <div
             data-reveal={first ? undefined : true}
             className={`section-panel flex flex-col gap-5 p-5 sm:p-7 lg:flex-row lg:items-end lg:justify-between ${
               children || footer ? "mb-10 sm:mb-12" : ""
@@ -75,11 +75,11 @@ export function Section({
               {lead ? <p className="mt-3 measure type-lead">{lead}</p> : null}
             </div>
             {aside ? <div className="shrink-0">{aside}</div> : null}
-          </header>
+          </div>
         ) : (
-          <header
+          <div
             data-reveal={first ? undefined : true}
-            className={`mx-auto flex max-w-3xl flex-col items-center text-center ${
+            className={`mx-auto flex max-w-3xl flex-col items-center text-center title-glow ${
               children || footer ? "mb-12 sm:mb-14" : ""
             }`}
           >
@@ -88,7 +88,7 @@ export function Section({
               <DisplayTitle text={title} />
             </Heading>
             {aside ? <div className="mt-6">{aside}</div> : null}
-          </header>
+          </div>
         )}
         {children}
       </div>
