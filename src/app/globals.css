@@ -735,6 +735,48 @@
    upper half of the viewport. The cards sit in a hatched well, like the section dividers, and a
    ruler of ticks beside the title shows which project is active.
    Phones: each image is followed by its own details, 100px between projects. */
+/* A section's title band: from rail to rail (like the case-study layout), equal space above and
+   below the title, and a line under it with junction squares where it meets the rails. The
+   section divider is its top edge; first bands (no divider) draw a top line too. */
+.section-title-band {
+  position: relative;
+  margin-inline: calc(var(--frame-inset) - var(--gutter));
+  padding: clamp(2.5rem, 5vw, 4.5rem) calc(var(--gutter) - var(--frame-inset));
+  border-bottom: 1px solid var(--frame-line);
+}
+
+.section-title-band--first {
+  border-top: 1px solid var(--frame-line);
+}
+
+.section-title-band::before,
+.section-title-band::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  background: var(--frame-marker);
+  box-shadow: 0 0 0 4px var(--bg);
+  translate: -50% 50%;
+  pointer-events: none;
+}
+
+.section-title-band::before {
+  left: 0;
+}
+
+.section-title-band::after {
+  left: 100%;
+}
+
+@media (forced-colors: active) {
+  .section-title-band::before,
+  .section-title-band::after {
+    display: none;
+  }
+}
+
 .case-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -757,6 +799,11 @@
     align-items: start;
     margin-inline: calc(var(--frame-inset) - var(--gutter));
     border-block: 1px solid var(--frame-line);
+  }
+
+  /* Directly under a title band, the band's line is this layout's top edge. */
+  .section-title-band + .case-layout {
+    border-top: 0;
   }
 
   /* The cards sit on the section-divider hatch; each keeps a thin bezel line 6px out, so it reads

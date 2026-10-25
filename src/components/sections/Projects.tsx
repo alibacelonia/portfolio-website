@@ -279,6 +279,7 @@ export function Projects() {
       id="projects"
       label="Case Studies"
       title="Curated work"
+      flush
       footer={<ActionStrip href="/projects/">View all projects</ActionStrip>}
     >
       <CaseStudies studies={buildCaseStudies()} />

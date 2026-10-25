@@ -27,6 +27,11 @@ interface SectionProps {
   before?: ReactNode;
   /** Optional full-width action row below the padded section content. */
   footer?: ReactNode;
+  /**
+   * Content that draws its own top rule from rail to rail (the case-study layout from `lg`): it
+   * sits flush against the title band and shares its line instead of doubling it.
+   */
+  flush?: boolean;
   children?: ReactNode;
 }
 
@@ -45,6 +50,7 @@ export function Section({
   aside,
   before,
   footer,
+  flush = false,
   children,
 }: SectionProps) {
   const headingId = `${id}-title`;
@@ -79,17 +85,23 @@ export function Section({
             {aside ? <div className="shrink-0">{aside}</div> : null}
           </div>
         ) : (
+          // The title sits in its own band, ruled from rail to rail like the reference's
+          // "Curated work" (the section divider above, a line below; first bands draw both).
           <div
-            data-reveal={first ? undefined : true}
-            className={`mx-auto flex max-w-3xl flex-col items-center text-center title-glow ${
-              children || footer ? "mb-12 sm:mb-14" : ""
+            className={`section-title-band ${first ? "section-title-band--first" : ""} ${
+              children || footer ? (flush ? "mb-12 sm:mb-14 lg:mb-0" : "mb-12 sm:mb-14") : ""
             }`}
           >
-            {label ? <p className="mb-4 type-overline text-muted">{label}</p> : null}
-            <Heading id={headingId} className="type-display text-fg">
-              <DisplayTitle text={title} />
-            </Heading>
-            {aside ? <div className="mt-6">{aside}</div> : null}
+            <div
+              data-reveal={first ? undefined : true}
+              className="mx-auto flex max-w-3xl flex-col items-center text-center title-glow"
+            >
+              {label ? <p className="mb-4 type-overline text-muted">{label}</p> : null}
+              <Heading id={headingId} className="type-display text-fg">
+                <DisplayTitle text={title} />
+              </Heading>
+              {aside ? <div className="mt-6">{aside}</div> : null}
+            </div>
           </div>
         )}
         {children}

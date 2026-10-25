@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: Section titles wrapped in rail-to-rail title bands on every page except the hero (D-69).
 - 2026-10-25: Case-study panels reformatted after the reference (pills, accent sparkles, arrow chip, accent ruler) (D-68).
 - 2026-10-25: Section top padding removed; titles start right under the divider band (D-67).
 - 2026-10-25: Section title blocks and case-study detail headers are `div`s instead of `<header>` (D-66).
