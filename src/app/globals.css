@@ -741,8 +741,8 @@
    upper half of the viewport. The cards sit in a hatched well, like the section dividers, and a
    ruler of ticks beside the title shows which project is active.
    Phones: each image is followed by its own details, 100px between projects. */
-/* Aurora text (after Magic UI): a gradient clipped to the letters, drifting through its colors
-   while the word sways. The title glow is turned off here: a text-shadow would paint over the
+/* Aurora text (after Magic UI): a gradient clipped to the letters, drifting through its colors;
+   the word itself stays still (Magic UI's sway is left out). The title glow is turned off here: a text-shadow would paint over the
    clipped gradient. Owner-approved exception to "no gradient text" (D-70). */
 .aurora-text {
   position: relative;
@@ -757,26 +757,20 @@
   animation: aurora 8s ease-in-out infinite alternate;
 }
 
+/* Only the colors move; the word itself stays still. */
 @keyframes aurora {
-  0% {
+  0%,
+  100% {
     background-position: 0% 50%;
-    transform: rotate(-2deg) scale(0.97);
   }
   25% {
     background-position: 50% 100%;
-    transform: rotate(2deg) scale(1.03);
   }
   50% {
     background-position: 100% 50%;
-    transform: rotate(-1deg) scale(0.99);
   }
   75% {
     background-position: 50% 0%;
-    transform: rotate(1deg) scale(1.02);
-  }
-  100% {
-    background-position: 0% 50%;
-    transform: rotate(-2deg) scale(0.97);
   }
 }
 

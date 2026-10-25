@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-26: Aurora word is still; only its colors drift (D-73).
 - 2026-10-26: Title bands vertically centered on sections that follow an action strip (D-72).
 - 2026-10-26: Section-title italic words are animated aurora text (D-70); Experience details are justified (D-71).
 - 2026-10-25: Section titles wrapped in rail-to-rail title bands on every page except the hero (D-69).

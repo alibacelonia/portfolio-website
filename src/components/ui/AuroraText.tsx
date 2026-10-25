@@ -5,8 +5,8 @@
 const AURORA_COLORS = ["#ff4fa3", "#b36bff", "#4f9dff", "#38bdf8"];
 
 /**
- * Aurora text after Magic UI: a gradient clipped to the letters that drifts through its colors
- * while the word gently sways. It stays real text (read and copied once), static with reduced
+ * Aurora text after Magic UI: a gradient clipped to the letters that drifts through its colors,
+ * on a still word (Magic UI's sway is left out). It stays real text (read and copied once), static with reduced
  * motion and a solid color in forced-colors mode.
  */
 export function AuroraText({ children }: { children: string }) {
