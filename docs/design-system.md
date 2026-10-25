@@ -41,6 +41,10 @@ Sections have no top padding or margin: the title block starts right under the s
 | Connect                                            | Tell me what you're building (also `/connect/`)           |
 | Overview / Solution / Architecture (project pages) | Why it exists / How it works / How it's built and shipped |
 
+## Case-study details panel
+
+Same format as the reference's “Curated work” panels: the project name in Instrument Serif (linking to the case study or site) with its category in 10 px uppercase sans; up to four key technologies as pills (`Tag shape="pill"`: rounded, faint fill, 70 % text); the client role line for client work; highlights in 14 px muted text, each marked with a 20 px four-point sparkle in the card's accent (`stageFrame()`, the gradient's second-lightest stop) with a soft glow; then the main link with a round arrow chip (→ internal, ↗ external) and the secondary links (GitHub, PyPI). The ruler's active tick uses the same accent. No description paragraph (see below).
+
 ## No repeated text
 
 Each fact is said once per section: no section descriptions; case-study panels carry the highlights, not the summary; labels that a group heading or a date already convey (“Client work”, “Current role”, the certification issuer) are omitted.

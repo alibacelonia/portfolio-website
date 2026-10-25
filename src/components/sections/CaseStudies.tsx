@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Plus } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
@@ -41,7 +41,8 @@ function Ruler({ studies, active }: { studies: CaseStudy[]; active: number }) {
       style={
         {
           "--active": active,
-          "--tick": stageTint[studies[active]!.discipline],
+          // The active tick glows in the active card's accent, like its highlight sparkles.
+          "--tick": stageFrame(stageGradientFor(studies[active]!)),
         } as CSSProperties
       }
     >
@@ -148,48 +149,102 @@ function Stage({
   );
 }
 
+/** The reference's four-point sparkle, used as the highlight marker. */
+function Sparkle({ color }: { color: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="mt-px size-5 shrink-0"
+      style={{ fill: color, filter: `drop-shadow(0 0 10px ${color})` }}
+    >
+      <path d="M12 1C12 1 12 8 10 10C8 12 1 12 1 12C1 12 8 12 10 14C12 16 12 23 12 23C12 23 12 16 14 14C16 12 23 12 23 12C23 12 16 12 14 10C12 8 12 1 12 1Z" />
+    </svg>
+  );
+}
+
+/** Up to this many key technologies show as pills in the panel, as on the reference. */
+const KEY_TECH = 4;
+
+/**
+ * A project's details in the reference's format: the name (linking to the case study or site) with
+ * its category, key-technology pills, client role, highlights marked with a sparkle in the card's
+ * accent color, and the links, the first one with an arrow chip.
+ */
 function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 4 }) {
   const Heading = `h${headingLevel}` as "h3" | "h4";
+  // The card's frame color doubles as the panel accent, so each panel matches its card.
+  const accent = stageFrame(stageGradientFor(study));
+  const Arrow = study.primary.external ? ArrowUpRight : ArrowRight;
+  const primaryLabel = study.primary.external
+    ? `${study.primary.label}: ${study.name} (opens in a new tab)`
+    : `${study.primary.label}: ${study.name}`;
+  const name = (
+    <Heading data-case-title className="type-display-serif">
+      {study.name}
+    </Heading>
+  );
   return (
     <>
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <Heading data-case-title className="type-display-serif">
-          {study.name}
-        </Heading>
-        <span className="type-label tracking-wide text-muted uppercase">{study.kind}</span>
+        {study.primary.external ? (
+          <a
+            href={study.primary.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={-1}
+            className="hover:underline"
+          >
+            {name}
+          </a>
+        ) : (
+          <Link href={study.primary.href} tabIndex={-1} className="hover:underline">
+            {name}
+          </Link>
+        )}
+        <span className="text-[10px] leading-none tracking-[0.1em] text-muted uppercase">
+          {study.kind}
+        </span>
       </div>
-      <ul aria-label="Technologies" className="mt-4 flex flex-wrap gap-1.5">
-        {study.tech.map((tech) => (
-          <Tag key={tech}>{tech}</Tag>
+      <ul aria-label="Key technologies" className="mt-4 flex flex-wrap gap-1.5">
+        {study.tech.slice(0, KEY_TECH).map((tech) => (
+          <Tag key={tech} shape="pill">
+            {tech}
+          </Tag>
         ))}
       </ul>
-      {study.role ? <p className="mt-3 type-mono text-muted">{study.role}</p> : null}
-      <ul aria-label="Highlights" className="mt-5 space-y-2.5 type-body text-fg-soft">
+      {study.role ? <p className="mt-4 type-mono text-muted">{study.role}</p> : null}
+      <ul aria-label="Highlights" className="mt-6 space-y-3 text-sm leading-5 text-muted">
         {study.highlights.map((item) => (
           <li key={item} className="flex gap-3">
-            <Plus aria-hidden="true" className="mt-[3px] size-3.5 shrink-0 text-sage-fg" />
+            <Sparkle color={accent} />
             <span>{item}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 type-action">
+      <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium">
         {study.primary.external ? (
-          <ExternalLink
+          <a
             href={study.primary.href}
-            className="min-h-10 text-fg hover:underline"
-            aria-label={`${study.primary.label}: ${study.name} (opens in a new tab)`}
-          >
-            {study.primary.label}
-          </ExternalLink>
-        ) : (
-          <Link
-            href={study.primary.href}
-            className="group inline-flex min-h-10 items-center gap-2 text-fg hover:underline"
-            aria-label={`${study.primary.label}: ${study.name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-h-10 items-center gap-2 text-fg"
+            aria-label={primaryLabel}
           >
             {study.primary.label}
             <span className="flex size-7 items-center justify-center rounded-full bg-fg/5 transition-colors group-hover:bg-fg/10">
-              <ArrowRight aria-hidden="true" className="size-3.5" />
+              <Arrow aria-hidden="true" className="size-3.5" />
+            </span>
+          </a>
+        ) : (
+          <Link
+            href={study.primary.href}
+            className="group inline-flex min-h-10 items-center gap-2 text-fg"
+            aria-label={primaryLabel}
+          >
+            {study.primary.label}
+            <span className="flex size-7 items-center justify-center rounded-full bg-fg/5 transition-colors group-hover:bg-fg/10">
+              <Arrow aria-hidden="true" className="size-3.5" />
             </span>
           </Link>
         )}
@@ -197,7 +252,7 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
           <ExternalLink
             key={link.href}
             href={link.href}
-            className="min-h-10 text-muted hover:text-fg"
+            className="min-h-10 text-fg/70 hover:text-fg"
             aria-label={`${study.name} on ${link.label} (opens in a new tab)`}
           >
             {link.label}
