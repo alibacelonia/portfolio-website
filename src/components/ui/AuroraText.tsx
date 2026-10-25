@@ -1,10 +1,4 @@
 /**
- * Brighter versions of Magic UI's aurora defaults (pink, purple, blue, sky), each at least 5.9:1
- * on the dark background (the original purple, #7928CA, is 2.75:1).
- */
-const AURORA_COLORS = ["#ff4fa3", "#b36bff", "#4f9dff", "#38bdf8"];
-
-/**
  * Aurora text after Magic UI: a gradient clipped to the letters that drifts through its colors,
  * on a still word (Magic UI's sway is left out). It stays real text (read and copied once), static with reduced
  * motion and a solid color in forced-colors mode.
@@ -14,7 +8,10 @@ export function AuroraText({ children }: { children: string }) {
     <span
       className="aurora-text"
       style={{
-        backgroundImage: `linear-gradient(135deg, ${[...AURORA_COLORS, AURORA_COLORS[0]].join(", ")})`,
+        // Colors come from the theme (--aurora-1…4 in globals.css), so light and dark each keep
+        // enough contrast.
+        backgroundImage:
+          "linear-gradient(135deg, var(--aurora-1), var(--aurora-2), var(--aurora-3), var(--aurora-4), var(--aurora-1))",
       }}
     >
       {children}

@@ -1,10 +1,9 @@
 import type { Page } from "@playwright/test";
 import { expect, openMessageTab, stubThirdParty, test } from "./fixtures";
-import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
 import { buildCaseStudies } from "../src/lib/caseStudies";
-import { stageFrame, stageGradientFor } from "../src/lib/stage";
+import { stageBackground, stageFrame, stageGradientFor } from "../src/lib/stage";
 import { navigation } from "../src/lib/site";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
@@ -91,8 +90,11 @@ test("shows exactly one section navigation per breakpoint", async ({ page }, tes
   const menuButton = page.getByRole("button", { name: /Open menu$/ });
   const header = page.getByRole("banner");
   await expect(header.getByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toHaveCount(0);
-  await expect(header.getByRole("button", { name: /theme/i })).toHaveCount(0);
-  await expect(header.getByRole("link", { name: /Resume/ })).toHaveCount(0);
+  // The theme toggle ends the dock on desktop; on phones it lives in the menu instead.
+  await expect(header.getByRole("button", { name: /theme/i })).toHaveCount(
+    testInfo.project.name === "desktop" ? 1 : 0,
+  );
+  await expect(header.getByRole("link", { name: /\bCV\b/ })).toHaveCount(0);
   if (testInfo.project.name === "desktop") {
     await expect(nav).toHaveCount(1);
     await expect(nav).toBeVisible();
@@ -341,20 +343,21 @@ test("view all projects opens the collection and cards remain visible after goin
   );
 });
 
-test("uses dark mode only even with a saved light preference", async ({ browser }) => {
-  const context = await browser.newContext({ colorScheme: "light" });
+test("follows the device theme, then remembers the visitor's choice", async ({
+  browser,
+}, testInfo) => {
+  const context = await browser.newContext({ ...testInfo.project.use, colorScheme: "light" });
   await stubThirdParty(context);
-  await context.addInitScript(
-    (key) => window.localStorage.setItem(key, "light"),
-    THEME_STORAGE_KEY,
-  );
   const page = await context.newPage();
   await page.goto("/");
+  // Nothing saved: the device's light setting wins.
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: /Open menu$/ }).click();
+  }
+  await page.getByRole("button", { name: "Switch to dark theme" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.emulateMedia({ colorScheme: "dark" });
-  await page.emulateMedia({ colorScheme: "light" });
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.getByRole("button", { name: /theme/i })).toHaveCount(0);
+  // The explicit choice survives a reload, even though the device still prefers light.
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await context.close();
@@ -371,9 +374,12 @@ test("skip link moves focus to the main content", async ({ page }, testInfo) => 
   await expect(page.locator("main")).toBeFocused();
 });
 
-test("serves the resume PDF", async ({ page, request }) => {
+test("serves the CV PDF", async ({ page, request }) => {
   await page.goto("/");
-  const href = await page.getByRole("link", { name: /Download Resume/ }).getAttribute("href");
+  const href = await page
+    .locator("#home")
+    .getByRole("link", { name: /Download CV/ })
+    .getAttribute("href");
   const response = await request.get(href!);
   expect(response.status()).toBe(200);
   expect(response.headers()["content-type"]).toContain("application/pdf");
@@ -727,7 +733,7 @@ test("case screenshots are framed in the second-lightest color of their card's g
       const shot = el.querySelector<HTMLElement>(".case-media img")!;
       const img = getComputedStyle(shot);
       return {
-        card: getComputedStyle(el).backgroundImage,
+        card: getComputedStyle(el).getPropertyValue("--stage-bg").trim(),
         color: img.borderTopColor,
         width: img.borderTopWidth,
         bottom: img.borderBottomWidth,
@@ -739,7 +745,7 @@ test("case screenshots are framed in the second-lightest color of their card's g
     });
     const frame = stageFrame(stageGradientFor(study));
     const rgb = [1, 3, 5].map((i) => parseInt(frame.slice(i, i + 2), 16)).join(", ");
-    expect(card, study.id).toContain(`rgb(${rgb})`);
+    expect(card, study.id).toBe(stageBackground(stageGradientFor(study)));
     expect(color, study.id).toBe(`rgb(${rgb})`);
     expect(width, study.id).toBe("2px");
     // The bottom edge keeps its width but only shows on hover.
@@ -787,7 +793,11 @@ test("case cards are dimmed until hovered (background only), for a mouse only", 
   await stage.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
   await expect.poll(async () => (await veil()).opacity).toBe("1");
-  expect((await veil()).backgroundColor).toBe("rgba(0, 0, 0, 0.3)");
+  expect((await veil()).backgroundColor).toBe(
+    (await page.locator("html").getAttribute("data-theme")) === "dark"
+      ? "rgba(0, 0, 0, 0.12)"
+      : "rgba(24, 24, 27, 0.035)",
+  );
   // The overlay sits under the tagline and the screenshot, so the image is never darkened.
   const layers = await stage.evaluate((el) => ({
     veil: Number(getComputedStyle(el, "::before").zIndex),

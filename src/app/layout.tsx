@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
 import { Instrument_Serif } from "next/font/google";
 import { site, siteHost } from "@/lib/site";
-import { DEFAULT_THEME, themeBootstrapScript } from "@/lib/theme";
+import { DEFAULT_THEME, THEME_COLORS, themeBootstrapScript } from "@/lib/theme";
 import { buildPersonJsonLd } from "@/lib/structured-data";
 import { Providers } from "@/components/layout/Providers";
 import { Header } from "@/components/layout/Header";
@@ -60,8 +59,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d0d0f",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+  ],
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -70,7 +72,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="en"
       data-theme={DEFAULT_THEME}
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable}`}
+      className={`${GeistSans.variable} ${instrumentSerif.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />

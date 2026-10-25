@@ -159,7 +159,7 @@ export function ContactForm({
             startedAt.current = now();
             setStatus({ kind: "idle" });
           }}
-          className="mt-6 inline-flex min-h-10 items-center rounded-lg border border-border-strong px-4 type-action text-fg transition-colors hover:bg-surface-2"
+          className="mt-6 inline-flex min-h-10 items-center rounded-lg glass-control px-4 type-action text-fg transition-colors hover:border-border-strong"
         >
           Send another message
         </button>
@@ -169,8 +169,8 @@ export function ContactForm({
 
   const submitting = status.kind === "submitting";
   const inputClass = (field: ContactField) =>
-    `block w-full rounded-lg border bg-bg px-3 py-2.5 text-base text-fg placeholder:text-muted/70 transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-fg disabled:opacity-60 ${
-      errors[field] ? "border-danger" : "border-border-strong hover:border-fg/30"
+    `block w-full rounded-lg glass-field px-3 py-2.5 text-base text-fg placeholder:text-muted transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-fg disabled:opacity-60 ${
+      errors[field] ? "border-danger!" : "hover:border-blue-fg"
     }`;
 
   const renderField = (
@@ -304,7 +304,7 @@ export function ContactForm({
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-fg px-5 type-action text-bg transition-[background-color,transform] hover:bg-fg/85 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg glass-control px-5 type-action text-fg transition-[border-color,transform] hover:border-blue-fg active:translate-y-px disabled:cursor-wait disabled:opacity-70"
         >
           {submitting ? (
             <>

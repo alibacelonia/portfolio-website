@@ -26,9 +26,7 @@ export function FlowDiagram({ steps, label }: { steps: string[]; label: string }
               →
             </span>
           ) : null}
-          <span className="rounded-md border border-border bg-surface-2 px-2 py-1 whitespace-nowrap">
-            {step}
-          </span>
+          <span className="rounded-md glass-chip px-2 py-1 whitespace-nowrap">{step}</span>
         </li>
       ))}
     </ol>
@@ -77,7 +75,7 @@ export function ProjectDetail({ project }: { project: Project }) {
               <li key={link.href}>
                 <ExternalLink
                   href={link.href}
-                  className="min-h-10 rounded-lg border border-border-strong bg-surface px-3.5 type-action text-fg transition-colors hover:bg-surface-2"
+                  className="min-h-10 rounded-lg glass-control px-3.5 type-action text-fg transition-colors hover:border-border-strong"
                   aria-label={`${project.name}: ${link.label} (opens in a new tab)`}
                 >
                   {link.label}
@@ -122,7 +120,7 @@ export function ProjectDetail({ project }: { project: Project }) {
           <article style={stagger(1)} className="flex flex-col card lg:col-span-5">
             <h3 className="type-card-title">Problem</h3>
             <p className="mt-3 type-prose text-fg-soft">{project.problem}</p>
-            <div className="mt-5 rounded-lg border border-border bg-surface-2 p-4 lg:mt-auto">
+            <div className="mt-5 rounded-lg glass-chip p-4 lg:mt-auto">
               <h4 className="type-label text-fg-soft">Who it helps</h4>
               <p className="mt-1.5 type-body text-fg-soft">{project.audience}</p>
             </div>

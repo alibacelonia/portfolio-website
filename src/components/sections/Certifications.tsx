@@ -41,7 +41,7 @@ export function Certifications() {
               {/* Reserve two lines in the three-column layout so codes and links align. */}
               <h3 className="type-card-title text-balance lg:min-h-[2lh]">{cert.name}</h3>
               <p className="mt-2 flex flex-wrap items-center gap-2 lg:justify-center">
-                <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 type-label text-fg-soft">
+                <span className="rounded-md glass-chip px-2 py-0.5 type-label text-fg-soft">
                   {cert.code}
                 </span>
                 <span className="type-label text-muted">{cert.level}</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "@/hooks/useTheme";
 
 const SCRIPT_URL = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
@@ -57,6 +58,7 @@ export function Turnstile({
   onToken: (token: string | null) => void;
   resetKey?: number;
 }) {
+  const { theme } = useTheme();
   const container = useRef<HTMLDivElement>(null);
   const callback = useRef(onToken);
   useEffect(() => {
@@ -64,6 +66,8 @@ export function Turnstile({
   });
 
   useEffect(() => {
+    // Turnstile cannot update a widget's theme; recreate it and invalidate its old token.
+    if (!theme) return;
     let widget: string | null = null;
     let cancelled = false;
     loadTurnstile()
@@ -71,7 +75,7 @@ export function Turnstile({
         if (cancelled || !container.current) return;
         widget = api.render(container.current, {
           sitekey: siteKey,
-          theme: "dark",
+          theme,
           size: "flexible",
           callback: (token) => callback.current(token),
           "expired-callback": () => callback.current(null),
@@ -84,7 +88,7 @@ export function Turnstile({
       if (widget) window.turnstile?.remove(widget);
       callback.current(null);
     };
-  }, [siteKey, resetKey]);
+  }, [siteKey, resetKey, theme]);
 
   return <div ref={container} className="min-h-[65px]" />;
 }

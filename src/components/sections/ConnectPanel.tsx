@@ -72,7 +72,7 @@ function CopyEmail() {
     }
   };
   return (
-    <div className="rounded-xl border border-border-strong bg-surface p-3.5 pl-4">
+    <div className="rounded-xl glass-control p-3.5 pl-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="type-label tracking-wide text-muted uppercase">Email</p>
@@ -112,7 +112,7 @@ function CopyEmail() {
 }
 
 const iconLink =
-  "inline-flex size-10 items-center justify-center rounded-lg border border-border-strong bg-surface text-fg-soft transition-colors hover:bg-surface-2 hover:text-fg";
+  "inline-flex size-10 items-center justify-center rounded-lg glass-control text-fg-soft transition-colors hover:border-border-strong hover:text-fg";
 
 /** LinkedIn and GitHub marks (lucide dropped brand icons). */
 function BrandIcon({ name }: { name: "linkedin" | "github" }) {
@@ -167,7 +167,7 @@ function ConnectTabs({ subject }: { subject?: string }) {
             role="tablist"
             aria-label="How to get in touch"
             onKeyDown={onKeyDown}
-            className="inline-flex gap-1 rounded-full border border-border bg-surface p-1"
+            className="inline-flex gap-1 rounded-full glass p-1"
           >
             {visible.map(({ id, label, Icon }) => (
               <button
@@ -182,7 +182,7 @@ function ConnectTabs({ subject }: { subject?: string }) {
                 aria-controls={`connect-panel-${id}`}
                 tabIndex={tab === id ? 0 : -1}
                 onClick={() => setTab(id)}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full px-4 type-action text-fg-soft transition-colors hover:text-fg aria-selected:bg-surface-2 aria-selected:text-fg aria-selected:shadow-sm"
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border glass-selectable border-transparent px-4 type-action text-fg-soft transition-colors hover:text-fg aria-selected:text-fg"
               >
                 <Icon aria-hidden="true" className="size-4" />
                 {label}
@@ -283,7 +283,7 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
                 type="button"
                 aria-pressed={intent === item.id}
                 onClick={() => setIntent(intent === item.id ? null : item.id)}
-                className="min-h-10 rounded-full border border-border-strong px-4 type-action text-fg-soft transition-colors hover:bg-surface-2 hover:text-fg aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-bg"
+                className="min-h-10 rounded-full glass-control glass-selectable px-4 type-action text-fg-soft transition-colors hover:border-border-strong hover:text-fg"
               >
                 {item.label}
               </button>
@@ -327,7 +327,7 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
                 href={site.resume.href}
                 download={site.resume.fileName}
                 className={iconLink}
-                aria-label="Download resume (PDF)"
+                aria-label="Download CV (PDF)"
               >
                 <FileText aria-hidden="true" className="size-4" />
               </a>

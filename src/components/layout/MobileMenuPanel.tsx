@@ -9,6 +9,7 @@ import { AnimatePresence, m } from "motion/react";
 import { BadgeCheck, BriefcaseBusiness, CodeXml, FolderKanban, House, Mail, X } from "lucide-react";
 import { navigation } from "@/lib/site";
 import { dockProps } from "@/lib/dock";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface MobileMenuPanelProps {
   open: boolean;
@@ -61,6 +62,8 @@ export default function MobileMenuPanel({
           <nav aria-label="Sections">
             <div className="flex items-center justify-between pl-3">
               <span className="type-label tracking-widest text-muted uppercase">Navigation</span>
+              <span className="ml-auto" />
+              <ThemeToggle />
               <button
                 type="button"
                 aria-label="Close navigation"

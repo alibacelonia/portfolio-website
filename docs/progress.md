@@ -1,7 +1,7 @@
 # Progress
 
 **Current phase:** Phase 9 (UI, branding and project refinement) complete locally. Deployment awaits owner actions (below).
-**Last updated:** 2026-10-23
+**Last updated:** 2026-10-26
 
 ## Phase 9 — refinement (2026-10-23)
 
@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-26: Review findings: Resume → CV; hero and estoe repetition removed; two font families and `rem` sizes; light mode with a dock toggle; clay surfaces and controls throughout (D-76 to D-80).
 - 2026-10-26: Aurora words no longer cut off descenders (the g in “building”) (D-75).
 - 2026-10-26: Certification badges tilt toward the mouse (D-74).
 - 2026-10-26: Aurora word is still; only its colors drift (D-73).
@@ -102,3 +103,11 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 5. ~~GitHub `production` environment and variables~~ — done.
 6. ~~DNS cutover on Cloudflare~~ — done: alibacelonia.dev serves from CloudFront. The Website Portfolio project no longer lists planned items.
 7. After going live: run Lighthouse against production (security headers and caching only exist on CloudFront).
+
+## Glass and theme audit (2026-10-26)
+
+Replaced clay/neo surfaces with reusable glass materials for cards, panels, controls, fields, labels, the dock and mobile snackbar. Project preview palettes now tint translucent theme surfaces with theme foreground text; the custom cursor, Connect photo frame, media shadows, form placeholders/errors/focus/selected states and browser chrome also follow the chosen theme. Legacy dock settings resolve to glass. Turnstile recreates its widget and clears its token when the theme changes; Cal.com follows the same theme and form input is preserved.
+
+Verified all eight rendered routes (home, Connect, project collection, all four project details and 404) in light/dark on desktop/mobile with zero detectable axe violations, including form validation states. Contrast checks cover floating navigation over an opposite-color backdrop; reduced-transparency and forced-colors fallbacks pass. Desktop/mobile project and Connect screenshots were reviewed in both themes. Original project screenshots and credential artwork are unchanged.
+
+Validation: lint, TypeScript/static production build and formatting pass; 77 unit/component tests pass. Full Playwright suites pass with third-party configuration enabled (99 passed, 7 expected breakpoint skips) and unset (95 passed, 11 expected breakpoint/configuration skips). Third-party services are stubbed; no real bookings or messages were sent. Decision D-81 records the shared material and fallback rules.

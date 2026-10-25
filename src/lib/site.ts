@@ -37,13 +37,13 @@ export function normalizeCalLink(value: string | undefined): string | null {
   return link && /^[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)?$/.test(link) ? link : null;
 }
 
-export const DOCK_STYLES = ["clay", "glass", "neo"] as const;
+export const DOCK_STYLES = ["glass"] as const;
 export type DockStyle = (typeof DOCK_STYLES)[number];
 
-/** Claymorphism, glassmorphism or neumorphism (`neo`); anything else falls back to clay. */
+/** Glass is the shared material; legacy or invalid settings resolve to glass too. */
 export function normalizeDockStyle(value: string | undefined): DockStyle {
   const style = value?.trim().toLowerCase();
-  return DOCK_STYLES.find((option) => option === style) ?? "clay";
+  return DOCK_STYLES.find((option) => option === style) ?? "glass";
 }
 
 export const site = {
@@ -51,8 +51,6 @@ export const site = {
   brand: "A/B",
   name: "Mohammed Ali B. Abdullah",
   roles: ["Full-Stack Developer", "DevOps Engineer", "AI Engineer"],
-  tagline:
-    "I build scalable applications, automate cloud infrastructure, and develop AI-powered solutions that solve real-world problems.",
   description:
     "Mohammed Ali B. Abdullah — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 7+ years building applications, CI/CD pipelines and cloud infrastructure.",
   /** Single source of truth for the canonical origin (NEXT_PUBLIC_SITE_URL). */
@@ -65,15 +63,15 @@ export const site = {
   github: "https://github.com/alibacelonia",
   linkedin: "https://www.linkedin.com/in/alibacelonia",
   resume: {
-    href: "/documents/mohammed-ali-abdullah-resume.pdf",
-    fileName: "Mohammed-Ali-Abdullah-Resume.pdf",
+    href: "/documents/mohammed-ali-abdullah-cv.pdf",
+    fileName: "Mohammed-Ali-Abdullah-CV.pdf",
   },
   /** Contact API (API Gateway → Lambda → SES); the only way the form sends. */
   contactApiUrl: normalizeApiUrl(process.env.NEXT_PUBLIC_CONTACT_API_URL),
   turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || null,
   /** Cal.com `user/event` for the Book a call tab. */
   calLink: normalizeCalLink(process.env.NEXT_PUBLIC_CAL_LINK),
-  /** Navigation dock surface: clay (default), glass or neo (see src/lib/dock.ts). */
+  /** Navigation dock surface: glass (legacy style values also resolve to glass) (see src/lib/dock.ts). */
   dockStyle: normalizeDockStyle(process.env.NEXT_PUBLIC_DOCK_STYLE),
 } as const;
 

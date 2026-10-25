@@ -10,14 +10,12 @@ import { clientWork, publishedClientWork } from "@/data/clientWork";
 import ProjectsPage from "@/app/projects/page";
 import { CaseStudies } from "@/components/sections/CaseStudies";
 import { buildCaseStudies } from "@/lib/caseStudies";
-import { Pipeline } from "@/components/sections/Pipeline";
 import { ProjectCard } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
 import { Skills } from "@/components/sections/Skills";
 import { Certifications } from "@/components/sections/Certifications";
 import { getProject, projects } from "@/data/projects";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
-import { mediaState } from "./setup";
 
 const pathname = vi.hoisted(() => ({ current: "/" }));
 vi.mock("next/navigation", () => ({ usePathname: () => pathname.current }));
@@ -78,14 +76,14 @@ describe("SectionNav", () => {
 });
 
 describe("Header", () => {
-  it("keeps all section links without a logo, theme toggle or resume in the dock", () => {
+  it("keeps all section links and the theme toggle, without a logo or CV link, in the dock", () => {
     pathname.current = "/";
     render(<Header />);
     expect(screen.queryByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toBeNull();
     expect(screen.getAllByRole("navigation", { name: "Sections" })).toHaveLength(1);
     expect(screen.getAllByRole("link")).toHaveLength(6);
-    expect(screen.queryByRole("button", { name: /theme/i })).toBeNull();
-    expect(screen.queryByRole("link", { name: /Resume/ })).toBeNull();
+    expect(screen.getByRole("button", { name: /theme/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /\bCV\b/ })).toBeNull();
   });
 
   it("marks Projects as current on project pages", () => {
@@ -96,28 +94,6 @@ describe("Header", () => {
       "location",
     );
     pathname.current = "/";
-  });
-});
-
-describe("Pipeline", () => {
-  it("renders exactly four labelled stages", () => {
-    render(<Pipeline />);
-    const list = screen.getByRole("list");
-    const items = within(list).getAllByRole("listitem");
-    expect(items.map((i) => i.textContent?.match(/^(Code|Build|Deploy|Monitor)/)?.[0])).toEqual([
-      "Code",
-      "Build",
-      "Deploy",
-      "Monitor",
-    ]);
-    expect(screen.getByText(/Delivery pipeline used for this site/)).toBeInTheDocument();
-  });
-
-  it("shows the finished state without a replay control when motion is reduced", () => {
-    mediaState.matches.add("(prefers-reduced-motion: reduce)");
-    render(<Pipeline />);
-    expect(screen.getByText("4/4 stages passed")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /run again/i })).not.toBeInTheDocument();
   });
 });
 

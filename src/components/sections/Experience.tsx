@@ -54,7 +54,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
         </p>
 
         {role.note ? (
-          <p className="mt-3 flex max-w-[72ch] gap-2.5 rounded-lg border border-border bg-surface-2 px-3 py-2 type-small text-fg-soft">
+          <p className="mt-3 flex max-w-[72ch] gap-2.5 rounded-lg glass-chip px-3 py-2 type-small text-fg-soft">
             <span aria-hidden="true" className="mt-[7px] size-1.5 shrink-0 rounded-full bg-sage" />
             {role.note}
           </p>

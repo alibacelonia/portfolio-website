@@ -11,7 +11,7 @@ function Legend() {
       className="flex flex-wrap items-center gap-x-4 gap-y-2 type-small text-muted"
     >
       <span className="inline-flex items-center gap-2">
-        <span className="inline-block h-4 w-6 rounded border border-border bg-surface-2" />
+        <span className="inline-block h-4 w-6 rounded glass-chip" />
         Hands-on
       </span>
       <span className="inline-flex items-center gap-2">

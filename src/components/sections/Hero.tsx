@@ -24,12 +24,12 @@ export function Hero() {
             </p>
             <h1
               id="home-title"
-              className="font-mono text-[clamp(1.875rem,1rem+2.2vw,3rem)] leading-[1.1] font-medium tracking-tight text-balance text-fg"
+              className="font-serif text-[clamp(2.5rem,1.6rem+3vw,4rem)] leading-[1.05] font-normal text-balance text-fg"
             >
               {site.name}
             </h1>
 
-            <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[15px] font-medium text-fg-soft sm:text-base lg:justify-start">
+            <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[0.9375rem] font-medium text-fg-soft sm:text-base lg:justify-start">
               {site.roles.map((role, index) => (
                 <span key={role} className="inline-flex items-center gap-2">
                   <span aria-hidden="true" className={`size-1.5 rounded-full ${roleDots[index]}`} />
@@ -37,10 +37,6 @@ export function Hero() {
                   {index < site.roles.length - 1 ? <span className="sr-only">,</span> : null}
                 </span>
               ))}
-            </p>
-
-            <p className="mx-auto mt-6 max-w-[54ch] text-base leading-[1.75] text-muted sm:text-lg lg:mx-0">
-              {site.tagline}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm font-medium lg:justify-start">
@@ -57,11 +53,11 @@ export function Hero() {
                 className="inline-flex min-h-11 items-center gap-2 text-fg-soft hover:text-fg hover:underline"
               >
                 <Download aria-hidden="true" className="size-4" />
-                Download Resume <span className="sr-only">(PDF)</span>
+                Download CV <span className="sr-only">(PDF)</span>
               </a>
             </div>
 
-            <div className="mx-auto mt-5 flex w-fit flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border px-2 pt-4 font-mono text-xs text-muted lg:mx-0 lg:justify-start lg:pl-0">
+            <div className="mx-auto mt-5 flex w-fit flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border px-2 pt-4 text-sm text-muted lg:mx-0 lg:justify-start lg:pl-0">
               <ExternalLink href={site.github} className="min-h-10 hover:text-fg">
                 github
               </ExternalLink>

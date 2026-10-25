@@ -5,13 +5,14 @@ import { navigation } from "@/lib/site";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { dockProps } from "@/lib/dock";
 import { SectionNav } from "./SectionNav";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { MobileMenu } from "./MobileMenu";
 
 const sectionIds = navigation.map((item) => item.id);
 const noSections: string[] = [];
 
 /**
- * The single primary navigation: a sticky, floating dock (clay, glass or neo; see src/lib/dock.ts). It overlaps the top of the page
+ * The single primary navigation: a sticky, floating glass dock (see src/lib/dock.ts). It overlaps the top of the page
  * (negative bottom margin) so the hero background runs behind it; content offsets use --nav-offset.
  */
 export function Header() {
@@ -33,6 +34,8 @@ export function Header() {
           )}
         >
           <SectionNav active={active} className="hidden sm:block" />
+          <span aria-hidden="true" className="hidden h-5 w-px bg-border-strong sm:block" />
+          <ThemeToggle className="hidden size-[calc(var(--nav-h)-0.5rem)] sm:inline-flex" />
           <MobileMenu active={active} />
         </div>
       </div>

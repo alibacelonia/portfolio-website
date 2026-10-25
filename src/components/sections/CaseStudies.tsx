@@ -8,7 +8,7 @@ import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
 import { ProjectCursor } from "@/components/ui/ProjectCursor";
-import { stageBackground, stageFrame, stageGradientFor } from "@/lib/stage";
+import { stageBackground, stageFrame, stageGlassBackground, stageGradientFor } from "@/lib/stage";
 
 const stageTint: Record<CaseStudy["discipline"], string> = {
   "full-stack": "var(--blue)",
@@ -65,7 +65,7 @@ function Ruler({ studies, active }: { studies: CaseStudy[]; active: number }) {
 /** Stand-in for a screenshot: the project's real architecture flow inside a window frame. */
 function FlowWindow({ steps, name }: { steps: string[]; name: string }) {
   return (
-    <div className="case-media-inner flex aspect-[16/10] flex-col overflow-hidden border border-b-0 border-border-strong bg-bg/90">
+    <div className="case-media-inner flex aspect-[16/10] flex-col overflow-hidden border-b-0 glass">
       <div className="flex h-9 items-center gap-1.5 border-b border-border px-3.5">
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="size-2 rounded-full bg-border-strong" />
@@ -76,9 +76,7 @@ function FlowWindow({ steps, name }: { steps: string[]; name: string }) {
         {steps.map((step, index) => (
           <li key={step} className="flex items-center gap-2">
             {index > 0 ? <span className="text-muted">→</span> : null}
-            <span className="rounded-md border border-border bg-surface px-2 py-1 whitespace-nowrap">
-              {step}
-            </span>
+            <span className="rounded-md glass-chip px-2 py-1 whitespace-nowrap">{step}</span>
           </li>
         ))}
       </ol>
@@ -101,6 +99,7 @@ function Stage({
   const media = (
     <>
       <div className="flex items-start justify-between gap-6 px-5 pt-5 pb-4 sm:px-7 sm:pt-7 sm:pb-6">
+        {/* Text follows the theme over the translucent project tint. */}
         <p className="max-w-[36ch] text-[clamp(1rem,0.92rem+0.4vw,1.25rem)] leading-snug font-medium text-fg">
           {study.tagline}
         </p>
@@ -132,6 +131,7 @@ function Stage({
     style: {
       "--stage": stageTint[study.discipline],
       "--stage-bg": stageBackground(gradient),
+      "--stage-glass": stageGlassBackground(gradient),
       "--stage-frame": stageFrame(gradient),
     } as CSSProperties,
     tabIndex: -1,
@@ -202,7 +202,7 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
             {name}
           </Link>
         )}
-        <span className="text-[10px] leading-none tracking-[0.1em] text-muted uppercase">
+        <span className="text-[0.6875rem] leading-none tracking-[0.1em] text-muted uppercase">
           {study.kind}
         </span>
       </div>

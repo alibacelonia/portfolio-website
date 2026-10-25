@@ -14,11 +14,9 @@ export function Tag({ children, level = "hands-on", index, shape = "square" }: T
   const working = level === "working";
   const look =
     shape === "pill"
-      ? "rounded-full border-fg/10 bg-fg/[0.03] px-2.5 text-fg/70"
+      ? "rounded-full glass-chip px-2.5 text-fg-soft"
       : `rounded-md px-2 text-fg-soft ${
-          working
-            ? "border-dashed border-border-strong bg-transparent"
-            : "border-border bg-surface-2"
+          working ? "border-dashed border-border-strong bg-transparent" : "glass-chip"
         }`;
   return (
     <li

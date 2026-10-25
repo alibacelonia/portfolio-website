@@ -41,3 +41,8 @@ export function stageFrame({ stops }: StageGradient): string {
   const byLightness = [...stops].sort((a, b) => luminance(b.color) - luminance(a.color));
   return (byLightness[1] ?? byLightness[0])!.color;
 }
+
+/** The same palette as translucent glass tints that resolve against the current theme. */
+export function stageGlassBackground({ angle, stops }: StageGradient): string {
+  return `linear-gradient(${angle}deg, ${stops.map((s) => `color-mix(in srgb, ${s.color} 12%, var(--glass-bg)) ${s.at}%`).join(", ")})`;
+}

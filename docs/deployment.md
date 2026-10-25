@@ -53,17 +53,17 @@ If the account already has the GitHub OIDC provider (`token.actions.githubuserco
    - Optional: _Required reviewers_ (yourself) for a manual approval gate.
 2. **Settings → Secrets and variables → Actions → Variables** (no secrets are needed):
 
-| Variable                     | Value                                                              |
-| ---------------------------- | ------------------------------------------------------------------ |
-| `AWS_DEPLOY_ROLE_ARN`        | `terraform output -raw deploy_role_arn`                            |
-| `AWS_REGION`                 | `ap-southeast-1` (or your `aws_region`)                            |
-| `S3_BUCKET`                  | `terraform output -raw bucket_name`                                |
-| `CLOUDFRONT_DISTRIBUTION_ID` | `terraform output -raw cloudfront_distribution_id`                 |
-| `SITE_URL`                   | `https://alibacelonia.dev` (canonical origin baked into the build) |
-| `CONTACT_API_URL`            | Contact API endpoint (see Contact API)                             |
-| `TURNSTILE_SITE_KEY`         | Cloudflare Turnstile site key (public)                             |
-| `CAL_LINK`                   | Cal.com `user/event` for the Book a call tab (optional)            |
-| `DOCK_STYLE`                 | Navigation dock: `clay` (default), `glass` or `neo` (optional)     |
+| Variable                     | Value                                                                |
+| ---------------------------- | -------------------------------------------------------------------- |
+| `AWS_DEPLOY_ROLE_ARN`        | `terraform output -raw deploy_role_arn`                              |
+| `AWS_REGION`                 | `ap-southeast-1` (or your `aws_region`)                              |
+| `S3_BUCKET`                  | `terraform output -raw bucket_name`                                  |
+| `CLOUDFRONT_DISTRIBUTION_ID` | `terraform output -raw cloudfront_distribution_id`                   |
+| `SITE_URL`                   | `https://alibacelonia.dev` (canonical origin baked into the build)   |
+| `CONTACT_API_URL`            | Contact API endpoint (see Contact API)                               |
+| `TURNSTILE_SITE_KEY`         | Cloudflare Turnstile site key (public)                               |
+| `CAL_LINK`                   | Cal.com `user/event` for the Book a call tab (optional)              |
+| `DOCK_STYLE`                 | Navigation dock: `glass` (legacy `clay`/`neo` also resolve to glass) |
 
 The deploy job is **skipped** until `AWS_DEPLOY_ROLE_ARN` is set, so CI stays green before AWS exists.
 

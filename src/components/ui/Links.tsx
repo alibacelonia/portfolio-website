@@ -9,8 +9,8 @@ const buttonBase =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-[background-color,border-color,color,transform] duration-200 ease-out-soft active:translate-y-px";
 
 export const buttonStyles = {
-  primary: `${buttonBase} bg-fg text-bg hover:bg-fg/85`,
-  secondary: `${buttonBase} border border-border-strong bg-surface text-fg hover:border-fg/40 hover:bg-surface-2`,
+  primary: `${buttonBase} glass-control text-fg hover:border-blue-fg`,
+  secondary: `${buttonBase} glass-control text-fg-soft hover:border-border-strong hover:text-fg`,
 };
 
 export function ButtonLink({
