@@ -330,7 +330,9 @@ describe("Experience timeline", () => {
     const branches = container.querySelectorAll(".exp-branch");
     expect(branches).toHaveLength(1);
     expect(branches[0]!.closest("li")).toHaveAttribute("id", "role-buzzerboy");
-    expect(container.querySelector("#role-buzzerboy")).toHaveTextContent("Current role");
+    // "Present" marks the current role; no extra "Current role" label.
+    expect(container.querySelector("#role-buzzerboy")).toHaveTextContent("Present");
+    expect(container.querySelector("#role-buzzerboy")).not.toHaveTextContent("Current role");
     expect(container.querySelector("#role-fujitsu")).toHaveTextContent("4 yrs 3 mos");
   });
 });

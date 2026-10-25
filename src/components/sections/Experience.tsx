@@ -26,7 +26,8 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
             "Present"
           )}
         </p>
-        <p className="type-label text-muted md:mt-1.5">{duration ?? "Current role"}</p>
+        {/* "Present" already marks the current role, so it gets no duration line. */}
+        {duration ? <p className="type-label text-muted md:mt-1.5">{duration}</p> : null}
         {role.employment ? (
           <p className="type-label text-muted md:mt-1">{role.employment}</p>
         ) : null}

@@ -1,8 +1,13 @@
 import { site } from "@/lib/site";
+import { experience } from "@/data/experience";
 import { OverviewStrip, type OverviewCell } from "@/components/ui/OverviewStrip";
 
+// The hero already lists the three roles; this cell says where I work now instead.
+const current = experience.find((role) => !role.end)!;
+const product = current.organization.split(" · ").at(-1);
+
 const cells: OverviewCell[] = [
-  { label: "Building", value: "Full-stack applications", accent: "bg-blue" },
+  { label: "Currently", value: `${current.title}, ${product}`, accent: "bg-blue" },
   { label: "Experience", value: `${site.experienceYears} years`, accent: "bg-sage" },
   { label: "Certified", value: "AWS 3×", accent: "bg-lavender", href: "#certifications" },
   { label: "Reach out", value: "Start a conversation", href: "#connect" },

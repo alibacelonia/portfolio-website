@@ -28,6 +28,10 @@ Dark-theme neutrals (background, surfaces, borders, text greys, frame lines and 
 
 Every project and client-work screenshot is **5 × 3.5 in (10:7)**, supplied by the owner and exported as `public/projects/<id>.webp` at 1600 × 1120 (WebP, quality 82). They are shown unaltered: never cropped, re-captured or replaced without the owner's file. `tests/data.test.ts` fails if a declared size is not 10:7 or the file's real size differs.
 
+## No repeated text
+
+Each fact is said once per section. Eyebrows show only the section number when the title already names the section (Connect keeps “06 / Connect” because its title doesn't). Leads don't restate the labels, legends or links right below them; case-study panels carry the highlights, not the summary (the card's tagline already says it); labels that a group heading or a date already convey (“Client work”, “Current role”, the certification issuer) are omitted.
+
 ## Typography
 
 - Geist Sans (via the `geist` package, self-hosted by `next/font`) for everything; Geist Mono for section indices, pipeline labels, dates and architecture flows.
@@ -36,7 +40,7 @@ Every project and client-work screenshot is **5 × 3.5 in (10:7)**, supplied by 
 
 | Utility              | Size / style                                  | Color | Role                                                         |
 | -------------------- | --------------------------------------------- | ----- | ------------------------------------------------------------ |
-| `type-eyebrow`       | Geist Mono 12 px, +0.025em                    | muted | Section index (“02 / Projects”), 404 code                    |
+| `type-eyebrow`       | Geist Mono 12 px, +0.025em                    | muted | Section index (“02”; the title names the section), 404 code  |
 | `type-section-title` | `clamp(1.5rem, 1.2rem + 1vw, 2rem)`, 600      | fg    | Every section `h2`                                           |
 | `type-page-title`    | `clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)`, 600 | fg    | Page `h1` (projects, project detail, 404)                    |
 | `type-lead`          | 15 px / 1.65                                  | muted | Section and page introductions                               |

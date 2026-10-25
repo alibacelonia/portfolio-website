@@ -14,7 +14,7 @@ export function Certifications() {
       id="certifications"
       index="05"
       title="Certifications"
-      lead="Three AWS certifications covering solution architecture, cloud fundamentals and AI on AWS. Each one can be verified on Credly."
+      lead="Three AWS certifications covering solution architecture, cloud fundamentals and AI."
     >
       <ul
         data-reveal-group="pop"
@@ -40,7 +40,7 @@ export function Certifications() {
             )}
 
             <div className="flex min-w-0 flex-col lg:mt-6 lg:flex-1 lg:items-center">
-              {/* Reserve two lines in the three-column layout so codes, issuers and links align. */}
+              {/* Reserve two lines in the three-column layout so codes and links align. */}
               <h3 className="type-card-title text-balance lg:min-h-[2lh]">{cert.name}</h3>
               <p className="mt-2 flex flex-wrap items-center gap-2 lg:justify-center">
                 <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 type-label text-fg-soft">
@@ -48,7 +48,6 @@ export function Certifications() {
                 </span>
                 <span className="type-label text-muted">{cert.level}</span>
               </p>
-              <p className="mt-2 type-body text-muted">{cert.issuer}</p>
 
               <div className="mt-4 lg:mt-auto lg:pt-6">
                 {cert.credentialUrl ? (

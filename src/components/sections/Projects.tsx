@@ -121,16 +121,14 @@ export function ClientWorkCard({
 
   const header = (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
-        <p className="inline-flex items-center gap-2 text-xs text-fg-soft">
-          <span
-            aria-hidden="true"
-            className={`size-1.5 shrink-0 rounded-full ${disciplineDot[work.discipline]}`}
-          />
-          {work.category}
-        </p>
-        <p className="type-label text-muted">Client work</p>
-      </div>
+      {/* Shown under the "Professional work" heading, so it isn't labelled "Client work" again. */}
+      <p className="inline-flex items-center gap-2 text-xs text-fg-soft">
+        <span
+          aria-hidden="true"
+          className={`size-1.5 shrink-0 rounded-full ${disciplineDot[work.discipline]}`}
+        />
+        {work.category}
+      </p>
       <Heading id={headingId} className="mt-4 type-card-title">
         {work.name}
       </Heading>

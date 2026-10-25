@@ -12,7 +12,7 @@ export const projects: Project[] = [
     tagline: "An AI agent that investigates AWS incidents and cites the evidence for every claim",
     highlights: [
       "Bounded agent: 8 tool calls, 6 turns, 60 seconds",
-      "Every statement cites evidence a tool returned",
+      "Facts, hypotheses and uncertainty kept separate",
       "Remediation always requires human approval",
       "Offline evaluation across ten scenarios",
     ],
@@ -272,7 +272,7 @@ export const projects: Project[] = [
     tagline:
       "This site: a static Next.js portfolio served from a private S3 bucket through CloudFront",
     highlights: [
-      "Static export with no server runtime",
+      "Serverless contact form with spam checks and rate limits",
       "Terraform and GitHub OIDC, with no stored AWS keys",
       "Deploys gated on tests and accessibility checks",
       "CSS-first motion that respects reduced motion",
@@ -318,9 +318,9 @@ export const projects: Project[] = [
     audience: "Recruiters, hiring managers and engineers evaluating my work.",
     solution: [
       "Content lives in typed data modules, separate from components, and each claim is traceable to the resume or a repository.",
-      "Accessible by design: semantic structure, keyboard navigation, visible focus, reduced-motion support and automated axe checks in both themes.",
+      "Accessible by design: semantic structure, keyboard navigation, visible focus, reduced-motion support and automated axe checks.",
       "A small performance budget: static HTML, CSS-first animation, and Motion for React only where it is needed.",
-      "A contact form that sends through the site's own API (API Gateway, Lambda and SES, with Cloudflare Turnstile and rate limits), with clear sending, success and error states.",
+      "A Connect page with call booking and a contact form, each with clear sending, success and error states.",
       "Deployments gated on linting, type checks, unit tests, end-to-end and accessibility tests, and Terraform validation.",
     ],
     stack: [
@@ -362,8 +362,7 @@ export const projects: Project[] = [
       },
     ],
     infrastructure: {
-      summary:
-        "Live at alibacelonia.dev. The hosting, the contact API and the deploy role are defined in Terraform, validated in CI and running in AWS; DNS is on Cloudflare.",
+      summary: "Live at alibacelonia.dev, served from AWS.",
       items: [
         {
           label: "Hosting",
@@ -398,7 +397,7 @@ export const projects: Project[] = [
         {
           label: "Domain & DNS",
           detail:
-            "alibacelonia.dev on Cloudflare DNS (DNS only, not proxied), pointed at CloudFront; www redirects to the apex.",
+            "alibacelonia.dev on Cloudflare DNS (DNS only, not proxied), pointed at CloudFront.",
         },
       ],
       graph: [

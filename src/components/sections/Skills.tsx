@@ -28,12 +28,7 @@ export function Skills() {
       id="skills"
       index="04"
       title="Skills"
-      lead={
-        <>
-          Grouped by discipline. Solid tags are tools used in production roles or public projects;
-          dashed tags mark working knowledge.
-        </>
-      }
+      lead="Tools from production roles and public projects, grouped by discipline."
       aside={<Legend />}
     >
       <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">

@@ -52,6 +52,7 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-25: Repeated text removed across sections (eyebrows, leads, labels, case-study panels, Website Portfolio page) (D-61).
 - 2026-10-25: Booking confirmation shown by the site after Cal.com reports a booking, replacing the white Cal.com success page (D-60). Hero jump-link test made motion-independent after a parallel-load flake.
 - 2026-10-25: The screenshot's bottom border now appears only on hover (D-59).
 - 2026-10-25: Case screenshots framed on all four sides, resting 20 px low and tipping back in perspective on desktop hover, per the owner's reference class (D-58).

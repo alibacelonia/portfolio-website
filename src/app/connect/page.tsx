@@ -30,7 +30,6 @@ export default function ConnectPage() {
       headingLevel={1}
       eyebrow="Get in touch"
       title="Tell me what you're building"
-      lead="Pick what brings you here and send a message, or reach me directly."
     >
       <ConnectPanel withForm />
     </Section>

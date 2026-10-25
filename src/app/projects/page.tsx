@@ -8,7 +8,7 @@ import { projects } from "@/data/projects";
 import { site, siteHost } from "@/lib/site";
 
 const description =
-  "Open-source work across application development, cloud delivery and applied AI. Explore the problem, solution, stack and architecture behind each project.";
+  "Client work and open-source projects across application development, cloud delivery and applied AI.";
 
 export const metadata: Metadata = {
   title: "All projects",
@@ -31,7 +31,6 @@ export default function ProjectsPage() {
       id="all-projects"
       first
       headingLevel={1}
-      eyebrow="Projects"
       title="All projects"
       lead={description}
       aside={<p className="type-mono text-muted">{projects.length} projects</p>}

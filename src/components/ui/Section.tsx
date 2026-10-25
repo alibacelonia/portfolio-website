@@ -3,7 +3,7 @@ import { SectionFrame } from "./SectionFrame";
 
 interface SectionProps {
   id: string;
-  /** Sequence number shown in the eyebrow ("02 / Projects"). Ignored when `eyebrow` is set. */
+  /** Sequence number shown as the eyebrow ("02"); the title names the section, so it isn't repeated. Ignored when `eyebrow` is set. */
   index?: string;
   /** Custom eyebrow content, e.g. a project category. */
   eyebrow?: ReactNode;
@@ -60,12 +60,7 @@ export function Section({
         >
           <div className="min-w-0">
             <p className="mb-3 type-eyebrow">
-              {eyebrow ?? (
-                <>
-                  <span aria-hidden="true">{index} / </span>
-                  {title}
-                </>
-              )}
+              {eyebrow ?? <span aria-hidden="true">{index}</span>}
             </p>
             <Heading
               id={headingId}

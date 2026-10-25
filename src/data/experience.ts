@@ -10,7 +10,7 @@ export const experience: Role[] = [
     start: "2024-08",
     end: null,
     employment: "Freelance · Part-time",
-    note: "Part-time engagement held alongside the Fujitsu role from August 2024 to September 2026.",
+    note: "Held alongside the Fujitsu role from August 2024 to September 2026.",
     summary: [
       "AWS infrastructure automation with Terraform and CDKTN",
       "Azure DevOps CI/CD with AWS OIDC integration",

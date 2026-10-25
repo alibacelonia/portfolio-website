@@ -163,7 +163,6 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
           <Tag key={tech}>{tech}</Tag>
         ))}
       </ul>
-      <p className="mt-5 max-w-[56ch] type-prose text-fg-soft">{study.summary}</p>
       {study.role ? <p className="mt-3 type-mono text-muted">{study.role}</p> : null}
       <ul aria-label="Highlights" className="mt-5 space-y-2.5 type-body text-fg-soft">
         {study.highlights.map((item) => (

@@ -14,7 +14,6 @@ export function Connect() {
         </>
       }
       title="Tell me what you're building"
-      lead="An opportunity, a project or an idea: pick what brings you here, or reach me directly."
       footer={<ActionStrip href="/connect/">Send a message</ActionStrip>}
     >
       <ConnectPanel />

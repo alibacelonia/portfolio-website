@@ -8,7 +8,6 @@ export interface CaseStudy {
   name: string;
   kind: string;
   tagline: string;
-  summary: string;
   tech: string[];
   highlights: string[];
   discipline: Discipline;
@@ -30,7 +29,6 @@ export function buildCaseStudies(): CaseStudy[] {
     name: work.name,
     kind: work.kind,
     tagline: work.tagline,
-    summary: work.summary,
     tech: work.tech,
     highlights: work.highlights,
     discipline: work.discipline,
@@ -45,7 +43,6 @@ export function buildCaseStudies(): CaseStudy[] {
     name: project.name,
     kind: project.kind,
     tagline: project.tagline,
-    summary: project.summary,
     tech: project.keyTech,
     highlights: project.highlights,
     discipline: project.discipline,
