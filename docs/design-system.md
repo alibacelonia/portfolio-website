@@ -30,7 +30,7 @@ Every project and client-work screenshot is **5 × 3.5 in (10:7)**, supplied by 
 
 ## No repeated text
 
-Each fact is said once per section. Eyebrows show only the section number when the title already names the section (Connect keeps “06 / Connect” because its title doesn't). Leads don't restate the labels, legends or links right below them; case-study panels carry the highlights, not the summary (the card's tagline already says it); labels that a group heading or a date already convey (“Client work”, “Current role”, the certification issuer) are omitted.
+Each fact is said once per section. Every section is numbered: the eyebrow is the number alone when the title already names the section (“02” above “Projects”), and “number / name” when it doesn't (“01 / Home” above the name in the hero, “06 / Connect” above “Tell me what you're building”, also on `/connect/`). `/projects/` uses “02”; project pages number their bands 01–03. Leads don't restate the labels, legends or links right below them; case-study panels carry the highlights, not the summary (the card's tagline already says it); labels that a group heading or a date already convey (“Client work”, “Current role”, the certification issuer) are omitted.
 
 ## Typography
 
@@ -38,19 +38,19 @@ Each fact is said once per section. Eyebrows show only the section number when t
 - Instrument Serif (via `next/font/google`, downloaded at build time and self-hosted, not preloaded) only for case-study project titles (`type-display-serif`, regular weight, `clamp(1.75rem, 1.4rem + 1.1vw, 2.375rem)`). It has a single weight, so it is never bolded.
 - Every section uses the same type scale, defined once as utilities in `src/app/globals.css`. Use these instead of ad-hoc `text-[…]` sizes:
 
-| Utility              | Size / style                                  | Color | Role                                                         |
-| -------------------- | --------------------------------------------- | ----- | ------------------------------------------------------------ |
-| `type-eyebrow`       | Geist Mono 12 px, +0.025em                    | muted | Section index (“02”; the title names the section), 404 code  |
-| `type-section-title` | `clamp(1.5rem, 1.2rem + 1vw, 2rem)`, 600      | fg    | Every section `h2`                                           |
-| `type-page-title`    | `clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)`, 600 | fg    | Page `h1` (projects, project detail, 404)                    |
-| `type-lead`          | 15 px / 1.65                                  | muted | Section and page introductions                               |
-| `type-prose`         | 15 px / 1.7                                   | (set) | Long-form text on project pages                              |
-| `type-card-title`    | 17 px / 1.35, 600                             | fg    | Every card heading, project-page subsection headings         |
-| `type-body`          | 14 px / 1.65                                  | (set) | Card descriptions, bullets, lists, contact details           |
-| `type-small`         | 13 px / 1.55                                  | (set) | Notes, form labels and messages, legends, footer             |
-| `type-label`         | Geist Mono 11 px, +0.02em                     | (set) | Status, group labels, codes, form/contact labels, hero strip |
-| `type-mono`          | Geist Mono 12 px                              | (set) | Dates and flow diagrams                                      |
-| `type-action`        | 13 px, 500                                    | (set) | Card actions, back links, buttons                            |
+| Utility              | Size / style                                  | Color | Role                                                                             |
+| -------------------- | --------------------------------------------- | ----- | -------------------------------------------------------------------------------- |
+| `type-eyebrow`       | Geist Mono 12 px, +0.025em                    | muted | Section index (“02”, or “06 / Connect” when the title doesn't name it), 404 code |
+| `type-section-title` | `clamp(1.5rem, 1.2rem + 1vw, 2rem)`, 600      | fg    | Every section `h2`                                                               |
+| `type-page-title`    | `clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)`, 600 | fg    | Page `h1` (projects, project detail, 404)                                        |
+| `type-lead`          | 15 px / 1.65                                  | muted | Section and page introductions                                                   |
+| `type-prose`         | 15 px / 1.7                                   | (set) | Long-form text on project pages                                                  |
+| `type-card-title`    | 17 px / 1.35, 600                             | fg    | Every card heading, project-page subsection headings                             |
+| `type-body`          | 14 px / 1.65                                  | (set) | Card descriptions, bullets, lists, contact details                               |
+| `type-small`         | 13 px / 1.55                                  | (set) | Notes, form labels and messages, legends, footer                                 |
+| `type-label`         | Geist Mono 11 px, +0.02em                     | (set) | Status, group labels, codes, form/contact labels, hero strip                     |
+| `type-mono`          | Geist Mono 12 px                              | (set) | Dates and flow diagrams                                                          |
+| `type-action`        | 13 px, 500                                    | (set) | Card actions, back links, buttons                                                |
 
 “(set)” means the utility carries no color: pair it with one `text-*` class. Never combine a utility that has a color with another color class (the winner is not guaranteed). Form inputs use 16 px so iOS does not zoom on focus. Navigation stays 13 px; the hero name and Tag chips (12 px) keep their own sizes.
 

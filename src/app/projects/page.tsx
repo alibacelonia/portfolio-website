@@ -31,6 +31,7 @@ export default function ProjectsPage() {
       id="all-projects"
       first
       headingLevel={1}
+      index="02"
       title="All projects"
       lead={description}
       aside={<p className="type-mono text-muted">{projects.length} projects</p>}

@@ -3,8 +3,13 @@ import { SectionFrame } from "./SectionFrame";
 
 interface SectionProps {
   id: string;
-  /** Sequence number shown as the eyebrow ("02"); the title names the section, so it isn't repeated. Ignored when `eyebrow` is set. */
+  /** Section number shown in the eyebrow ("02"). Ignored when `eyebrow` is set. */
   index?: string;
+  /**
+   * Section name after the number ("06 / Connect"), only when the title doesn't already name the
+   * section; otherwise the eyebrow is just the number, so nothing is said twice.
+   */
+  label?: string;
   /** Custom eyebrow content, e.g. a project category. */
   eyebrow?: ReactNode;
   title: string;
@@ -32,6 +37,7 @@ interface SectionProps {
 export function Section({
   id,
   index,
+  label,
   eyebrow,
   title,
   headingLevel = 2,
@@ -60,7 +66,7 @@ export function Section({
         >
           <div className="min-w-0">
             <p className="mb-3 type-eyebrow">
-              {eyebrow ?? <span aria-hidden="true">{index}</span>}
+              {eyebrow ?? <SectionIndex index={index} label={label} />}
             </p>
             <Heading
               id={headingId}
@@ -76,5 +82,18 @@ export function Section({
       </div>
       {footer}
     </SectionFrame>
+  );
+}
+
+/** "02" or "06 / Connect": the number is decorative for screen readers; the name is read. */
+export function SectionIndex({ index, label }: { index?: string; label?: string }) {
+  return (
+    <>
+      <span aria-hidden="true">
+        {index}
+        {index && label ? " / " : null}
+      </span>
+      {label}
+    </>
   );
 }

@@ -8,11 +8,7 @@ export function Connect() {
     <Section
       id="connect"
       index="06"
-      eyebrow={
-        <>
-          <span aria-hidden="true">06 / </span>Connect
-        </>
-      }
+      label="Connect"
       title="Tell me what you're building"
       footer={<ActionStrip href="/connect/">Send a message</ActionStrip>}
     >

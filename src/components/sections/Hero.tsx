@@ -5,6 +5,7 @@ import { ExternalLink } from "@/components/ui/Links";
 import { EmailLink } from "@/components/ui/EmailLink";
 import { SectionFrame } from "@/components/ui/SectionFrame";
 import { HeroOverview } from "./HeroOverview";
+import { SectionIndex } from "@/components/ui/Section";
 
 const roleDots = ["bg-blue", "bg-sage", "bg-lavender"] as const;
 
@@ -18,6 +19,10 @@ export function Hero() {
       <div className="container-fluid flex flex-1 items-center pt-4 pb-14 sm:pt-14 sm:pb-20 lg:pt-10 lg:pb-16">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-x-12 gap-y-10 lg:grid-cols-[auto_minmax(0,1fr)] xl:gap-x-16">
           <div className="hero-sequence min-w-0 text-center lg:col-start-2 lg:row-start-1 lg:text-left">
+            {/* Numbered like the other sections; the title is the name, so "Home" isn't repeated. */}
+            <p className="mb-3 type-eyebrow">
+              <SectionIndex index="01" label="Home" />
+            </p>
             <p className="mb-5 flex items-center justify-center gap-1.5 type-small text-muted lg:justify-start">
               <MapPin aria-hidden="true" className="size-3.5 shrink-0" />
               Based in {site.basedIn}
