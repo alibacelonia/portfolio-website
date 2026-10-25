@@ -3,9 +3,7 @@ import { SectionFrame } from "./SectionFrame";
 
 interface SectionProps {
   id: string;
-  /** Section number in the overline ("02"). */
-  index?: string;
-  /** Section name in the overline ("Case Studies" → "02 — Case Studies"). */
+  /** Section name in the overline above the title ("Case Studies"). */
   label?: string;
   /**
    * Custom eyebrow, e.g. a project category. Gives the boxed page-header layout (project pages)
@@ -38,7 +36,6 @@ interface SectionProps {
  */
 export function Section({
   id,
-  index,
   label,
   eyebrow,
   title,
@@ -86,9 +83,7 @@ export function Section({
               children || footer ? "mb-12 sm:mb-14" : ""
             }`}
           >
-            <p className="mb-4 type-overline text-muted">
-              <SectionIndex index={index} label={label} />
-            </p>
+            {label ? <p className="mb-4 type-overline text-muted">{label}</p> : null}
             <Heading id={headingId} className="type-display text-fg">
               <DisplayTitle text={title} />
             </Heading>
@@ -99,19 +94,6 @@ export function Section({
       </div>
       {footer}
     </SectionFrame>
-  );
-}
-
-/** "02 — Case Studies": the number is decorative for screen readers; the name is read. */
-export function SectionIndex({ index, label }: { index?: string; label?: string }) {
-  return (
-    <>
-      <span aria-hidden="true">
-        {index}
-        {index && label ? " — " : null}
-      </span>
-      {label}
-    </>
   );
 }
 

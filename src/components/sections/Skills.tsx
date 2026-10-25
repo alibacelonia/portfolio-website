@@ -24,13 +24,7 @@ function Legend() {
 
 export function Skills() {
   return (
-    <Section
-      id="skills"
-      index="04"
-      label="Tech Stack"
-      title="Tools I build with"
-      aside={<Legend />}
-    >
+    <Section id="skills" label="Tech Stack" title="Tools I build with" aside={<Legend />}>
       <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
         {skills.map((discipline, index) => (
           <article

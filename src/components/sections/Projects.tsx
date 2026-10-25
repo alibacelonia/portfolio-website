@@ -277,7 +277,6 @@ export function Projects() {
   return (
     <Section
       id="projects"
-      index="02"
       label="Case Studies"
       title="Curated work"
       footer={<ActionStrip href="/projects/">View all projects</ActionStrip>}

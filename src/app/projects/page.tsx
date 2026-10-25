@@ -31,7 +31,6 @@ export default function ProjectsPage() {
       id="all-projects"
       first
       headingLevel={1}
-      index="02"
       label="Case Studies"
       title="All projects"
       aside={<p className="type-mono text-muted">{projects.length} projects</p>}

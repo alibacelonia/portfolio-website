@@ -7,7 +7,6 @@ export function Connect() {
   return (
     <Section
       id="connect"
-      index="06"
       label="Connect"
       title="Tell me what you're building"
       footer={<ActionStrip href="/connect/">Send a message</ActionStrip>}

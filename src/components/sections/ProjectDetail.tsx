@@ -109,7 +109,7 @@ export function ProjectDetail({ project }: { project: Project }) {
         }
       />
 
-      <Section id="overview" index="01" label="Overview" title="Why it exists">
+      <Section id="overview" label="Overview" title="Why it exists">
         <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
           <article style={stagger(0)} className="card lg:col-span-7">
             <h3 className="type-card-title">What it does</h3>
@@ -130,7 +130,7 @@ export function ProjectDetail({ project }: { project: Project }) {
         </div>
       </Section>
 
-      <Section id="solution" index="02" label="Solution" title="How it works">
+      <Section id="solution" label="Solution" title="How it works">
         <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
           <ul
             style={stagger(0)}
@@ -166,7 +166,6 @@ export function ProjectDetail({ project }: { project: Project }) {
 
       <Section
         id="infrastructure"
-        index="03"
         label="Architecture"
         title="How it's built and shipped"
         footer={

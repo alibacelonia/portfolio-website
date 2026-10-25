@@ -30,17 +30,16 @@ Every project and client-work screenshot is **5 × 3.5 in (10:7)**, supplied by 
 
 ## Section titles
 
-Every numbered section opens with the same centered, unboxed heading, after the owner's reference: an overline with the number and the section name (`type-overline`, “02 — Case Studies”, the number hidden from screen readers) and a display title (`type-display`, an `h2`, or the page's `h1`) whose last word is set in Instrument Serif italic: “Curated _work_”. The italic word stays solid white (the reference's gradient is not used: no gradient text). There is no description under the title; a legend or count (`aside`) sits below it. Only the project-page header keeps the boxed layout with its category, summary and links.
+Every section opens with the same centered, unboxed heading, after the owner's reference: an overline with the section name (`type-overline`, “CASE STUDIES”) and a display title (`type-display`, an `h2`, or the page's `h1`) whose last word is set in Instrument Serif italic: “Curated _work_”. Sections are not numbered. The italic word stays solid white (the reference's gradient is not used: no gradient text). There is no description under the title; a legend or count (`aside`) sits below it. The hero has no overline (its title is the name), and only the project-page header keeps the boxed layout with its category, summary and links.
 
-| #                   | Overline                           | Title                                                     |
-| ------------------- | ---------------------------------- | --------------------------------------------------------- |
-| 01                  | Home                               | the name (hero `h1`)                                      |
-| 02                  | Case Studies                       | Curated work (`/projects/`: All projects)                 |
-| 03                  | Experience                         | Where I've worked                                         |
-| 04                  | Tech Stack                         | Tools I build with                                        |
-| 05                  | Certifications                     | Credentials I've earned                                   |
-| 06                  | Connect                            | Tell me what you're building (also `/connect/`)           |
-| Project pages 01–03 | Overview / Solution / Architecture | Why it exists / How it works / How it's built and shipped |
+| Overline                                           | Title                                                     |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| Case Studies                                       | Curated work (`/projects/`: All projects)                 |
+| Experience                                         | Where I've worked                                         |
+| Tech Stack                                         | Tools I build with                                        |
+| Certifications                                     | Credentials I've earned                                   |
+| Connect                                            | Tell me what you're building (also `/connect/`)           |
+| Overview / Solution / Architecture (project pages) | Why it exists / How it works / How it's built and shipped |
 
 ## No repeated text
 
@@ -56,7 +55,7 @@ Each fact is said once per section: no section descriptions; case-study panels c
 | -------------------- | --------------------------------------------- | ----- | ------------------------------------------------------------ |
 | `type-eyebrow`       | Geist Mono 12 px, +0.025em                    | muted | Project-page category, 404 code                              |
 | `type-section-title` | `clamp(1.5rem, 1.2rem + 1vw, 2rem)`, 600      | fg    | Every section `h2`                                           |
-| `type-overline`      | 12 px sans, medium, uppercase, +0.1em         | muted | Section label above a display title (“02 — CASE STUDIES”)    |
+| `type-overline`      | 12 px sans, medium, uppercase, +0.1em         | muted | Section name above a display title (“CASE STUDIES”)          |
 | `type-display`       | Instrument Serif 40–60 px, soft white glow    | fg    | Numbered section titles; last word in italic                 |
 | `type-page-title`    | `clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)`, 600 | fg    | Page `h1` (projects, project detail, 404)                    |
 | `type-lead`          | 15 px / 1.65                                  | muted | Section and page introductions                               |

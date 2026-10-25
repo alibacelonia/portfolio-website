@@ -28,7 +28,6 @@ export default function ConnectPage() {
       id="connect"
       first
       headingLevel={1}
-      index="06"
       label="Connect"
       title="Tell me what you're building"
     >

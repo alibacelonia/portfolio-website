@@ -8,7 +8,8 @@ alibacelonia.dev portfolio (A/B logo): Next.js 16 static export → private S3 +
 - **Truthful content.** Edit `src/data/*` only with facts verifiable in the resume or a repository; record sources in `docs/requirements.md`. No invented metrics, screenshots, badges or dates.
 - **Design** follows `docs/design-system.md`: solid-color text only (no gradient text), pastel accents only as dots/lines/tints, one navigation system: sticky clay dock at the top, links inline from `lg`, menu below.
 - **Uniform sections:** use the shared `type-*` utilities and `card` from `globals.css` (table in `docs/design-system.md`) instead of ad-hoc `text-[…]` sizes, padding or card classes. All sections share `bg-bg`; cards sit on `--surface`.
-- **Section titles:** numbered sections use `Section` with `index`, `label` and `title` (“02 — Case Studies” over “Curated _work_”, last word italic, solid color), and **no description** (`lead`). The table is in `docs/design-system.md`.
+- **Section titles:** sections use `Section` with `label` and `title` (“Case Studies” over “Curated _work_”, last word italic, solid color), **no numbers** and **no description** (`lead`). The table is in `docs/design-system.md`.
+- **Section markup:** a section's items (e.g. the case-study list) are `div`s, not `ol`/`li` (owner preference). Exceptions: the Experience timeline keeps its `ol`, and step sequences (architecture lanes, flow diagrams) stay ordered lists.
 - Accent colors on text must use `*-fg` tokens. Never use `--muted` on `--surface-2` (contrast).
 - Content must be visible without JS: no Motion `initial` hidden states in server HTML. Use `data-reveal` for entrances.
 - Anything rendered differently on the client must match the static HTML at hydration (use `useSyncExternalStore` with a server snapshot, e.g. `usePrefersReducedMotion`).

@@ -227,7 +227,7 @@ export function CaseStudies({
 }) {
   const [active, setActive] = useState(0);
   const stages = useRef<(HTMLElement | null)[]>([]);
-  const list = useRef<HTMLOListElement>(null);
+  const list = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const stack = useRef<HTMLDivElement>(null);
@@ -311,9 +311,9 @@ export function CaseStudies({
   return (
     <div className="case-layout">
       <ProjectCursor selector=".case-stage" />
-      <ol ref={list} className="case-list">
+      <div ref={list} className="case-list">
         {studies.map((study, index) => (
-          <li key={study.id} id={`case-study-${study.id}`} className="case-item">
+          <div key={study.id} id={`case-study-${study.id}`} className="case-item">
             <Stage
               study={study}
               stageRef={(el) => {
@@ -324,9 +324,9 @@ export function CaseStudies({
             <div className="mt-4 lg:hidden">
               <Details study={study} headingLevel={headingLevel} />
             </div>
-          </li>
+          </div>
         ))}
-      </ol>
+      </div>
 
       {/* Desktop: one pinned panel; the active project's details are the only visible ones. */}
       <div ref={track} className="case-panel-track hidden lg:block">

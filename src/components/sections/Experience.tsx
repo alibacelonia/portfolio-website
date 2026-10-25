@@ -92,7 +92,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
 
 export function Experience() {
   return (
-    <Section id="experience" index="03" label="Experience" title="Where I've worked">
+    <Section id="experience" label="Experience" title="Where I've worked">
       <ol className="exp-timeline relative grid grid-cols-1">
         {experience.map((role, index) => (
           <RoleItem key={role.id} role={role} next={experience[index + 1]} />
