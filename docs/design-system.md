@@ -30,7 +30,7 @@ Every project and client-work screenshot is **5 × 3.5 in (10:7)**, supplied by 
 
 ## Section titles
 
-Sections have no top padding or margin: the title block starts right under the section's divider band (first bands keep room for the dock). Every section title (all but the hero) sits in a **title band** (`.section-title-band`), ruled like the reference's “Curated work”: it spans rail to rail, has equal space above and below the title (`clamp(2.5rem, 5vw, 4.5rem)`), the section divider as its top edge and a line below with junction squares at the rails; first bands of a page (`/projects/`, `/connect/`) draw a top line too, and content that draws its own rail-to-rail rule (the case-study layout, `flush`) shares the band's line. Every section opens with the same centered, unboxed heading, after the owner's reference: a plain `div` title block (`section > div.container-fluid > div.title-glow > p + h2`, no `<header>`) with a soft white glow on both lines, holding an overline with the section name (`type-overline`, “CASE STUDIES”) and a display title (`type-display`, an `h2`, or the page's `h1`) whose last word is set in Instrument Serif italic: “Curated _work_”. Sections are not numbered. The italic word stays solid white (the reference's gradient is not used: no gradient text). There is no description under the title; a legend or count (`aside`) sits below it. The hero has no overline (its title is the name), and only the project-page header keeps the boxed layout with its category, summary and links.
+Sections have no top padding or margin: the title block starts right under the section's divider band (first bands keep room for the dock). Every section title (all but the hero) sits in a **title band** (`.section-title-band`), ruled like the reference's “Curated work”: it spans rail to rail, has equal space above and below the title (`clamp(2.5rem, 5vw, 4.5rem)`), the section divider as its top edge and a line below with junction squares at the rails; first bands of a page (`/projects/`, `/connect/`) draw a top line too, and content that draws its own rail-to-rail rule (the case-study layout, `flush`) shares the band's line. Every section opens with the same centered, unboxed heading, after the owner's reference: a plain `div` title block (`section > div.container-fluid > div.title-glow > p + h2`, no `<header>`) with a soft white glow on both lines, holding an overline with the section name (`type-overline`, “CASE STUDIES”) and a display title (`type-display`, an `h2`, or the page's `h1`) whose last word is set in Instrument Serif italic as **aurora text** (`AuroraText`, after Magic UI): a 135° gradient of pink `#FF4FA3`, purple `#B36BFF`, blue `#4F9DFF` and sky `#38BDF8` clipped to the letters, drifting through its colors over 8 s while the word sways ±2° and scales 0.97–1.03 (static with reduced motion, solid in forced colors; brighter than Magic UI's defaults so each stop stays ≥ 5.9:1 on the background): “Curated _work_”. Sections are not numbered. There is no description under the title; a legend or count (`aside`) sits below it. The hero has no overline (its title is the name), and only the project-page header keeps the boxed layout with its category, summary and links.
 
 | Overline                                           | Title                                                     |
 | -------------------------------------------------- | --------------------------------------------------------- |
@@ -55,21 +55,21 @@ Each fact is said once per section: no section descriptions; case-study panels c
 - Instrument Serif (via `next/font/google`, downloaded at build time and self-hosted, not preloaded) only for case-study project titles (`type-display-serif`, regular weight, `clamp(1.75rem, 1.4rem + 1.1vw, 2.375rem)`). It has a single weight, so it is never bolded.
 - Every section uses the same type scale, defined once as utilities in `src/app/globals.css`. Use these instead of ad-hoc `text-[…]` sizes:
 
-| Utility              | Size / style                                   | Color | Role                                                         |
-| -------------------- | ---------------------------------------------- | ----- | ------------------------------------------------------------ |
-| `type-eyebrow`       | Geist Mono 12 px, +0.025em                     | muted | Project-page category, 404 code                              |
-| `type-section-title` | `clamp(1.5rem, 1.2rem + 1vw, 2rem)`, 600       | fg    | Every section `h2`                                           |
-| `type-overline`      | 12 px sans, medium, uppercase, +0.1em          | muted | Section name above a display title (“CASE STUDIES”)          |
-| `type-display`       | Instrument Serif 40–60 px (glow: `title-glow`) | fg    | Numbered section titles; last word in italic                 |
-| `type-page-title`    | `clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)`, 600  | fg    | Page `h1` (projects, project detail, 404)                    |
-| `type-lead`          | 15 px / 1.65                                   | muted | Section and page introductions                               |
-| `type-prose`         | 15 px / 1.7                                    | (set) | Long-form text on project pages                              |
-| `type-card-title`    | 17 px / 1.35, 600                              | fg    | Every card heading, project-page subsection headings         |
-| `type-body`          | 14 px / 1.65                                   | (set) | Card descriptions, bullets, lists, contact details           |
-| `type-small`         | 13 px / 1.55                                   | (set) | Notes, form labels and messages, legends, footer             |
-| `type-label`         | Geist Mono 11 px, +0.02em                      | (set) | Status, group labels, codes, form/contact labels, hero strip |
-| `type-mono`          | Geist Mono 12 px                               | (set) | Dates and flow diagrams                                      |
-| `type-action`        | 13 px, 500                                     | (set) | Card actions, back links, buttons                            |
+| Utility              | Size / style                                                                | Color | Role                                                         |
+| -------------------- | --------------------------------------------------------------------------- | ----- | ------------------------------------------------------------ |
+| `type-eyebrow`       | Geist Mono 12 px, +0.025em                                                  | muted | Project-page category, 404 code                              |
+| `type-section-title` | `clamp(1.5rem, 1.2rem + 1vw, 2rem)`, 600                                    | fg    | Every section `h2`                                           |
+| `type-overline`      | 12 px sans, medium, uppercase, +0.1em                                       | muted | Section name above a display title (“CASE STUDIES”)          |
+| `type-display`       | Instrument Serif 40–60 px (glow: `title-glow`; italic word: `.aurora-text`) | fg    | Numbered section titles; last word in italic                 |
+| `type-page-title`    | `clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)`, 600                               | fg    | Page `h1` (projects, project detail, 404)                    |
+| `type-lead`          | 15 px / 1.65                                                                | muted | Section and page introductions                               |
+| `type-prose`         | 15 px / 1.7                                                                 | (set) | Long-form text on project pages                              |
+| `type-card-title`    | 17 px / 1.35, 600                                                           | fg    | Every card heading, project-page subsection headings         |
+| `type-body`          | 14 px / 1.65                                                                | (set) | Card descriptions, bullets, lists, contact details           |
+| `type-small`         | 13 px / 1.55                                                                | (set) | Notes, form labels and messages, legends, footer             |
+| `type-label`         | Geist Mono 11 px, +0.02em                                                   | (set) | Status, group labels, codes, form/contact labels, hero strip |
+| `type-mono`          | Geist Mono 12 px                                                            | (set) | Dates and flow diagrams                                      |
+| `type-action`        | 13 px, 500                                                                  | (set) | Card actions, back links, buttons                            |
 
 “(set)” means the utility carries no color: pair it with one `text-*` class. Never combine a utility that has a color with another color class (the winner is not guaranteed). Form inputs use 16 px so iOS does not zoom on focus. Navigation stays 13 px; the hero name and Tag chips (12 px) keep their own sizes.
 

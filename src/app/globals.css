@@ -735,6 +735,58 @@
    upper half of the viewport. The cards sit in a hatched well, like the section dividers, and a
    ruler of ticks beside the title shows which project is active.
    Phones: each image is followed by its own details, 100px between projects. */
+/* Aurora text (after Magic UI): a gradient clipped to the letters, drifting through its colors
+   while the word sways. The title glow is turned off here: a text-shadow would paint over the
+   clipped gradient. Owner-approved exception to "no gradient text" (D-70). */
+.aurora-text {
+  position: relative;
+  display: inline-block;
+  padding-inline: 0.04em 0.12em; /* room for the italic overhang, so the gradient isn't cut */
+  margin-inline: -0.04em -0.12em;
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  animation: aurora 8s ease-in-out infinite alternate;
+}
+
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+    transform: rotate(-2deg) scale(0.97);
+  }
+  25% {
+    background-position: 50% 100%;
+    transform: rotate(2deg) scale(1.03);
+  }
+  50% {
+    background-position: 100% 50%;
+    transform: rotate(-1deg) scale(0.99);
+  }
+  75% {
+    background-position: 50% 0%;
+    transform: rotate(1deg) scale(1.02);
+  }
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(-2deg) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-text {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .aurora-text {
+    background: none;
+    color: CanvasText;
+  }
+}
+
 /* A section's title band: from rail to rail (like the case-study layout), equal space above and
    below the title, and a line under it with junction squares where it meets the rails. The
    section divider is its top edge; first bands (no divider) draw a top line too. */

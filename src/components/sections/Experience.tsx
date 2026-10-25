@@ -79,7 +79,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
             <span className="hidden group-open:inline">Hide details</span>{" "}
             <span className="sr-only">for {role.title}</span>
           </summary>
-          <ul className="mt-3 max-w-[72ch] space-y-2 type-body text-muted">
+          <ul className="mt-3 max-w-[72ch] space-y-2 text-justify type-body hyphens-auto text-muted">
             {role.details.map((detail) => (
               <li key={detail}>{detail}</li>
             ))}

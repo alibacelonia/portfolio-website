@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { SectionFrame } from "./SectionFrame";
+import { AuroraText } from "./AuroraText";
 
 interface SectionProps {
   id: string;
@@ -111,14 +112,19 @@ export function Section({
   );
 }
 
-/** A display title with its last word in italic ("Curated *work*"), after the reference. */
+/**
+ * A display title with its last word in italic aurora text ("Curated *work*"), after the reference
+ * and Magic UI's Aurora Text.
+ */
 function DisplayTitle({ text }: { text: string }) {
   const split = text.lastIndexOf(" ");
-  if (split < 0) return <em className="italic">{text}</em>;
+  const word = split < 0 ? text : text.slice(split + 1);
   return (
     <>
-      {text.slice(0, split + 1)}
-      <em className="italic">{text.slice(split + 1)}</em>
+      {split < 0 ? null : text.slice(0, split + 1)}
+      <em className="italic">
+        <AuroraText>{word}</AuroraText>
+      </em>
     </>
   );
 }
