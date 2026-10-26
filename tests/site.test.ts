@@ -5,6 +5,7 @@ import {
   normalizeCalLink,
   normalizeDockStyle,
   normalizeSiteUrl,
+  resolveSiteUrl,
   site,
   siteHost,
 } from "@/lib/site";
@@ -91,5 +92,19 @@ describe("dock style", () => {
       "data-dock": "glass",
       className: "dock glass rounded-full",
     });
+  });
+});
+
+describe("resolveSiteUrl", () => {
+  it("prefers NEXT_PUBLIC_SITE_URL", () => {
+    expect(resolveSiteUrl("https://example.com/", "me.vercel.app")).toBe("https://example.com");
+  });
+
+  it("falls back to the Vercel production domain, then the default", () => {
+    expect(resolveSiteUrl(undefined, "my-portfolio.vercel.app")).toBe(
+      "https://my-portfolio.vercel.app",
+    );
+    expect(resolveSiteUrl(" ", "https://me.example.dev")).toBe("https://me.example.dev");
+    expect(resolveSiteUrl(undefined, undefined)).toBe("https://alibacelonia.dev");
   });
 });

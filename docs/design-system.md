@@ -6,7 +6,7 @@ Premium, minimalist, full-width, with restrained operating-system details (a sti
 
 Defined as CSS variables in `src/app/globals.css` and exposed to Tailwind through `@theme inline`.
 
-Light and dark themes. Before first paint the visitor's saved choice applies, otherwise the device's color scheme (dark when unknown); the static HTML is dark. A sun/moon toggle sits at the end of the dock (desktop) and beside Close in the mobile menu, and remembers the choice. Both themes use the zinc neutral family; case cards use translucent palette tints and theme foreground text in both, the title glow is dark-only, and the aurora word uses darker stops in light mode (each ≥ 3.9:1). Cal.com and Turnstile follow the current theme.
+Light and dark themes. **Dark is the default**: before first paint the visitor's saved choice applies, otherwise dark, whatever the device's color scheme; the static HTML and the browser `theme-color` are dark. A sun/moon toggle sits at the end of the dock (desktop) and beside Close in the mobile menu, and remembers the choice. Both themes use the zinc neutral family; case cards use translucent palette tints and theme foreground text in both, the title glow is dark-only, and the aurora word uses darker stops in light mode (each ≥ 3.9:1). Cal.com and Turnstile follow the current theme.
 
 | Token                          | Light                 | Dark                  | Use                              |
 | ------------------------------ | --------------------- | --------------------- | -------------------------------- |

@@ -2,6 +2,8 @@
 
 Nothing in this repository provisions AWS resources or changes DNS automatically. Every step below is run deliberately by the owner.
 
+> **No AWS account or budget?** Deploy on Vercel instead: [deploy-vercel.md](deploy-vercel.md) is a step-by-step beginner guide (free Hobby plan, no terminal needed).
+
 ## Overview
 
 | Piece          | Where                                                                                                        |

@@ -4,6 +4,8 @@ Portfolio of **Mohammed Ali B. Abdullah** (logo: A/B): Full-Stack Developer · D
 
 A statically exported Next.js site served from a private S3 bucket through CloudFront, provisioned with Terraform and deployed by GitHub Actions using OIDC.
 
+**Deploying your own copy:** on AWS, follow [docs/deployment.md](docs/deployment.md). No AWS experience or budget? [docs/deploy-vercel.md](docs/deploy-vercel.md) walks you through a free Vercel deployment in the browser, step by step.
+
 ## Stack
 
 Next.js 16 (App Router, `output: "export"`) · React 19 · TypeScript (strict) · Tailwind CSS 4 · Motion for React · Geist · Vitest + Testing Library · Playwright + axe · Terraform · GitHub Actions
@@ -32,13 +34,13 @@ npm run dev        # http://localhost:3000
 
 ## Configuration
 
-| Variable                         | Default                    | Effect                                                         |
-| -------------------------------- | -------------------------- | -------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`           | `https://alibacelonia.dev` | Canonical URL, sitemap, robots, Open Graph, JSON-LD            |
-| `NEXT_PUBLIC_CONTACT_API_URL`    | empty                      | Contact API endpoint; empty = form reports sending unavailable |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | empty                      | Cloudflare Turnstile site key (public)                         |
-| `NEXT_PUBLIC_CAL_LINK`           | empty                      | Cal.com `user/event` for the Book a call tab                   |
-| `NEXT_PUBLIC_DOCK_STYLE`         | `clay`                     | Navigation dock: `clay`, `glass` or `neo` (neumorphism)        |
+| Variable                         | Default                    | Effect                                                                                                               |
+| -------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`           | `https://alibacelonia.dev` | Canonical URL, sitemap, robots, Open Graph, JSON-LD (on Vercel, unset falls back to the project's production domain) |
+| `NEXT_PUBLIC_CONTACT_API_URL`    | empty                      | Contact API endpoint; empty = form reports sending unavailable                                                       |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | empty                      | Cloudflare Turnstile site key (public)                                                                               |
+| `NEXT_PUBLIC_CAL_LINK`           | empty                      | Cal.com `user/event` for the Book a call tab                                                                         |
+| `NEXT_PUBLIC_DOCK_STYLE`         | `clay`                     | Navigation dock: `clay`, `glass` or `neo` (neumorphism)                                                              |
 
 ## Site structure
 
@@ -67,6 +69,7 @@ Only add claims that can be verified in the resume or a repository. Sources are 
 - [Design system](docs/design-system.md)
 - [Architecture](docs/architecture.md)
 - [Deployment, DNS, rollback, cost](docs/deployment.md)
+- [Deploy on Vercel (free, beginner guide)](docs/deploy-vercel.md)
 - [Decisions](docs/decisions.md)
 - [Development plan](docs/development-plan.md) and [progress](docs/progress.md)
 - [Terraform](infra/terraform/README.md)

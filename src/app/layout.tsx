@@ -59,11 +59,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
-    { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
-  ],
-  colorScheme: "light dark",
+  // Dark by default; the bootstrap script switches this when the visitor has chosen light.
+  themeColor: THEME_COLORS[DEFAULT_THEME],
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

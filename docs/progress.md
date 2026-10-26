@@ -135,3 +135,7 @@ Validation: lint, typecheck, format, 80 unit tests and the static build pass; Pl
 Connect's direct channels are now labeled buttons (LinkedIn, GitHub, CV) instead of icon-only ones, so first-time visitors don't have to guess which icon is the CV; accessible names are unchanged.
 
 The portrait is now in color: it develops from black and white into color once (hero on load, the Connect instant photo as it reveals), replacing a short-lived mouse-only spotlight and lens cursor; reduced motion and no-JavaScript visitors see color immediately. The Connect email wraps after the “@” at 320 px instead of mid-word. New E2E checks cover both. D-85 records the choices.
+
+## Dark default and Vercel deployment (2026-10-26)
+
+The site now starts in dark mode for every new visitor (the toggle still saves light). Added Vercel as a free, beginner-friendly host: `vercel.json` (same security headers and CSP as CloudFront, checked by `tests/vercel.test.ts`), a Vercel fallback for the site URL, and the step-by-step guide `docs/deploy-vercel.md`, linked from the README and `docs/deployment.md`. Not deployed to Vercel from here (no account); the configuration follows Vercel's documented Next.js static-export support. D-86 records the choices.
