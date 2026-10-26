@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "./fixtures";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
+import { THEME_STORAGE_KEY } from "../src/lib/theme";
 
 const entries = [...publishedClientWork, ...projects];
 
@@ -10,6 +11,11 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }, testInfo) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
+    // The site ignores the device setting (dark by default), so choose the theme explicitly.
+    await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+      key: THEME_STORAGE_KEY,
+      value: theme,
+    });
     await page.goto("/projects/");
     const filters = page.getByRole("group", { name: "Filter projects by discipline" });
     await expect(page.locator("#all-projects article:visible")).toHaveCount(entries.length);
@@ -50,6 +56,11 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }, testInfo) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
+    // The site ignores the device setting (dark by default), so choose the theme explicitly.
+    await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+      key: THEME_STORAGE_KEY,
+      value: theme,
+    });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: testInfo.outputPath(`hero-${theme}.png`) });

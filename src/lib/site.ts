@@ -17,6 +17,19 @@ export function normalizeSiteUrl(value: string | undefined): string {
   }
 }
 
+/**
+ * The site origin: `NEXT_PUBLIC_SITE_URL` when set; on Vercel without it, the project's production
+ * domain (Vercel's system variable, a hostname without a scheme); otherwise the default.
+ */
+export function resolveSiteUrl(
+  siteUrl: string | undefined,
+  vercelHost: string | undefined,
+): string {
+  if (siteUrl?.trim()) return normalizeSiteUrl(siteUrl);
+  const host = vercelHost?.trim().replace(/^https?:\/\//, "");
+  return normalizeSiteUrl(host ? `https://${host}` : undefined);
+}
+
 /** HTTPS endpoint (or http://localhost) for the contact API; anything else is unconfigured. */
 export function normalizeApiUrl(value: string | undefined): string | null {
   try {
@@ -55,7 +68,10 @@ export const site = {
   description:
     "Mohammed Ali B. Abdullah — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 7+ years building applications, CI/CD pipelines and cloud infrastructure.",
   /** Single source of truth for the canonical origin (NEXT_PUBLIC_SITE_URL). */
-  url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
+  url: resolveSiteUrl(
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
+  ),
   location: "Baguio City, Philippines",
   /** Short form for the hero ("Based in the Philippines"). */
   basedIn: "the Philippines",

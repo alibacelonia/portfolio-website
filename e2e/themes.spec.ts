@@ -1,6 +1,14 @@
+import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, openMessageTab } from "./fixtures";
 import { THEME_COLORS, THEME_STORAGE_KEY } from "../src/lib/theme";
+
+/** Starts a page in the light theme once (the site defaults to dark); later toggles still persist. */
+async function startLight(page: Page) {
+  await page.addInitScript((key) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, "light");
+  }, THEME_STORAGE_KEY);
+}
 
 for (const theme of ["light", "dark"] as const) {
   test(`glass surfaces and interaction states follow ${theme} mode`, async ({ page }, testInfo) => {
@@ -83,6 +91,7 @@ test("theme changes update already-mounted booking and spam-check widgets", asyn
   page,
 }, testInfo) => {
   await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
+  await startLight(page);
   await page.route(/^https:\/\/challenges\.cloudflare\.com\//, (route) =>
     route.fulfill({
       contentType: "text/javascript",
@@ -134,6 +143,7 @@ test("glass has opaque reduced-transparency and forced-color fallbacks", async (
   context,
 }) => {
   await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
+  await startLight(page);
   await page.goto("/connect/");
   const session = await context.newCDPSession(page);
   await session.send("Emulation.setEmulatedMedia", {

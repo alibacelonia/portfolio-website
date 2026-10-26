@@ -343,23 +343,27 @@ test("view all projects opens the collection and cards remain visible after goin
   );
 });
 
-test("follows the device theme, then remembers the visitor's choice", async ({
+test("defaults to dark, even on a light device, then remembers the visitor's choice", async ({
   browser,
 }, testInfo) => {
   const context = await browser.newContext({ ...testInfo.project.use, colorScheme: "light" });
   await stubThirdParty(context);
   const page = await context.newPage();
   await page.goto("/");
-  // Nothing saved: the device's light setting wins.
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  // Nothing saved: dark, even though the device prefers light.
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute(
+    "content",
+    "#0d0d0f",
+  );
   if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: /Open menu$/ }).click();
   }
-  await page.getByRole("button", { name: "Switch to dark theme" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  // The explicit choice survives a reload, even though the device still prefers light.
+  await page.getByRole("button", { name: "Switch to light theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  // The explicit choice survives a reload.
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await context.close();
 });
 
@@ -902,7 +906,8 @@ test("the hero and Connect lead with one solid main action", async ({ page }) =>
     // Solid: the theme's foreground as the fill, the background as the text.
     expect(background).not.toBe("rgba(0, 0, 0, 0)");
     expect(background).not.toBe(color);
-    expect(height).toBeGreaterThanOrEqual(44);
+    // Rounded: layout can report 43.99997px for a 44px box.
+    expect(Math.round(height)).toBeGreaterThanOrEqual(44);
   }
 });
 
