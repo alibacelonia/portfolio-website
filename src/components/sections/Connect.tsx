@@ -7,15 +7,13 @@ export function Connect() {
   return (
     <Section
       id="connect"
-      index="06"
-      eyebrow={
-        <>
-          <span aria-hidden="true">06 / </span>Connect
-        </>
-      }
+      label="Connect"
       title="Tell me what you're building"
-      lead="An opportunity, a project or an idea: pick what brings you here, or reach me directly."
-      footer={<ActionStrip href="/connect/">Send a message</ActionStrip>}
+      footer={
+        <ActionStrip href="/connect/" prominent>
+          Send a message
+        </ActionStrip>
+      }
     >
       <ConnectPanel />
     </Section>

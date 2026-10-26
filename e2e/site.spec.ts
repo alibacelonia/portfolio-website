@@ -1,10 +1,10 @@
 import type { Page } from "@playwright/test";
 import { expect, openMessageTab, stubThirdParty, test } from "./fixtures";
-import { THEME_STORAGE_KEY } from "../src/lib/theme";
 import { projects } from "../src/data/projects";
 import { publishedClientWork } from "../src/data/clientWork";
 import { buildCaseStudies } from "../src/lib/caseStudies";
-import { stageFrame, stageGradientFor } from "../src/lib/stage";
+import { stageBackground, stageFrame, stageGradientFor } from "../src/lib/stage";
+import { navigation } from "../src/lib/site";
 
 const SECTIONS = ["home", "projects", "experience", "skills", "certifications", "connect"];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
@@ -90,8 +90,11 @@ test("shows exactly one section navigation per breakpoint", async ({ page }, tes
   const menuButton = page.getByRole("button", { name: /Open menu$/ });
   const header = page.getByRole("banner");
   await expect(header.getByRole("link", { name: "Mohammed Ali B. Abdullah, home" })).toHaveCount(0);
-  await expect(header.getByRole("button", { name: /theme/i })).toHaveCount(0);
-  await expect(header.getByRole("link", { name: /Resume/ })).toHaveCount(0);
+  // The theme toggle ends the dock on desktop; on phones it lives in the menu instead.
+  await expect(header.getByRole("button", { name: /theme/i })).toHaveCount(
+    testInfo.project.name === "desktop" ? 1 : 0,
+  );
+  await expect(header.getByRole("link", { name: /\bCV\b/ })).toHaveCount(0);
   if (testInfo.project.name === "desktop") {
     await expect(nav).toHaveCount(1);
     await expect(nav).toBeVisible();
@@ -137,7 +140,7 @@ test("mobile snackbar stays at the viewport bottom and dismisses accessibly", as
   // #skills and races the menu's initial focus. A real tap doesn't scroll, so dispatch the click.
   await trigger.dispatchEvent("click");
   const menu = page.getByRole("navigation", { name: "Sections" });
-  await expect(menu.getByRole("link", { name: "Skills" })).toBeFocused();
+  await expect(menu.getByRole("link", { name: "Tech Stack" })).toBeFocused();
   const panel = menu.locator("..");
   await expect(async () => {
     const box = (await panel.boundingBox())!;
@@ -164,6 +167,9 @@ test("mobile snackbar stays at the viewport bottom and dismisses accessibly", as
   await expect(page.getByRole("navigation", { name: "Sections" })).toBeVisible();
 });
 
+/** The nav label for a section id, from the site's own navigation (e.g. skills → "Tech Stack"). */
+const navLabel = (id: string) => navigation.find((item) => item.id === id)!.label;
+
 test("keeps the navigation visible and clear of section headings", async ({ page }, testInfo) => {
   await page.goto("/");
   const bar = page.getByRole("banner");
@@ -171,17 +177,13 @@ test("keeps the navigation visible and clear of section headings", async ({ page
     if (testInfo.project.name === "desktop") {
       await page
         .getByRole("navigation", { name: "Sections" })
-        .getByRole("link", {
-          name: id[0]!.toUpperCase() + id.slice(1),
-        })
+        .getByRole("link", { name: navLabel(id) })
         .click();
     } else {
       await page.getByRole("button", { name: /Open menu$/ }).click();
       await page
         .getByRole("navigation", { name: "Sections" })
-        .getByRole("link", {
-          name: id[0]!.toUpperCase() + id.slice(1),
-        })
+        .getByRole("link", { name: navLabel(id) })
         .click();
     }
     await expect(page).toHaveURL(new RegExp(`#${id}$`));
@@ -283,7 +285,7 @@ test("project cards open static detail pages and lead back", async ({ page }) =>
   await expect(page).toHaveURL(/\/projects\/estoe\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("estoe");
   await expect(
-    page.getByRole("heading", { level: 2, name: "Infrastructure & architecture" }),
+    page.getByRole("heading", { level: 2, name: "How it's built and shipped" }),
   ).toBeVisible();
   // Crawlers load each URL directly, so check the canonical in the static HTML. After client-side
   // navigation Next.js streams the new <head> separately, so it can briefly hold both canonicals.
@@ -335,23 +337,27 @@ test("view all projects opens the collection and cards remain visible after goin
   await expect(card).toHaveCSS("opacity", "1");
   await page.getByRole("link", { name: "Back to portfolio" }).click();
   await expect(page).toHaveURL(/\/#projects$/);
-  await expect(page.locator("#projects header[data-reveal]")).toHaveCSS("opacity", "1");
+  await expect(page.locator("#projects [data-reveal]:has(> #projects-title)")).toHaveCSS(
+    "opacity",
+    "1",
+  );
 });
 
-test("uses dark mode only even with a saved light preference", async ({ browser }) => {
-  const context = await browser.newContext({ colorScheme: "light" });
+test("follows the device theme, then remembers the visitor's choice", async ({
+  browser,
+}, testInfo) => {
+  const context = await browser.newContext({ ...testInfo.project.use, colorScheme: "light" });
   await stubThirdParty(context);
-  await context.addInitScript(
-    (key) => window.localStorage.setItem(key, "light"),
-    THEME_STORAGE_KEY,
-  );
   const page = await context.newPage();
   await page.goto("/");
+  // Nothing saved: the device's light setting wins.
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: /Open menu$/ }).click();
+  }
+  await page.getByRole("button", { name: "Switch to dark theme" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.emulateMedia({ colorScheme: "dark" });
-  await page.emulateMedia({ colorScheme: "light" });
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.getByRole("button", { name: /theme/i })).toHaveCount(0);
+  // The explicit choice survives a reload, even though the device still prefers light.
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await context.close();
@@ -368,9 +374,12 @@ test("skip link moves focus to the main content", async ({ page }, testInfo) => 
   await expect(page.locator("main")).toBeFocused();
 });
 
-test("serves the resume PDF", async ({ page, request }) => {
+test("serves the CV PDF", async ({ page, request }) => {
   await page.goto("/");
-  const href = await page.getByRole("link", { name: /Download Resume/ }).getAttribute("href");
+  const href = await page
+    .locator("#home")
+    .getByRole("link", { name: /Download CV/ })
+    .getAttribute("href");
   const response = await request.get(href!);
   expect(response.status()).toBe(200);
   expect(response.headers()["content-type"]).toContain("application/pdf");
@@ -531,20 +540,21 @@ test("all-projects client work card shows its screenshot left of the details, st
   await expect(card.getByRole("img")).toHaveJSProperty("complete", true);
 });
 
-test("case studies: preview cards 100px apart, with a pinned panel that switches at 25%", async ({
+test("case studies: preview cards 100px apart (56px on phones), with a pinned panel that switches at 25%", async ({
   page,
 }, testInfo) => {
   await page.goto("/");
   const items = page.locator(".case-item");
   await expect(items).toHaveCount(projects.length + publishedClientWork.length);
-  // 100px (6.25rem) between projects at every breakpoint.
+  // 100px (6.25rem) between projects from sm; 56px (3.5rem) on phones.
+  const expectedGap = testInfo.project.name === "mobile" ? 56 : 100;
   const gaps = await page.evaluate(() => {
     const boxes = [...document.querySelectorAll(".case-item")].map((e) =>
       e.getBoundingClientRect(),
     );
     return boxes.slice(1).map((box, i) => Math.round(box.top - boxes[i]!.bottom));
   });
-  for (const gap of gaps) expect(gap).toBe(100);
+  for (const gap of gaps) expect(gap).toBe(expectedGap);
 
   if (testInfo.project.name !== "desktop") {
     // Phones: no pinned panel; each image is followed by its own details.
@@ -641,6 +651,76 @@ test("case studies: preview cards 100px apart, with a pinned panel that switches
   await expect.poll(active).toBe(first);
 });
 
+test("certification badges tilt toward the mouse and settle back", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Mouse only");
+  await page.goto("/");
+  const badge = page.locator("#certifications .tilt-badge").first();
+  await badge.scrollIntoViewIfNeeded();
+  // Smooth scrolling keeps easing after the jump; wait until the badge stops moving, or the
+  // pointer lands where the badge was and it slides away again.
+  await expect
+    .poll(async () => {
+      const before = (await badge.boundingBox())!.y;
+      await page.waitForTimeout(150);
+      return Math.abs((await badge.boundingBox())!.y - before);
+    })
+    .toBeLessThan(0.5);
+  const box = (await badge.boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.1, box.y + box.height * 0.1, { steps: 3 });
+  await expect(badge).toHaveAttribute("data-tilting");
+  // Pointer near the top left: the badge leans back on its top edge and toward the left.
+  const [tiltX, tiltY] = await badge.evaluate((el) => [
+    parseFloat(el.style.getPropertyValue("--tilt-x")),
+    parseFloat(el.style.getPropertyValue("--tilt-y")),
+  ]);
+  expect(tiltX).toBeGreaterThan(8);
+  expect(tiltY).toBeLessThan(-8);
+  await page.mouse.move(0, 0);
+  await expect(badge).not.toHaveAttribute("data-tilting");
+});
+
+test("aurora words paint their whole glyphs, descenders included", async ({ page }) => {
+  await page.goto("/");
+  const words = await page.locator(".aurora-text").evaluateAll((els) =>
+    els.map((el) => {
+      // The gradient only paints inside the element's box, so it must reach below the text's own
+      // line box far enough for descenders (g, j, p).
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const text = range.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
+      const em = parseFloat(getComputedStyle(el).fontSize);
+      return { word: el.textContent, extra: (box.bottom - text.bottom) / em };
+    }),
+  );
+  expect(words.map((w) => w.word)).toContain("building");
+  for (const { word, extra } of words) expect(extra, word ?? "").toBeGreaterThanOrEqual(0.1);
+});
+
+test("section titles sit vertically centered in their title band", async ({ page }) => {
+  await page.goto("/");
+  const gaps = await page.evaluate(() =>
+    ["projects", "experience", "skills", "certifications", "connect"].map((id) => {
+      const section = document.getElementById(id)!;
+      const band = section.querySelector(".section-title-band")!;
+      const block = band.firstElementChild!.getBoundingClientRect();
+      const divider = getComputedStyle(section, "::before");
+      // The band's top line: the divider's lower edge, or the section's top edge when a strip
+      // above stands in for the divider.
+      const top =
+        section.getBoundingClientRect().top +
+        (divider.display === "none" ? 0 : parseFloat(divider.height));
+      return {
+        id,
+        above: block.top - top,
+        below: band.getBoundingClientRect().bottom - block.bottom,
+      };
+    }),
+  );
+  for (const { id, above, below } of gaps)
+    expect(Math.abs(above - below), id).toBeLessThanOrEqual(2);
+});
+
 test("case screenshots are framed in the second-lightest color of their card's gradient", async ({
   page,
 }) => {
@@ -654,7 +734,7 @@ test("case screenshots are framed in the second-lightest color of their card's g
       const shot = el.querySelector<HTMLElement>(".case-media img")!;
       const img = getComputedStyle(shot);
       return {
-        card: getComputedStyle(el).backgroundImage,
+        card: getComputedStyle(el).getPropertyValue("--stage-bg").trim(),
         color: img.borderTopColor,
         width: img.borderTopWidth,
         bottom: img.borderBottomWidth,
@@ -666,7 +746,7 @@ test("case screenshots are framed in the second-lightest color of their card's g
     });
     const frame = stageFrame(stageGradientFor(study));
     const rgb = [1, 3, 5].map((i) => parseInt(frame.slice(i, i + 2), 16)).join(", ");
-    expect(card, study.id).toContain(`rgb(${rgb})`);
+    expect(card, study.id).toBe(stageBackground(stageGradientFor(study)));
     expect(color, study.id).toBe(`rgb(${rgb})`);
     expect(width, study.id).toBe("2px");
     // The bottom edge keeps its width but only shows on hover.
@@ -714,7 +794,11 @@ test("case cards are dimmed until hovered (background only), for a mouse only", 
   await stage.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
   await expect.poll(async () => (await veil()).opacity).toBe("1");
-  expect((await veil()).backgroundColor).toBe("rgba(0, 0, 0, 0.3)");
+  expect((await veil()).backgroundColor).toBe(
+    (await page.locator("html").getAttribute("data-theme")) === "dark"
+      ? "rgba(0, 0, 0, 0.12)"
+      : "rgba(24, 24, 27, 0.035)",
+  );
   // The overlay sits under the tagline and the screenshot, so the image is never darkened.
   const layers = await stage.evaluate((el) => ({
     veil: Number(getComputedStyle(el, "::before").zIndex),
@@ -757,4 +841,144 @@ test("project cards show the custom cursor for a mouse only", async ({ page }, t
   // Leaving the card restores the native cursor.
   await page.mouse.move(box.x + box.width + 120, target.y, { steps: 3 });
   await expect(cursor).not.toHaveAttribute("data-visible", "");
+});
+
+test("cards without a screenshot fill their window with the architecture flow", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Phones show a compact row instead");
+  await page.goto("/");
+  const windows = page.locator(".case-stage .flow-window");
+  expect(await windows.count()).toBeGreaterThan(0);
+  for (const window of await windows.all()) {
+    const [windowBox, stepsBox, firstStep, lastStep] = await window.evaluate((el) => {
+      const steps = el.querySelector(".flow-steps")!;
+      return [
+        el.getBoundingClientRect().toJSON(),
+        steps.getBoundingClientRect().toJSON(),
+        steps.firstElementChild!.getBoundingClientRect().toJSON(),
+        steps.lastElementChild!.getBoundingClientRect().toJSON(),
+      ];
+    });
+    // The steps fill the window below its title bar, top to bottom.
+    expect(stepsBox.height / windowBox.height).toBeGreaterThan(0.75);
+    expect(lastStep.bottom - firstStep.top).toBeGreaterThan(stepsBox.height * 0.75);
+  }
+});
+
+test("skill groups after the first fold behind one button on phones only", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const card = page.locator("#skills article").first();
+  const extra = card.locator(".skill-group-extra").first();
+  const more = card.getByRole("button", { name: /^Show \d+ more/ });
+  if (testInfo.project.name !== "mobile") {
+    await expect(extra).toBeVisible();
+    await expect(more).toBeHidden();
+    return;
+  }
+  await expect(extra).toBeHidden();
+  await expect(more).toHaveAttribute("aria-expanded", "false");
+  await more.click();
+  await expect(extra).toBeVisible();
+  await expect(card.getByRole("button", { name: /^Show fewer/ })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+});
+
+test("the hero and Connect lead with one solid main action", async ({ page }) => {
+  await page.goto("/");
+  for (const action of [
+    page.locator("#home").getByRole("link", { name: "View My Work" }),
+    page.locator("#connect").getByRole("link", { name: "Send a message" }),
+  ]) {
+    await expect(action).toBeVisible();
+    const [background, color, height] = await action.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return [style.backgroundColor, style.color, el.getBoundingClientRect().height];
+    });
+    // Solid: the theme's foreground as the fill, the background as the text.
+    expect(background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(background).not.toBe(color);
+    expect(height).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test("phones keep two highlights per case study and fold earlier roles", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const highlights = page.locator(".case-item .case-highlights").first().locator("li:visible");
+  const earlier = page.locator(".exp-timeline [data-earlier] .exp-summary").first();
+  const recent = page.locator(".exp-timeline > li:not([data-earlier]) .exp-summary").first();
+  await expect(recent).toBeVisible();
+  if (testInfo.project.name === "mobile") {
+    await expect(highlights).toHaveCount(2);
+    await expect(earlier).toBeHidden();
+    // The full points are still one tap away.
+    await earlier.locator("xpath=ancestor::article").locator("summary").click();
+    await expect(
+      earlier.locator("xpath=ancestor::article").locator("details li").first(),
+    ).toBeVisible();
+  } else {
+    await expect(earlier).toBeVisible();
+    await expect(page.locator(".case-panel-item[data-active] .case-highlights li")).not.toHaveCount(
+      0,
+    );
+  }
+});
+
+test("Connect's direct channels are labeled, not icon-only", async ({ page }) => {
+  await page.goto("/");
+  const connect = page.locator("#connect");
+  for (const [name, text] of [
+    ["LinkedIn (opens in a new tab)", "LinkedIn"],
+    ["GitHub (opens in a new tab)", "GitHub"],
+    ["Download CV (PDF)", "CV"],
+  ] as const) {
+    const link = connect.getByRole("link", { name, exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toContainText(text);
+    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(40);
+  }
+});
+
+test("the portrait develops from black and white into color once, then stays in color", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const photo = page.locator("#home .portrait-photo");
+  // Mid-load it is still monochrome (the develop animation fills backwards from grayscale).
+  const name = await photo.evaluate(
+    (el) => (el.getAnimations()[0] as CSSAnimation | undefined)?.animationName,
+  );
+  expect(name).toBe("photo-develop");
+  await photo.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
+  await expect(photo).toHaveCSS("filter", "none");
+
+  // Reduced motion: in color from the start, no animation.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(photo).toHaveCSS("filter", "none");
+  expect(await photo.evaluate((el) => el.getAnimations().length)).toBe(0);
+});
+
+test("the Connect email breaks after the @, never inside a word", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/");
+  const lines = await page.locator('#connect a[href^="mailto:"] span').evaluate((span) => {
+    const [local, , domain] = [...span.childNodes];
+    const rects = (node: ChildNode) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return [...range.getClientRects()].map((rect) => Math.round(rect.top));
+    };
+    return { local: rects(local!), domain: rects(domain!) };
+  });
+  // Each part sits on one line; at 320px the domain wraps below the name.
+  expect(new Set(lines.local).size).toBe(1);
+  expect(new Set(lines.domain).size).toBe(1);
+  expect(lines.domain[0]).toBeGreaterThanOrEqual(lines.local[0]!);
 });

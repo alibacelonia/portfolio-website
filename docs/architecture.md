@@ -8,7 +8,7 @@ src/
 │                   projects/page.tsx (collection), projects/[slug]/page.tsx (static detail pages via generateStaticParams),
 │                   not-found.tsx, robots.ts, sitemap.ts, opengraph-image.tsx, icon.svg, globals.css
 ├── components/
-│   ├── layout/     Header (sticky clay dock), SectionNav, MobileMenu(+Panel), Footer, Providers, SmoothScroll
+│   ├── layout/     Header (sticky glass dock), SectionNav, MobileMenu(+Panel), Footer, Providers, SmoothScroll
 │   ├── sections/   Hero, Pipeline, Projects, ProjectDetail, Experience, Skills, Certifications, Contact(+Form)
 │   └── ui/         Section(+Frame), OverviewStrip, ActionStrip, Tag, ButtonLink, ExternalLink, ThemeToggle, Logo, RevealObserver
 ├── data/           projects, experience, skills, certifications, navigation (typed, no JSX)

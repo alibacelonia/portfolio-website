@@ -1,7 +1,9 @@
 import { skills } from "@/data/skills";
 import { disciplineDot } from "@/lib/disciplines";
 import { Section } from "@/components/ui/Section";
-import { Tag } from "@/components/ui/Tag";
+import { SkillTag } from "@/components/ui/SkillTag";
+import { SkillGroups } from "@/components/ui/SkillGroups";
+import { findSkillProjects } from "@/lib/skill-evidence";
 import { stagger } from "@/lib/motion";
 
 function Legend() {
@@ -11,7 +13,7 @@ function Legend() {
       className="flex flex-wrap items-center gap-x-4 gap-y-2 type-small text-muted"
     >
       <span className="inline-flex items-center gap-2">
-        <span className="inline-block h-4 w-6 rounded border border-border bg-surface-2" />
+        <span className="inline-block h-4 w-6 rounded glass-chip" />
         Hands-on
       </span>
       <span className="inline-flex items-center gap-2">
@@ -24,18 +26,7 @@ function Legend() {
 
 export function Skills() {
   return (
-    <Section
-      id="skills"
-      index="04"
-      title="Skills"
-      lead={
-        <>
-          Grouped by discipline. Solid tags are tools used in production roles or public projects;
-          dashed tags mark working knowledge.
-        </>
-      }
-      aside={<Legend />}
-    >
+    <Section id="skills" label="Tech Stack" title="Tools I build with" aside={<Legend />}>
       <div data-reveal-group className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
         {skills.map((discipline, index) => (
           <article
@@ -56,20 +47,29 @@ export function Skills() {
             </h3>
             <p className="mt-2 type-body text-muted">{discipline.description}</p>
 
-            <div className="mt-5 space-y-5">
-              {discipline.groups.map((group) => (
-                <div key={group.label}>
+            <SkillGroups
+              discipline={discipline.title}
+              hiddenCount={discipline.groups
+                .slice(1)
+                .reduce((sum, group) => sum + group.skills.length, 0)}
+            >
+              {discipline.groups.map((group, groupIndex) => (
+                <div key={group.label} className={groupIndex > 0 ? "skill-group-extra" : undefined}>
                   <h4 className="type-label text-muted">{group.label}</h4>
                   <ul data-reveal-group="ripple" className="mt-2 flex flex-wrap gap-1.5">
                     {group.skills.map((skill, tagIndex) => (
-                      <Tag key={skill.name} level={skill.level} index={tagIndex}>
-                        {skill.name}
-                      </Tag>
+                      <SkillTag
+                        key={skill.name}
+                        skill={skill}
+                        evidence={findSkillProjects(skill.name)}
+                        index={tagIndex}
+                        group={`skill-evidence-${discipline.id}`}
+                      />
                     ))}
                   </ul>
                 </div>
               ))}
-            </div>
+            </SkillGroups>
           </article>
         ))}
       </div>

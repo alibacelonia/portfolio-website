@@ -7,18 +7,18 @@
 /* ---------- Design tokens (docs/design-system.md) ---------- */
 :root {
   color-scheme: light;
-  --bg: #fafbfc;
+  --bg: #fafafa;
   --surface: #ffffff;
-  --surface-2: #f3f5f8;
-  --fg: #111827;
-  --fg-soft: #334155;
-  --muted: #64748b;
-  --border: #e5e7eb;
-  --border-strong: #d1d5db;
-  --frame-line: rgb(15 23 42 / 0.12);
-  --frame-hatch: rgb(15 23 42 / 0.06);
-  --frame-shade: rgb(15 23 42 / 0.025);
-  --frame-marker: #a1a9b5;
+  --surface-2: #f4f4f5;
+  --fg: #18181b;
+  --fg-soft: #3f3f46;
+  --muted: #63636e;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --frame-line: rgb(24 24 27 / 0.12);
+  --frame-hatch: rgb(24 24 27 / 0.06);
+  --frame-shade: rgb(24 24 27 / 0.025);
+  --frame-marker: #a1a1aa;
   --frame-divider-h: clamp(20px, 2.5vw, 32px);
 
   --blue: #a9c4e8;
@@ -31,33 +31,32 @@
 
   --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04);
   --shadow-md: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
-  /* Clay navigation: an opaque, softly inflated surface (lit top lip, shaded underside, deep drop). */
-  --clay-top: #ffffff;
-  --clay-bottom: #eef0f4;
-  /* The same clay at card size: broader lit lip and underside, longer drop. */
-  --clay-card-shadow:
-    inset 0 2px 0 rgb(255 255 255 / 1), inset 0 -18px 32px -14px rgb(15 23 42 / 0.08),
-    0 30px 50px -24px rgb(15 23 42 / 0.3), 0 6px 12px rgb(15 23 42 / 0.06);
-  --clay-shadow:
-    inset 0 2px 0 rgb(255 255 255 / 1), inset 0 -6px 12px -4px rgb(15 23 42 / 0.08),
-    0 14px 28px -12px rgb(15 23 42 / 0.25), 0 3px 6px rgb(15 23 42 / 0.06);
-  --clay-active-top: #ffffff;
-  --clay-active-bottom: #f1f3f7;
-  --clay-active-shadow:
-    inset 0 2px 0 #fff, inset 0 -3px 6px rgb(15 23 42 / 0.06), 0 4px 10px -3px rgb(15 23 42 / 0.18);
-  /* Glass navigation: translucent, blurred, with a fine rim and top sheen. */
-  --glass-bg: rgb(255 255 255 / 0.62);
-  --glass-border: rgb(255 255 255 / 0.8);
-  --glass-sheen: rgb(255 255 255 / 0.65);
-  --glass-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.9), 0 0 0 1px rgb(15 23 42 / 0.06),
-    0 8px 24px -8px rgb(15 23 42 / 0.16);
-  --glass-active-bg: rgb(255 255 255 / 0.9);
-  --glass-active-border: rgb(15 23 42 / 0.08);
-  --glass-active-shadow: inset 0 1px 0 #fff, 0 2px 5px rgb(15 23 42 / 0.1);
-  /* Neumorphic navigation: the page color, extruded by a light and a dark shadow. */
-  --neo-light: rgb(255 255 255 / 0.9);
-  --neo-dark: rgb(15 23 42 / 0.12);
+  /* Aurora text (section-title italic words): darker stops for the light background, each ≥ 3.9:1. */
+  --aurora-1: #db2777;
+  --aurora-2: #9333ea;
+  --aurora-3: #2563eb;
+  --aurora-4: #0284c7;
+  /* The white title glow only reads on dark; light mode keeps titles crisp. */
+  --title-glow: none;
+  /* Shared frosted material: surfaces, controls, fields and small labels. */
+  --glass-bg: rgb(255 255 255 / 0.72);
+  --glass-floating-bg: rgb(255 255 255 / 0.9);
+  --glass-border: rgb(24 24 27 / 0.15);
+  --glass-sheen: rgb(255 255 255 / 0.55);
+  --glass-shadow: inset 0 1px 0 rgb(255 255 255 / 0.75), 0 8px 28px -12px rgb(24 24 27 / 0.14);
+  --glass-control-bg: rgb(255 255 255 / 0.82);
+  --glass-control-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.85), 0 2px 8px -3px rgb(24 24 27 / 0.12);
+  --glass-field-bg: rgb(250 250 250 / 0.76);
+  --glass-field-border: #767680;
+  --glass-chip-bg: rgb(244 244 245 / 0.7);
+  --glass-selected-bg: color-mix(in srgb, var(--blue) 22%, var(--surface));
+  --glass-selected-border: var(--blue-fg);
+  --glass-blur: 20px;
+  --stage-veil: rgb(24 24 27 / 0.035);
+  --media-shadow: 0 12px 32px -12px rgb(24 24 27 / 0.22);
+  --badge-glare: rgb(255 255 255 / 0.35);
+  --portrait-dot: rgb(13 13 15 / 0.6);
 
   --gutter: clamp(32px, 7.5vw, 120px);
   --frame-inset: clamp(16px, 5vw, 80px);
@@ -81,7 +80,7 @@
   --surface-2: #1c1c20;
   --fg: #f4f4f5;
   --fg-soft: #d4d4d8;
-  --muted: #a1a1aa;
+  --muted: #b0b0ba;
   --border: #303036;
   --border-strong: #3f3f46;
   --frame-line: rgb(244 244 245 / 0.1);
@@ -99,33 +98,25 @@
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-  /* Clay in the page's near-black (#0d0d0f), a few steps lighter so it reads as raised. */
-  --clay-top: #1c1c20;
-  --clay-bottom: #141417;
-  --clay-card-shadow:
-    inset 0 2px 0 rgb(255 255 255 / 0.07), inset 0 28px 44px -28px rgb(255 255 255 / 0.06),
-    inset 0 -20px 36px -16px rgb(0 0 0 / 0.6), 0 32px 56px -22px rgb(0 0 0 / 0.9),
-    0 6px 14px rgb(0 0 0 / 0.5);
-  --clay-shadow:
-    inset 0 1.5px 0 rgb(255 255 255 / 0.08), inset 0 10px 16px -10px rgb(255 255 255 / 0.06),
-    inset 0 -8px 14px -6px rgb(0 0 0 / 0.65), 0 16px 30px -10px rgb(0 0 0 / 0.9),
-    0 4px 8px rgb(0 0 0 / 0.5);
-  --clay-active-top: #2c2c32;
-  --clay-active-bottom: #212126;
-  --clay-active-shadow:
-    inset 0 1.5px 0 rgb(255 255 255 / 0.12), inset 0 -4px 8px -2px rgb(0 0 0 / 0.5),
-    0 6px 12px -4px rgb(0 0 0 / 0.75), 0 1px 2px rgb(0 0 0 / 0.5);
-  --glass-bg: rgb(30 30 34 / 0.62);
-  --glass-border: rgb(255 255 255 / 0.12);
-  --glass-sheen: rgb(255 255 255 / 0.07);
-  --glass-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 0 1px rgb(0 0 0 / 0.2),
-    0 10px 28px -8px rgb(0 0 0 / 0.6);
-  --glass-active-bg: rgb(255 255 255 / 0.1);
-  --glass-active-border: rgb(255 255 255 / 0.14);
-  --glass-active-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 2px 5px rgb(0 0 0 / 0.35);
-  --neo-light: rgb(255 255 255 / 0.05);
-  --neo-dark: rgb(0 0 0 / 0.75);
+  /* Brighter versions of Magic UI's aurora defaults, each ≥ 5.9:1 on the dark background. */
+  --aurora-1: #ff4fa3;
+  --aurora-2: #b36bff;
+  --aurora-3: #4f9dff;
+  --aurora-4: #38bdf8;
+  --title-glow: 0 4px 8px rgb(255 255 255 / 0.05), 0 8px 30px rgb(255 255 255 / 0.2);
+  --glass-bg: rgb(26 26 31 / 0.72);
+  --glass-floating-bg: rgb(26 26 31 / 0.9);
+  --glass-border: rgb(244 244 245 / 0.16);
+  --glass-sheen: rgb(255 255 255 / 0.045);
+  --glass-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 10px 30px -12px rgb(0 0 0 / 0.42);
+  --glass-control-bg: rgb(47 47 54 / 0.78);
+  --glass-control-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 2px 8px -3px rgb(0 0 0 / 0.35);
+  --glass-field-bg: rgb(17 17 21 / 0.76);
+  --glass-field-border: #686873;
+  --glass-chip-bg: rgb(37 37 43 / 0.7);
+  --glass-selected-bg: color-mix(in srgb, var(--blue) 20%, var(--surface));
+  --stage-veil: rgb(0 0 0 / 0.12);
+  --media-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -146,7 +137,6 @@
   --color-danger: var(--danger);
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
 
   --shadow-card: var(--shadow-sm);
@@ -170,7 +160,7 @@
     overflow-x: clip;
     background: var(--bg);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -209,31 +199,47 @@
    One utility per role so every section uses identical sizes. Color is baked in only where a
    role always has the same color; otherwise pair the utility with a text-* color class. */
 @utility type-eyebrow {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.75rem;
   line-height: 1.5;
   letter-spacing: 0.025em;
   color: var(--muted);
 }
 
-/* Monospace data (dates, flows) without a fixed color; pair with a text-* class. */
+/* Data (dates, codes, flows) in the body face with even-width figures; pair with a text-* class.
+   Two families only: Geist Sans for text, Instrument Serif for display. */
 @utility type-mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Section label above a display title: "02 — CASE STUDIES" (after the owner's reference). */
+@utility type-overline {
   font-size: 0.75rem;
-  line-height: 1.5;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Section display title in Instrument Serif; its last word is set in italic. */
+@utility type-display {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(2.5rem, 1.55rem + 2.9vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* The soft glow on a section's title block (overline and title together), as on the reference. */
+@utility title-glow {
+  text-shadow: var(--title-glow);
 }
 
 @utility type-section-title {
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
   line-height: 1.25;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  color: var(--fg);
-}
-
-@utility type-page-title {
-  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
-  line-height: 1.2;
   font-weight: 600;
   letter-spacing: -0.025em;
   color: var(--fg);
@@ -249,6 +255,26 @@
 @utility type-display-serif {
   font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
   font-size: clamp(1.75rem, 1.4rem + 1.1vw, 2.375rem);
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+/* Project names keep the case-study serif everywhere: card size (project index, client work) and
+   page size (a project page's h1). */
+@utility type-project-title {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(1.5rem, 1.35rem + 0.5vw, 1.75rem);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+
+@utility type-project-page-title {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(2.25rem, 1.7rem + 2vw, 3.25rem);
   line-height: 1.05;
   font-weight: 400;
   letter-spacing: -0.01em;
@@ -280,10 +306,10 @@
 }
 
 @utility type-label {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.45;
-  letter-spacing: 0.02em;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 @utility type-action {
@@ -292,19 +318,85 @@
   font-weight: 500;
 }
 
-/* Card surface without padding, for panels split into cells that pad themselves. */
-@utility card-shell {
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
+/* Reusable glass material. A solid theme surface is the baseline, so missing blur support,
+   reduced transparency and forced colors never leave text over an unreadable background.
+   Local --glass-fill customizes a surface without duplicating its material rules. */
+@utility glass {
+  border: 1px solid var(--glass-border);
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow);
+
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background:
+      linear-gradient(180deg, var(--glass-sheen), transparent), var(--glass-fill, var(--glass-bg));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  @media (forced-colors: active) {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@utility glass-control {
+  @apply glass;
+  --glass-fill: var(--glass-control-bg);
+  box-shadow: var(--glass-control-shadow);
+}
+
+@utility glass-field {
+  @apply glass;
+  --glass-fill: var(--glass-field-bg);
+  border-color: var(--glass-field-border);
+  box-shadow: none;
+}
+
+/* Small labels share the material's colors, without paying for a blur layer per tag. */
+@utility glass-chip {
+  @apply glass;
+  --glass-fill: var(--glass-chip-bg);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Shared selected state for tabs and intent buttons; text never inverts over a pale sheen. */
+@utility glass-selectable {
+  &[aria-pressed="true"],
+  &[aria-selected="true"] {
+    background: var(--glass-selected-bg);
+    border-color: var(--glass-selected-border);
+    color: var(--fg);
+  }
+
+  @media (forced-colors: active) {
+    &[aria-pressed="true"],
+    &[aria-selected="true"] {
+      background: Highlight;
+      border-color: Highlight;
+      color: HighlightText;
+    }
+  }
+}
+
+@utility card-shell {
+  @apply glass;
+  border-radius: 0.75rem;
 }
 
 @utility card {
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  @apply card-shell;
   padding: 1.25rem;
 
   @media (width >= 40rem) {
@@ -524,6 +616,12 @@
   display: none;
 }
 
+/* Without its divider, the section also drops the space reserved for it, so its title band is
+   framed by the strip's border above and its own line below with equal space on both sides. */
+.section-frame:has(> .section-action:last-child) + .section-frame {
+  padding-top: 0;
+}
+
 .section-frame--hero::before,
 .section-frame--top::before,
 .section-frame--footer::before,
@@ -545,8 +643,8 @@
 }
 
 .section-panel {
-  border: 1px solid var(--frame-line);
-  background: linear-gradient(135deg, var(--frame-shade), transparent), var(--surface);
+  @apply glass;
+  border-radius: 1rem;
 }
 
 @media (forced-colors: active) {
@@ -623,6 +721,17 @@
 
 /* An aperture opening, with no opacity fade: the portrait is the mobile LCP element, and Chrome
    only counts an element once it is visible, so a fade-in would delay LCP. */
+/* The portrait develops like an instant photo: it opens in black and white, then its color comes
+   in once and stays (the end state is the unfiltered photo). */
+@keyframes photo-develop {
+  from {
+    filter: grayscale(1) contrast(1.08);
+  }
+  35% {
+    filter: grayscale(1) contrast(1.08);
+  }
+}
+
 @keyframes portrait-in {
   from {
     clip-path: inset(14% 14% 14% 14%);
@@ -668,6 +777,13 @@
   .js .section-frame--hero .hero-portrait {
     animation: portrait-in 1100ms var(--ease) backwards;
   }
+  .js .section-frame--hero .hero-portrait .portrait-photo {
+    animation: photo-develop 2600ms var(--ease) 300ms backwards;
+  }
+  /* The Connect instant photo develops as its panel reveals. */
+  .js [data-reveal-group][data-revealed] .connect-polaroid .portrait-photo {
+    animation: photo-develop 2600ms var(--ease) 350ms backwards;
+  }
   .js .hero-sequence > * {
     animation: reveal-rise 800ms var(--ease) backwards;
     animation-delay: calc(80ms + var(--i, 0) * 90ms);
@@ -696,6 +812,9 @@
 .hero-sequence > :nth-child(6) {
   --i: 5;
 }
+.hero-sequence > :nth-child(7) {
+  --i: 6;
+}
 
 @media (min-width: 640px) {
   :root {
@@ -709,6 +828,147 @@
    upper half of the viewport. The cards sit in a hatched well, like the section dividers, and a
    ruler of ticks beside the title shows which project is active.
    Phones: each image is followed by its own details, 100px between projects. */
+/* Aurora text (after Magic UI): a gradient clipped to the letters, drifting through its colors;
+   the word itself stays still (Magic UI's sway is left out). The title glow is turned off here: a text-shadow would paint over the
+   clipped gradient. Owner-approved exception to "no gradient text" (D-70). */
+.aurora-text {
+  position: relative;
+  display: inline-block;
+  /* The gradient only paints inside this box, so it must cover every glyph: room for the italic
+     overhang at the sides, ascenders above, and descenders (g, j, p) below the tight title line
+     height. Equal negative margins keep the layout exactly as if the padding weren't there. */
+  padding: 0.12em 0.12em 0.25em 0.04em;
+  margin: -0.12em -0.12em -0.25em -0.04em;
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  animation: aurora 8s ease-in-out infinite alternate;
+}
+
+/* Only the colors move; the word itself stays still. */
+@keyframes aurora {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-text {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .aurora-text {
+    background: none;
+    color: CanvasText;
+  }
+}
+
+/* Certification badges lean toward the mouse (TiltBadge sets --tilt-x/-y and --glare-x/-y).
+   Quick to follow the pointer, slower to settle back flat. */
+.tilt-badge {
+  flex-shrink: 0;
+  perspective: 600px;
+}
+
+.tilt-badge-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(1);
+  transform-style: preserve-3d;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.tilt-badge[data-tilting] .tilt-badge-inner {
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(1.06);
+  transition-duration: 120ms;
+}
+
+/* A soft light that follows the pointer, clipped to the badge's hexagon by its own image. */
+.tilt-badge-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    var(--badge-glare),
+    transparent 55%
+  );
+  -webkit-mask: var(--badge-mask) center / contain no-repeat;
+  mask: var(--badge-mask) center / contain no-repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.tilt-badge[data-tilting] .tilt-badge-glare {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt-badge-inner,
+  .tilt-badge-glare {
+    transition: none;
+  }
+}
+
+/* A section's title band: from rail to rail (like the case-study layout), equal space above and
+   below the title, and a line under it with junction squares where it meets the rails. The
+   section divider is its top edge; first bands (no divider) draw a top line too. */
+.section-title-band {
+  position: relative;
+  margin-inline: calc(var(--frame-inset) - var(--gutter));
+  padding: clamp(2.5rem, 5vw, 4.5rem) calc(var(--gutter) - var(--frame-inset));
+  border-bottom: 1px solid var(--frame-line);
+}
+
+.section-title-band--first {
+  border-top: 1px solid var(--frame-line);
+}
+
+.section-title-band::before,
+.section-title-band::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  background: var(--frame-marker);
+  box-shadow: 0 0 0 4px var(--bg);
+  translate: -50% 50%;
+  pointer-events: none;
+}
+
+.section-title-band::before {
+  left: 0;
+}
+
+.section-title-band::after {
+  left: 100%;
+}
+
+@media (forced-colors: active) {
+  .section-title-band::before,
+  .section-title-band::after {
+    display: none;
+  }
+}
+
 .case-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -717,7 +977,14 @@
 .case-list {
   display: flex;
   flex-direction: column;
-  gap: 6.25rem;
+  /* 100px between projects; phones use 56px so the section stays a few screens long. */
+  gap: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .case-list {
+    gap: 6.25rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -731,6 +998,11 @@
     align-items: start;
     margin-inline: calc(var(--frame-inset) - var(--gutter));
     border-block: 1px solid var(--frame-line);
+  }
+
+  /* Directly under a title band, the band's line is this layout's top edge. */
+  .section-title-band + .case-layout {
+    border-top: 0;
   }
 
   /* The cards sit on the section-divider hatch; each keeps a thin bezel line 6px out, so it reads
@@ -881,14 +1153,12 @@ html:not(.js) .case-panel-item {
 /* Connect: the portrait as a slightly tilted instant photo. */
 .connect-polaroid {
   padding: 5px 5px 14px;
-  background: #f4f4f5;
+  @apply glass;
   border-radius: 3px;
-  box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.6);
   rotate: -4deg;
 }
 
-/* Project cursor (ProjectCursor): replaces the native cursor over case-study cards for a mouse.
-   A neutral light disc (not a pastel accent) so it reads on every card tint. */
+/* Project cursor: a theme-aware glass disc over case-study cards, for a mouse only. */
 @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
   html[data-project-cursor] .case-stage {
     cursor: none;
@@ -910,7 +1180,7 @@ html:not(.js) .case-panel-item {
   width: 100%;
   height: 100%;
   place-items: center;
-  border: 1px dotted rgb(255 255 255 / 0.8);
+  border: 1px dotted var(--fg-soft);
   border-radius: 9999px;
   opacity: 0;
   scale: 0.6;
@@ -928,19 +1198,14 @@ html:not(.js) .case-panel-item {
 .project-cursor-eye {
   grid-area: 1 / 1;
   border-radius: 9999px;
-  color: #0a0a0a;
+  color: var(--fg);
 }
 
 .project-cursor-disc {
   width: 92px;
   height: 92px;
-  background: linear-gradient(#fafafa, #d4d4d8);
-  box-shadow:
-    inset 0 1px 0 #fff,
-    inset 0 -2px 3px rgb(0 0 0 / 0.08),
-    0 0 0 1px rgb(0 0 0 / 0.08),
-    0 12px 32px -8px rgb(0 0 0 / 0.5);
-  font-size: 13px;
+  @apply glass-control;
+  font-size: 0.8125rem;
   font-weight: 600;
   animation: project-cursor-spin 12s linear infinite;
 }
@@ -956,10 +1221,7 @@ html:not(.js) .case-panel-item {
   width: 44px;
   height: 44px;
   place-items: center;
-  background: #fff;
-  box-shadow:
-    inset 0 -1px 0 rgb(0 0 0 / 0.06),
-    0 1px 3px rgb(0 0 0 / 0.12);
+  @apply glass-control;
 }
 
 @keyframes project-cursor-spin {
@@ -985,26 +1247,16 @@ html:not(.js) .case-panel-item {
   }
 }
 
-/* A claymorphic stage (same clay as the dock, at card size) tinted with the project's discipline
-   color (pastel, low saturation), shading diagonally from dark at the top left to lighter at the
-   bottom right: tagline and arrow at the top, then the screenshot (or the flow window that stands
-   in for one) rising from the bottom edge. */
+/* Theme-aware tinted glass, retaining each project's screenshot palette as a subtle wash. */
 .case-stage {
+  @apply glass;
+  --glass-fill: var(--stage-glass);
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
-  /* The card's background: a per-card gradient (--stage-bg, set from the data), or by default a
-     diagonal discipline tint from dark top left to lighter bottom right. */
-  --stage-bg: linear-gradient(
-    to bottom right,
-    color-mix(in srgb, var(--stage, var(--sage)) 5%, var(--bg)),
-    color-mix(in srgb, var(--stage, var(--sage)) 22%, var(--clay-top))
-  );
-  background: var(--stage-bg);
-  box-shadow: var(--clay-card-shadow);
-  transition: box-shadow 300ms var(--ease);
+  transition: border-color 300ms var(--ease);
 }
 
 /* Tall 4:3 cards from sm; on phones the card grows with the tagline instead. */
@@ -1015,9 +1267,7 @@ html:not(.js) .case-panel-item {
 }
 
 .case-stage:hover {
-  box-shadow:
-    var(--clay-card-shadow),
-    0 0 0 1px var(--border-strong);
+  border-color: var(--border-strong);
 }
 
 /* Card content (tagline row, screenshot) sits above the card's own overlay. */
@@ -1029,9 +1279,8 @@ html:not(.js) .case-panel-item {
   z-index: 1;
 }
 
-/* A dark veil over the card's background only (below the tagline and screenshot, which are never
-   darkened), until the card is hovered; then it fades away so the card brightens. Mouse only:
-   touch screens have no hover, so there the cards stay at full brightness. */
+/* A subtle theme-aware veil affects only the background; the screenshot and text stay crisp.
+   Hover clears it. Touch screens have no veil. */
 @media (hover: hover) and (pointer: fine) {
   .case-stage::before {
     content: "";
@@ -1039,7 +1288,7 @@ html:not(.js) .case-panel-item {
     inset: 0;
     z-index: 0;
     border-radius: inherit;
-    background: rgb(0 0 0 / 0.3);
+    background: var(--stage-veil);
     pointer-events: none;
     transition: opacity 400ms var(--ease);
   }
@@ -1115,10 +1364,7 @@ html:not(.js) .case-panel-item {
      image never shifts. */
   border-bottom-color: transparent;
   border-radius: 0.375rem 0.375rem 0 0;
-  box-shadow:
-    0 0 0 1px rgb(0 0 0 / 0.25),
-    0 4px 16px rgb(0 0 0 / 0.35),
-    0 18px 50px -8px rgb(0 0 0 / 0.5);
+  box-shadow: var(--media-shadow);
   transform-origin: bottom;
   translate: 0 1.25rem;
   rotate: 1deg;
@@ -1158,12 +1404,151 @@ html:not(.js) .case-panel-item {
   flex-shrink: 0;
   margin-top: auto;
   border-radius: 0.75rem 0.75rem 0 0;
-  box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+  box-shadow: var(--media-shadow);
   transition: translate 500ms var(--ease);
 }
 
 .case-stage:hover .case-media-inner {
   translate: 0 -6px;
+}
+
+/* Phones and tablets: each case study keeps its first two highlights (all of them stay in the
+   desktop panel and on the project pages). */
+@media (max-width: 1023.98px) {
+  .case-item .case-highlights > li:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+/* Phones: roles after the two most recent show their header and "Show details" only; the details
+   repeat their summary points in full. */
+@media (max-width: 767.98px) {
+  .exp-timeline [data-earlier] .exp-summary {
+    display: none;
+  }
+}
+
+/* Skills: below lg, groups after the first fold behind "Show N more" (JavaScript only). */
+.skill-more {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .js .skill-groups:not([data-expanded]) > .skill-group-extra {
+    display: none;
+  }
+
+  /* The visible group is the last one shown, so it drops the stack's spacing. */
+  .js .skill-groups:not([data-expanded]) > :first-child {
+    margin-block-end: 0;
+  }
+
+  .js .skill-more {
+    display: inline-flex;
+  }
+}
+
+/* Architecture flow (cards without a screenshot). Phones: a wrapped row of chips joined by
+   arrows, as tall as its content. */
+.flow-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 0.5rem;
+  padding: 1rem;
+}
+
+.flow-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flow-node {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .case-media:has(> .flow-window) {
+    height: auto;
+  }
+}
+
+/* From sm: the window fills the card under the tagline, and the steps alternate left and right
+   of a vertical spine in equal rows, so the diagram uses the whole window. */
+@media (min-width: 640px) {
+  .flow-window {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .flow-steps {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-auto-rows: minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: 1.25rem;
+    padding: 0.75rem 1.5rem 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  .flow-steps li {
+    position: relative;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+  }
+
+  /* The spine: from this step's node to the next one (rows are equal, so 100% reaches it). */
+  .flow-steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: var(--border-strong);
+    translate: -50% 0;
+  }
+
+  .flow-arrow {
+    display: none;
+  }
+
+  .flow-node {
+    position: relative;
+    z-index: 1;
+    display: block;
+    grid-row: 1;
+    grid-column: 2;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 999px;
+    background: var(--stage-frame, var(--border-strong));
+    box-shadow: 0 0 0 4px
+      color-mix(in srgb, var(--stage-frame, var(--border-strong)) 18%, transparent);
+  }
+
+  .flow-chip {
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: end;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .flow-steps li:nth-child(even) .flow-chip {
+    grid-column: 3;
+    justify-self: start;
+  }
+}
+
+@media (forced-colors: active) {
+  .flow-node {
+    background: CanvasText;
+    box-shadow: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1295,7 +1680,7 @@ html:not(.js) .case-panel-item {
   }
 }
 
-/* Square monochrome portrait with a fine halftone texture. */
+/* Square color portrait with a fine halftone texture. */
 .hero-portrait {
   isolation: isolate;
 }
@@ -1304,66 +1689,126 @@ html:not(.js) .case-panel-item {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgb(13 13 15 / 0.6) 0.65px, transparent 0.9px);
+  background-image: radial-gradient(var(--portrait-dot) 0.65px, transparent 0.9px);
   background-size: 3px 3px;
   mix-blend-mode: multiply;
   opacity: 0.35;
   pointer-events: none;
 }
 
-/*
- * Navigation dock surfaces, chosen with data-dock (NEXT_PUBLIC_DOCK_STYLE, see src/lib/dock.ts).
- * Each style also shapes the active-link .nav-indicator inside it.
- */
-
-/* Clay: opaque and puffy, shaped by inner light and shadow; the active link is a raised lump. */
-.dock[data-dock="clay"] {
-  background: linear-gradient(180deg, var(--clay-top), var(--clay-bottom));
-  box-shadow: var(--clay-shadow);
-}
-.dock[data-dock="clay"] .nav-indicator {
-  background: linear-gradient(180deg, var(--clay-active-top), var(--clay-active-bottom));
-  box-shadow: var(--clay-active-shadow);
+/* The dock, mobile snackbar and sliding indicator use the same material as other controls. */
+/* Floating navigation crosses screenshots too; the denser fill preserves text contrast. */
+.dock {
+  --glass-fill: var(--glass-floating-bg);
 }
 
-/* Glass: frosted and translucent with a fine rim; opaque fallback without backdrop-filter. */
-.dock[data-dock="glass"] {
-  background: var(--surface);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .dock[data-dock="glass"] {
-    background: linear-gradient(180deg, var(--glass-sheen), transparent), var(--glass-bg);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    backdrop-filter: blur(24px) saturate(160%);
-  }
-}
-.dock[data-dock="glass"] .nav-indicator {
-  background: var(--glass-active-bg);
-  border: 1px solid var(--glass-active-border);
-  box-shadow: var(--glass-active-shadow);
-}
-
-/* Neumorphism: the page color pushed out by a light and a dark shadow; the active link is pressed in. */
-.dock[data-dock="neo"] {
-  background: var(--bg);
-  box-shadow:
-    -5px -5px 12px var(--neo-light),
-    6px 6px 14px var(--neo-dark);
-}
-.dock[data-dock="neo"] .nav-indicator {
-  background: var(--bg);
-  box-shadow:
-    inset 3px 3px 7px var(--neo-dark),
-    inset -3px -3px 7px var(--neo-light);
+.nav-indicator {
+  @apply glass-control;
 }
 
 @media (forced-colors: active) {
-  .dock,
   .nav-indicator {
-    background: Canvas;
-    border: 1px solid CanvasText;
-    box-shadow: none;
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .dock [aria-current="location"] {
+    color: LinkText;
+  }
+}
+
+/* Static accent layers add depth without animating a blur or changing the portrait's LCP. */
+@utility offset-frame {
+  position: relative;
+  isolation: isolate;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: 2px;
+  }
+
+  &::before {
+    z-index: -2;
+    inset: -0.625rem;
+    border: 1px solid var(--frame-line);
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--blue) 18%, var(--bg)),
+      color-mix(in srgb, var(--lavender) 12%, var(--bg))
+    );
+    transform: rotate(-3deg);
+  }
+
+  &::after {
+    z-index: -1;
+    inset: -0.25rem;
+    border: 1px solid color-mix(in srgb, var(--blue-fg) 25%, transparent);
+    transform: rotate(1.5deg);
+  }
+
+  @media (forced-colors: active) {
+    &::before,
+    &::after {
+      background: Canvas;
+      border-color: CanvasText;
+    }
+  }
+}
+
+/* Native skill disclosures grow into a full row; no absolute tooltip can escape the viewport. */
+.skill-item:has(> .skill-disclosure[open]) {
+  flex-basis: 100%;
+}
+
+.skill-disclosure[open] > summary {
+  border-color: var(--blue-fg);
+  color: var(--fg);
+}
+
+.skill-chevron {
+  transition: transform 180ms var(--ease);
+}
+
+.skill-disclosure[open] .skill-chevron {
+  transform: rotate(180deg);
+}
+
+/* Progressive enhancement: without JS the entire collection remains visible. */
+.project-filter-controls {
+  display: none;
+}
+.js .project-filter-controls {
+  display: flex;
+}
+
+.project-collection[data-project-filter="full-stack"]
+  :is(
+    [data-project-discipline]:not([data-project-discipline="full-stack"]),
+    [data-project-group]:not([data-project-disciplines~="full-stack"])
+  ),
+.project-collection[data-project-filter="devops"]
+  :is(
+    [data-project-discipline]:not([data-project-discipline="devops"]),
+    [data-project-group]:not([data-project-disciplines~="devops"])
+  ),
+.project-collection[data-project-filter="ai"]
+  :is(
+    [data-project-discipline]:not([data-project-discipline="ai"]),
+    [data-project-group]:not([data-project-disciplines~="ai"])
+  ) {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .project-collection:not([data-project-filter="all"]) [data-project-discipline] {
+    animation: reveal-rise 240ms var(--ease) backwards;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skill-chevron {
+    transition: none;
   }
 }

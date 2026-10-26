@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { projects } from "@/data/projects";
-import { site } from "@/lib/site";
 import type { ClientWork, Project } from "@/types/content";
 import { publishedClientWork } from "@/data/clientWork";
 import { disciplineDot } from "@/lib/disciplines";
@@ -38,6 +37,7 @@ export function ProjectCard({
   return (
     <article
       aria-labelledby={headingId}
+      data-project-discipline={project.discipline}
       style={stagger(index)}
       className="flex h-full min-w-0 flex-col card transition-[border-color,box-shadow,transform] duration-300 ease-out-soft hover:-translate-y-0.5 hover:border-border-strong hover:shadow-raised"
     >
@@ -52,7 +52,7 @@ export function ProjectCard({
         <p className="type-label text-muted">{project.status}</p>
       </div>
 
-      <Heading id={headingId} className="mt-4 type-card-title">
+      <Heading id={headingId} className="mt-3 type-project-title">
         {project.name}
       </Heading>
       <p className="mt-2 type-body text-muted">{project.summary}</p>
@@ -121,17 +121,15 @@ export function ClientWorkCard({
 
   const header = (
     <>
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
-        <p className="inline-flex items-center gap-2 text-xs text-fg-soft">
-          <span
-            aria-hidden="true"
-            className={`size-1.5 shrink-0 rounded-full ${disciplineDot[work.discipline]}`}
-          />
-          {work.category}
-        </p>
-        <p className="type-label text-muted">Client work</p>
-      </div>
-      <Heading id={headingId} className="mt-4 type-card-title">
+      {/* Shown under the "Professional work" heading, so it isn't labelled "Client work" again. */}
+      <p className="inline-flex items-center gap-2 text-xs text-fg-soft">
+        <span
+          aria-hidden="true"
+          className={`size-1.5 shrink-0 rounded-full ${disciplineDot[work.discipline]}`}
+        />
+        {work.category}
+      </p>
+      <Heading id={headingId} className="mt-3 type-project-title">
         {work.name}
       </Heading>
       <p className="mt-2 type-body text-muted">{work.summary}</p>
@@ -192,6 +190,7 @@ export function ClientWorkCard({
     return (
       <article
         aria-labelledby={headingId}
+        data-project-discipline={work.discipline}
         data-reveal
         className="grid grid-cols-1 gap-6 card lg:grid-cols-12 lg:gap-8"
       >
@@ -219,6 +218,7 @@ export function ClientWorkCard({
   return (
     <article
       aria-labelledby={headingId}
+      data-project-discipline={work.discipline}
       data-reveal
       className="grid grid-cols-1 gap-6 card lg:grid-cols-12 lg:gap-10"
     >
@@ -260,7 +260,10 @@ export function ProjectCollection({
   const cardLevel = (level + 1) as 3 | 4;
   return (
     <div className="space-y-10 sm:space-y-12">
-      <div>
+      <div
+        data-project-group
+        data-project-disciplines={[...new Set(work.map((item) => item.discipline))].join(" ")}
+      >
         <GroupHeading level={level}>Professional work</GroupHeading>
         <div className="space-y-4 lg:space-y-5">
           {work.map((item) => (
@@ -268,7 +271,10 @@ export function ProjectCollection({
           ))}
         </div>
       </div>
-      <div>
+      <div
+        data-project-group
+        data-project-disciplines={[...new Set(projects.map((item) => item.discipline))].join(" ")}
+      >
         <GroupHeading level={level}>Open source</GroupHeading>
         <ProjectGrid headingLevel={cardLevel} />
       </div>
@@ -280,18 +286,9 @@ export function Projects() {
   return (
     <Section
       id="projects"
-      index="02"
-      title="Projects"
-      lead={
-        publishedClientWork.length > 0
-          ? "Client work and open-source projects across application development, cloud delivery and applied AI. Each open-source project page covers the problem, the solution, the stack and how it is built and shipped."
-          : "Open-source work across application development, cloud delivery and applied AI. Each project page covers the problem, the solution, the stack and how it is built and shipped."
-      }
-      aside={
-        <ExternalLink href={site.github} className="type-mono text-muted hover:text-fg">
-          github.com/alibacelonia
-        </ExternalLink>
-      }
+      label="Case Studies"
+      title="Curated work"
+      flush
       footer={<ActionStrip href="/projects/">View all projects</ActionStrip>}
     >
       <CaseStudies studies={buildCaseStudies()} />

@@ -52,6 +52,8 @@ function useLocalTime(): string {
   );
 }
 
+const [emailLocal, emailDomain] = site.email.split("@");
+
 function CopyEmail() {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -72,15 +74,20 @@ function CopyEmail() {
     }
   };
   return (
-    <div className="rounded-xl border border-border-strong bg-surface p-3.5 pl-4">
+    <div className="rounded-xl glass-control p-3.5 pl-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="type-label tracking-wide text-muted uppercase">Email</p>
           <a
             href={`mailto:${site.email}`}
-            className="mt-0.5 inline-flex min-h-8 items-center type-body break-all text-fg hover:underline"
+            className="mt-0.5 inline-flex min-h-8 items-center type-body text-fg hover:underline"
           >
-            {site.email}
+            {/* Breaks after the "@" on narrow screens, never inside the name or domain. */}
+            <span className="min-w-0 wrap-break-word">
+              {`${emailLocal}@`}
+              <wbr />
+              {emailDomain}
+            </span>
           </a>
         </div>
         <button
@@ -111,8 +118,9 @@ function CopyEmail() {
   );
 }
 
-const iconLink =
-  "inline-flex size-10 items-center justify-center rounded-lg border border-border-strong bg-surface text-fg-soft transition-colors hover:bg-surface-2 hover:text-fg";
+/** Labeled channel buttons: the icon helps scanning, the word says what it is. */
+const channelLink =
+  "inline-flex min-h-10 items-center gap-2 rounded-lg glass-control px-3 type-action text-fg-soft transition-colors hover:border-border-strong hover:text-fg";
 
 /** LinkedIn and GitHub marks (lucide dropped brand icons). */
 function BrandIcon({ name }: { name: "linkedin" | "github" }) {
@@ -167,7 +175,7 @@ function ConnectTabs({ subject }: { subject?: string }) {
             role="tablist"
             aria-label="How to get in touch"
             onKeyDown={onKeyDown}
-            className="inline-flex gap-1 rounded-full border border-border bg-surface p-1"
+            className="inline-flex gap-1 rounded-full glass p-1"
           >
             {visible.map(({ id, label, Icon }) => (
               <button
@@ -182,7 +190,7 @@ function ConnectTabs({ subject }: { subject?: string }) {
                 aria-controls={`connect-panel-${id}`}
                 tabIndex={tab === id ? 0 : -1}
                 onClick={() => setTab(id)}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full px-4 type-action text-fg-soft transition-colors hover:text-fg aria-selected:bg-surface-2 aria-selected:text-fg aria-selected:shadow-sm"
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border glass-selectable border-transparent px-4 type-action text-fg-soft transition-colors hover:text-fg aria-selected:text-fg"
               >
                 <Icon aria-hidden="true" className="size-4" />
                 {label}
@@ -255,7 +263,7 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
               alt=""
               width={160}
               height={160}
-              className="size-20 object-cover contrast-[1.08] grayscale sm:size-[5.5rem]"
+              className="portrait-photo size-20 object-cover sm:size-[5.5rem]"
             />
           </div>
           <div className="min-w-0">
@@ -283,7 +291,7 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
                 type="button"
                 aria-pressed={intent === item.id}
                 onClick={() => setIntent(intent === item.id ? null : item.id)}
-                className="min-h-10 rounded-full border border-border-strong px-4 type-action text-fg-soft transition-colors hover:bg-surface-2 hover:text-fg aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-bg"
+                className="min-h-10 rounded-full glass-control glass-selectable px-4 type-action text-fg-soft transition-colors hover:border-border-strong hover:text-fg"
               >
                 {item.label}
               </button>
@@ -299,16 +307,16 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
           <div className="mt-3">
             <CopyEmail />
           </div>
-          <ul className="mt-3 flex gap-2">
+          <ul className="mt-3 flex flex-wrap gap-2">
             <li>
               <a
                 href={site.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={iconLink}
-                aria-label="LinkedIn (opens in a new tab)"
+                className={channelLink}
               >
                 <BrandIcon name="linkedin" />
+                LinkedIn<span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
@@ -316,20 +324,17 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
                 href={site.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={iconLink}
-                aria-label="GitHub (opens in a new tab)"
+                className={channelLink}
               >
                 <BrandIcon name="github" />
+                GitHub<span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
-              <a
-                href={site.resume.href}
-                download={site.resume.fileName}
-                className={iconLink}
-                aria-label="Download resume (PDF)"
-              >
+              <a href={site.resume.href} download={site.resume.fileName} className={channelLink}>
                 <FileText aria-hidden="true" className="size-4" />
+                <span className="sr-only">Download </span>CV
+                <span className="sr-only"> (PDF)</span>
               </a>
             </li>
           </ul>

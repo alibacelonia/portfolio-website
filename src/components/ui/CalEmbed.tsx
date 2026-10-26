@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CircleCheck, RotateCcw } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 
 export const CAL_EMBED_ORIGIN = "https://app.cal.com";
 export const CAL_EMBED_SCRIPT = `${CAL_EMBED_ORIGIN}/embed/embed.js`;
@@ -32,6 +33,8 @@ function queue(): CalQueue {
 }
 
 let loading: Promise<void> | null = null;
+/** Calendar mounts so far; each gets its own Cal.com namespace. */
+let mounts = 0;
 
 /**
  * Cal.com's embed snippet, unminified: calls are queued on window.Cal until embed.js loads and
@@ -102,6 +105,7 @@ export function parseBooking(origin: string, message: unknown): Booking | null {
  * instead; "Book another time" brings back a fresh calendar.
  */
 export function CalEmbed({ link, title }: { link: string; title: string }) {
+  const { theme } = useTheme();
   const [booking, setBooking] = useState<Booking | null>(null);
   const [round, setRound] = useState(0);
 
@@ -125,8 +129,11 @@ export function CalEmbed({ link, title }: { link: string; title: string }) {
       />
     );
   }
-  // Each round is a new Cal.com namespace, so a fresh calendar never reuses the finished one.
-  return <CalendarFrame key={round} link={link} title={title} round={round} />;
+  // "Book another time" and a theme switch both remount the calendar; every mount gets a fresh
+  // Cal.com namespace, so a new calendar never reuses a finished or differently themed one.
+  return (
+    <CalendarFrame key={`${round}-${theme}`} link={link} title={title} theme={theme ?? "dark"} />
+  );
 }
 
 function BookingConfirmed({
@@ -181,7 +188,7 @@ function BookingConfirmed({
       <button
         type="button"
         onClick={onBookAnother}
-        className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-lg border border-border-strong px-4 type-action text-fg transition-colors hover:bg-surface-2"
+        className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-lg glass-control px-4 type-action text-fg transition-colors hover:border-border-strong"
       >
         <RotateCcw aria-hidden="true" className="size-4" />
         Book another time
@@ -191,11 +198,19 @@ function BookingConfirmed({
 }
 
 /**
- * Inline Cal.com booking calendar in Cal.com's own dark theme (event details, month view, time
+ * Inline Cal.com booking calendar in Cal.com's own theme (following the site's) (event details, month view, time
  * slots), sized to its content with no surrounding box. A skeleton shows until Cal.com reports the
  * link is ready; if the embed script is blocked or slow, the plain booking iframe is used instead.
  */
-function CalendarFrame({ link, title, round }: { link: string; title: string; round: number }) {
+function CalendarFrame({
+  link,
+  title,
+  theme,
+}: {
+  link: string;
+  title: string;
+  theme: "light" | "dark";
+}) {
   const container = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"loading" | "ready" | "fallback">("loading");
 
@@ -214,15 +229,15 @@ function CalendarFrame({ link, title, round }: { link: string; title: string; ro
     timer = window.setTimeout(() => settle("fallback"), READY_TIMEOUT_MS);
 
     const { cal, ready } = loadCal();
-    const namespace = round ? `${NAMESPACE}${round}` : NAMESPACE;
+    const namespace = mounts++ ? `${NAMESPACE}${mounts}` : NAMESPACE;
     if (!cal.ns[namespace]) cal("init", namespace, { origin: CAL_EMBED_ORIGIN });
     const api = cal.ns[namespace]!;
     api("inline", {
       elementOrSelector: el,
       calLink: link,
-      config: { layout: "month_view", theme: "dark" },
+      config: { layout: "month_view", theme },
     });
-    api("ui", { theme: "dark", layout: "month_view" });
+    api("ui", { theme, layout: "month_view" });
     api("on", {
       action: "linkReady",
       callback: () => {
@@ -237,12 +252,12 @@ function CalendarFrame({ link, title, round }: { link: string; title: string; ro
       window.clearTimeout(timer);
       el.remove();
     };
-  }, [link, title, round]);
+  }, [link, title, theme]);
 
   if (state === "fallback") {
     return (
       <iframe
-        src={`https://cal.com/${link}?embed=true&layout=month_view&theme=dark`}
+        src={`https://cal.com/${link}?embed=true&layout=month_view&theme=${theme}`}
         title={title}
         className="block h-[720px] w-full"
       />
@@ -273,7 +288,7 @@ function CalendarSkeleton() {
     <div
       role="status"
       aria-label="Loading the booking calendar"
-      className="flex min-h-[570px] overflow-hidden rounded-md border border-border-strong bg-surface"
+      className="flex min-h-[570px] overflow-hidden rounded-md glass"
     >
       <div className="hidden w-[17.5rem] shrink-0 flex-col gap-3 border-r border-border-strong p-6 lg:flex">
         <span className={`size-6 rounded-full ${bar}`} />

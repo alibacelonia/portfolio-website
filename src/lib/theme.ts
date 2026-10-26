@@ -2,12 +2,14 @@ export type Theme = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "alibacelonia-theme";
 export const DEFAULT_THEME: Theme = "dark";
+export const THEME_COLORS: Record<Theme, string> = { light: "#fafafa", dark: "#0d0d0f" };
 
 /**
- * Runs in <head> before first paint: enforces dark mode while light mode is disabled,
- * and marks the document as JS-enabled so progressive enhancements (entrances) can apply.
+ * Runs in <head> before first paint: applies the saved theme, or the device's color scheme when
+ * nothing is saved (dark when unknown), and marks the document as JS-enabled so progressive
+ * enhancements (entrances) can apply.
  */
-export const themeBootstrapScript = `(function(){var d=document.documentElement;d.classList.add('js');d.dataset.theme='${DEFAULT_THEME}'})();`;
+export const themeBootstrapScript = `(function(){var d=document.documentElement;d.classList.add('js');var t;try{t=localStorage.getItem('${THEME_STORAGE_KEY}')}catch(e){}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}d.dataset.theme=t;d.querySelectorAll('meta[name=theme-color]').forEach(function(m){m.removeAttribute('media');m.content=t==='light'?'${THEME_COLORS.light}':'${THEME_COLORS.dark}'})})();`;
 
 export function readStoredTheme(): Theme | null {
   try {
@@ -33,6 +35,11 @@ export function applyTheme(theme: Theme, { persist = false, animate = false } = 
   }
 
   root.dataset.theme = theme;
+  // Browser chrome must follow the explicit site choice, even when the OS prefers the opposite.
+  document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
+    meta.removeAttribute("media");
+    meta.content = THEME_COLORS[theme];
+  });
 
   if (persist) {
     try {

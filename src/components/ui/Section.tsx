@@ -1,12 +1,17 @@
 import type { ReactNode } from "react";
 import { SectionFrame } from "./SectionFrame";
+import { AuroraText } from "./AuroraText";
 
 interface SectionProps {
   id: string;
-  /** Sequence number shown in the eyebrow ("02 / Projects"). Ignored when `eyebrow` is set. */
-  index?: string;
-  /** Custom eyebrow content, e.g. a project category. */
+  /** Section name in the overline above the title ("Case Studies"). */
+  label?: string;
+  /**
+   * Custom eyebrow, e.g. a project category. Gives the boxed page-header layout (project pages,
+   * whose h1 is the project name in the project serif) instead of the centered display title.
+   */
   eyebrow?: ReactNode;
+  /** Display title ("Curated work"); its last word is set in italic. */
   title: string;
   /** Page-level bands render the title as the page's h1. */
   headingLevel?: 1 | 2;
@@ -15,13 +20,19 @@ interface SectionProps {
    * entrance animation so the largest text paints immediately.
    */
   first?: boolean;
+  /** Page-header summary (boxed layout only); numbered sections have no description. */
   lead?: ReactNode;
-  /** Right-aligned header content (legend, counts, links). */
+  /** Header extras (legend, counts): beside the title in the boxed layout, below it otherwise. */
   aside?: ReactNode;
   /** Content above the header panel, e.g. a back link. */
   before?: ReactNode;
   /** Optional full-width action row below the padded section content. */
   footer?: ReactNode;
+  /**
+   * Content that draws its own top rule from rail to rail (the case-study layout from `lg`): it
+   * sits flush against the title band and shares its line instead of doubling it.
+   */
+  flush?: boolean;
   children?: ReactNode;
 }
 
@@ -31,7 +42,7 @@ interface SectionProps {
  */
 export function Section({
   id,
-  index,
+  label,
   eyebrow,
   title,
   headingLevel = 2,
@@ -40,46 +51,80 @@ export function Section({
   aside,
   before,
   footer,
+  flush = false,
   children,
 }: SectionProps) {
   const headingId = `${id}-title`;
   const Heading = headingLevel === 1 ? "h1" : "h2";
+  // No top spacing: content starts right below the section's divider band. The first band of a
+  // page keeps room for the fixed navigation dock instead.
   const top = first
     ? "section-frame--top pt-[calc(var(--nav-offset)+32px)]"
-    : "pt-16 sm:pt-20 lg:pt-24";
+    : "pt-[var(--frame-divider-h)]";
   const bottom = footer ? "" : "pb-16 sm:pb-20 lg:pb-24";
   return (
     <SectionFrame id={id} aria-labelledby={headingId} className={`bg-bg ${top} ${bottom}`}>
       <div className="container-fluid">
         {before}
-        <header
-          data-reveal={first ? undefined : true}
-          className={`section-panel flex flex-col gap-5 p-5 sm:p-7 lg:flex-row lg:items-end lg:justify-between ${
-            children || footer ? "mb-10 sm:mb-12" : ""
-          }`}
-        >
-          <div className="min-w-0">
-            <p className="mb-3 type-eyebrow">
-              {eyebrow ?? (
-                <>
-                  <span aria-hidden="true">{index} / </span>
-                  {title}
-                </>
-              )}
-            </p>
-            <Heading
-              id={headingId}
-              className={headingLevel === 1 ? "type-page-title" : "type-section-title"}
-            >
-              {title}
-            </Heading>
-            {lead ? <p className="mt-3 measure type-lead">{lead}</p> : null}
+        {eyebrow !== undefined ? (
+          <div
+            data-reveal={first ? undefined : true}
+            className={`section-panel flex flex-col gap-5 p-5 sm:p-7 lg:flex-row lg:items-end lg:justify-between ${
+              children || footer ? "mb-10 sm:mb-12" : ""
+            }`}
+          >
+            <div className="min-w-0">
+              <p className="mb-3 type-eyebrow">{eyebrow}</p>
+              <Heading
+                id={headingId}
+                className={headingLevel === 1 ? "type-project-page-title" : "type-section-title"}
+              >
+                {title}
+              </Heading>
+              {lead ? <p className="mt-3 measure type-lead">{lead}</p> : null}
+            </div>
+            {aside ? <div className="shrink-0">{aside}</div> : null}
           </div>
-          {aside ? <div className="shrink-0">{aside}</div> : null}
-        </header>
+        ) : (
+          // The title sits in its own band, ruled from rail to rail like the reference's
+          // "Curated work" (the section divider above, a line below; first bands draw both).
+          <div
+            className={`section-title-band ${first ? "section-title-band--first" : ""} ${
+              children || footer ? (flush ? "mb-12 sm:mb-14 lg:mb-0" : "mb-12 sm:mb-14") : ""
+            }`}
+          >
+            <div
+              data-reveal={first ? undefined : true}
+              className="mx-auto flex max-w-3xl flex-col items-center text-center title-glow"
+            >
+              {label ? <p className="mb-4 type-overline text-muted">{label}</p> : null}
+              <Heading id={headingId} className="type-display text-fg">
+                <DisplayTitle text={title} />
+              </Heading>
+              {aside ? <div className="mt-6">{aside}</div> : null}
+            </div>
+          </div>
+        )}
         {children}
       </div>
       {footer}
     </SectionFrame>
+  );
+}
+
+/**
+ * A display title with its last word in italic aurora text ("Curated *work*"), after the reference
+ * and Magic UI's Aurora Text.
+ */
+function DisplayTitle({ text }: { text: string }) {
+  const split = text.lastIndexOf(" ");
+  const word = split < 0 ? text : text.slice(split + 1);
+  return (
+    <>
+      {split < 0 ? null : text.slice(0, split + 1)}
+      <em className="italic">
+        <AuroraText>{word}</AuroraText>
+      </em>
+    </>
   );
 }

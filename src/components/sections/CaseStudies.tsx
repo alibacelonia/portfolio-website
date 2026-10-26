@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Plus } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { CaseStudy } from "@/lib/caseStudies";
 import { Tag } from "@/components/ui/Tag";
 import { ExternalLink } from "@/components/ui/Links";
 import { ProjectCursor } from "@/components/ui/ProjectCursor";
-import { stageBackground, stageFrame, stageGradientFor } from "@/lib/stage";
+import { stageBackground, stageFrame, stageGlassBackground, stageGradientFor } from "@/lib/stage";
 
 const stageTint: Record<CaseStudy["discipline"], string> = {
   "full-stack": "var(--blue)",
@@ -41,7 +41,8 @@ function Ruler({ studies, active }: { studies: CaseStudy[]; active: number }) {
       style={
         {
           "--active": active,
-          "--tick": stageTint[studies[active]!.discipline],
+          // The active tick glows in the active card's accent, like its highlight sparkles.
+          "--tick": stageFrame(stageGradientFor(studies[active]!)),
         } as CSSProperties
       }
     >
@@ -61,21 +62,26 @@ function Ruler({ studies, active }: { studies: CaseStudy[]; active: number }) {
   );
 }
 
-/** Stand-in for a screenshot: the project's real architecture flow inside a window frame. */
+/**
+ * Stand-in for a screenshot: the project's real architecture flow inside a window frame. Phones
+ * show a compact wrapped row; from `sm` the steps alternate along a vertical spine that fills the
+ * window, so the card never shows an empty box.
+ */
 function FlowWindow({ steps, name }: { steps: string[]; name: string }) {
   return (
-    <div className="case-media-inner flex aspect-[16/10] flex-col overflow-hidden border border-b-0 border-border-strong bg-bg/90">
-      <div className="flex h-9 items-center gap-1.5 border-b border-border px-3.5">
+    <div className="case-media-inner flow-window flex flex-col overflow-hidden border-b-0 glass">
+      <div className="flex h-9 shrink-0 items-center gap-1.5 border-b border-border px-3.5">
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="ml-2 truncate type-mono text-muted">{name} · architecture</span>
       </div>
-      <ol className="flex flex-wrap items-center gap-x-2 gap-y-2.5 p-4 type-mono text-fg-soft sm:p-6">
+      <ol className="flow-steps type-mono text-fg-soft">
         {steps.map((step, index) => (
-          <li key={step} className="flex items-center gap-2">
-            {index > 0 ? <span className="text-muted">→</span> : null}
-            <span className="rounded-md border border-border bg-surface px-2 py-1 whitespace-nowrap">
+          <li key={step}>
+            {index > 0 ? <span className="flow-arrow text-muted">→</span> : null}
+            <span className="flow-node" />
+            <span className="flow-chip rounded-md glass-chip px-2.5 py-1 whitespace-nowrap">
               {step}
             </span>
           </li>
@@ -100,6 +106,7 @@ function Stage({
   const media = (
     <>
       <div className="flex items-start justify-between gap-6 px-5 pt-5 pb-4 sm:px-7 sm:pt-7 sm:pb-6">
+        {/* Text follows the theme over the translucent project tint. */}
         <p className="max-w-[36ch] text-[clamp(1rem,0.92rem+0.4vw,1.25rem)] leading-snug font-medium text-fg">
           {study.tagline}
         </p>
@@ -131,6 +138,7 @@ function Stage({
     style: {
       "--stage": stageTint[study.discipline],
       "--stage-bg": stageBackground(gradient),
+      "--stage-glass": stageGlassBackground(gradient),
       "--stage-frame": stageFrame(gradient),
     } as CSSProperties,
     tabIndex: -1,
@@ -148,49 +156,107 @@ function Stage({
   );
 }
 
+/** The reference's four-point sparkle, used as the highlight marker. */
+function Sparkle({ color }: { color: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="mt-px size-5 shrink-0"
+      style={{ fill: color, filter: `drop-shadow(0 0 10px ${color})` }}
+    >
+      <path d="M12 1C12 1 12 8 10 10C8 12 1 12 1 12C1 12 8 12 10 14C12 16 12 23 12 23C12 23 12 16 14 14C16 12 23 12 23 12C23 12 16 12 14 10C12 8 12 1 12 1Z" />
+    </svg>
+  );
+}
+
+/** The name link gets a taller hit area (40px+) without moving the layout. */
+const nameLinkClass =
+  "relative hover:underline before:absolute before:inset-x-0 before:-inset-y-1.5";
+
+/** Up to this many key technologies show as pills in the panel, as on the reference. */
+const KEY_TECH = 4;
+
+/**
+ * A project's details in the reference's format: the name (linking to the case study or site) with
+ * its category, key-technology pills, client role, highlights marked with a sparkle in the card's
+ * accent color, and the links, the first one with an arrow chip.
+ */
 function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 4 }) {
   const Heading = `h${headingLevel}` as "h3" | "h4";
+  // The card's frame color doubles as the panel accent, so each panel matches its card.
+  const accent = stageFrame(stageGradientFor(study));
+  const Arrow = study.primary.external ? ArrowUpRight : ArrowRight;
+  const primaryLabel = study.primary.external
+    ? `${study.primary.label}: ${study.name} (opens in a new tab)`
+    : `${study.primary.label}: ${study.name}`;
+  const name = (
+    <Heading data-case-title className="type-display-serif">
+      {study.name}
+    </Heading>
+  );
   return (
     <>
-      <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <Heading data-case-title className="type-display-serif">
-          {study.name}
-        </Heading>
-        <span className="type-label tracking-wide text-muted uppercase">{study.kind}</span>
-      </header>
-      <ul aria-label="Technologies" className="mt-4 flex flex-wrap gap-1.5">
-        {study.tech.map((tech) => (
-          <Tag key={tech}>{tech}</Tag>
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        {study.primary.external ? (
+          <a
+            href={study.primary.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={-1}
+            className={nameLinkClass}
+          >
+            {name}
+          </a>
+        ) : (
+          <Link href={study.primary.href} tabIndex={-1} className={nameLinkClass}>
+            {name}
+          </Link>
+        )}
+        <span className="type-overline text-muted">{study.kind}</span>
+      </div>
+      <ul aria-label="Key technologies" className="mt-4 flex flex-wrap gap-1.5">
+        {study.tech.slice(0, KEY_TECH).map((tech) => (
+          <Tag key={tech} shape="pill">
+            {tech}
+          </Tag>
         ))}
       </ul>
-      <p className="mt-5 max-w-[56ch] type-prose text-fg-soft">{study.summary}</p>
-      {study.role ? <p className="mt-3 type-mono text-muted">{study.role}</p> : null}
-      <ul aria-label="Highlights" className="mt-5 space-y-2.5 type-body text-fg-soft">
+      {study.role ? <p className="mt-4 type-mono text-muted">{study.role}</p> : null}
+      <ul
+        aria-label="Highlights"
+        className="case-highlights mt-6 space-y-3 text-sm leading-5 text-muted"
+      >
         {study.highlights.map((item) => (
           <li key={item} className="flex gap-3">
-            <Plus aria-hidden="true" className="mt-[3px] size-3.5 shrink-0 text-sage-fg" />
+            <Sparkle color={accent} />
             <span>{item}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 type-action">
+      <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium">
         {study.primary.external ? (
-          <ExternalLink
+          <a
             href={study.primary.href}
-            className="min-h-10 text-fg hover:underline"
-            aria-label={`${study.primary.label}: ${study.name} (opens in a new tab)`}
-          >
-            {study.primary.label}
-          </ExternalLink>
-        ) : (
-          <Link
-            href={study.primary.href}
-            className="group inline-flex min-h-10 items-center gap-2 text-fg hover:underline"
-            aria-label={`${study.primary.label}: ${study.name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-h-10 items-center gap-2 text-fg"
+            aria-label={primaryLabel}
           >
             {study.primary.label}
             <span className="flex size-7 items-center justify-center rounded-full bg-fg/5 transition-colors group-hover:bg-fg/10">
-              <ArrowRight aria-hidden="true" className="size-3.5" />
+              <Arrow aria-hidden="true" className="size-3.5" />
+            </span>
+          </a>
+        ) : (
+          <Link
+            href={study.primary.href}
+            className="group inline-flex min-h-10 items-center gap-2 text-fg"
+            aria-label={primaryLabel}
+          >
+            {study.primary.label}
+            <span className="flex size-7 items-center justify-center rounded-full bg-fg/5 transition-colors group-hover:bg-fg/10">
+              <Arrow aria-hidden="true" className="size-3.5" />
             </span>
           </Link>
         )}
@@ -198,7 +264,7 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
           <ExternalLink
             key={link.href}
             href={link.href}
-            className="min-h-10 text-muted hover:text-fg"
+            className="min-h-10 text-fg/70 hover:text-fg"
             aria-label={`${study.name} on ${link.label} (opens in a new tab)`}
           >
             {link.label}
@@ -228,7 +294,7 @@ export function CaseStudies({
 }) {
   const [active, setActive] = useState(0);
   const stages = useRef<(HTMLElement | null)[]>([]);
-  const list = useRef<HTMLOListElement>(null);
+  const list = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const stack = useRef<HTMLDivElement>(null);
@@ -312,9 +378,9 @@ export function CaseStudies({
   return (
     <div className="case-layout">
       <ProjectCursor selector=".case-stage" />
-      <ol ref={list} className="case-list">
+      <div ref={list} className="case-list">
         {studies.map((study, index) => (
-          <li key={study.id} id={`case-study-${study.id}`} className="case-item">
+          <div key={study.id} id={`case-study-${study.id}`} className="case-item">
             <Stage
               study={study}
               stageRef={(el) => {
@@ -325,9 +391,9 @@ export function CaseStudies({
             <div className="mt-4 lg:hidden">
               <Details study={study} headingLevel={headingLevel} />
             </div>
-          </li>
+          </div>
         ))}
-      </ol>
+      </div>
 
       {/* Desktop: one pinned panel; the active project's details are the only visible ones. */}
       <div ref={track} className="case-panel-track hidden lg:block">

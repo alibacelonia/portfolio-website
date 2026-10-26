@@ -1,7 +1,7 @@
 # Progress
 
 **Current phase:** Phase 9 (UI, branding and project refinement) complete locally. Deployment awaits owner actions (below).
-**Last updated:** 2026-10-23
+**Last updated:** 2026-10-26
 
 ## Phase 9 — refinement (2026-10-23)
 
@@ -52,6 +52,21 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 - Dock indicator stuck on the first item (`offsetLeft` relative to the `<li>`). Fixed with rect deltas; E2E asserts alignment.
 - Initial JS 237 KB → 199 KB by dropping Motion layout features (D-18).
 - Copy that over-claimed (“trade-offs written down”, “I read every message”) was softened.
+- 2026-10-26: Review findings: Resume → CV; hero and estoe repetition removed; two font families and `rem` sizes; light mode with a dock toggle; clay surfaces and controls throughout (D-76 to D-80).
+- 2026-10-26: Aurora words no longer cut off descenders (the g in “building”) (D-75).
+- 2026-10-26: Certification badges tilt toward the mouse (D-74).
+- 2026-10-26: Aurora word is still; only its colors drift (D-73).
+- 2026-10-26: Title bands vertically centered on sections that follow an action strip (D-72).
+- 2026-10-26: Section-title italic words are animated aurora text (D-70); Experience details are justified (D-71).
+- 2026-10-25: Section titles wrapped in rail-to-rail title bands on every page except the hero (D-69).
+- 2026-10-25: Case-study panels reformatted after the reference (pills, accent sparkles, arrow chip, accent ruler) (D-68).
+- 2026-10-25: Section top padding removed; titles start right under the divider band (D-67).
+- 2026-10-25: Section title blocks and case-study detail headers are `div`s instead of `<header>` (D-66).
+- 2026-10-25: Case-study list uses `div`s instead of `ol`/`li` (D-65).
+- 2026-10-25: Section numbers removed; overlines show the section name only, and the hero has none (D-64).
+- 2026-10-25: Section titles redesigned after the reference (overline + serif display title with italic last word, no descriptions); Skills renamed Tech Stack (D-63).
+- 2026-10-25: Consistent section numbering: hero “01 / Home”, home 02–05, “06 / Connect” (also on `/connect/`), `/projects/` “02” (D-62).
+- 2026-10-25: Repeated text removed across sections (eyebrows, leads, labels, case-study panels, Website Portfolio page) (D-61).
 - 2026-10-25: Booking confirmation shown by the site after Cal.com reports a booking, replacing the white Cal.com success page (D-60). Hero jump-link test made motion-independent after a parallel-load flake.
 - 2026-10-25: The screenshot's bottom border now appears only on hover (D-59).
 - 2026-10-25: Case screenshots framed on all four sides, resting 20 px low and tipping back in perspective on desktop hover, per the owner's reference class (D-58).
@@ -88,3 +103,35 @@ All tasks P0-1 … P8-10 in `docs/development-plan.md`.
 5. ~~GitHub `production` environment and variables~~ — done.
 6. ~~DNS cutover on Cloudflare~~ — done: alibacelonia.dev serves from CloudFront. The Website Portfolio project no longer lists planned items.
 7. After going live: run Lighthouse against production (security headers and caching only exist on CloudFront).
+
+## Glass and theme audit (2026-10-26)
+
+Replaced clay/neo surfaces with reusable glass materials for cards, panels, controls, fields, labels, the dock and mobile snackbar. Project preview palettes now tint translucent theme surfaces with theme foreground text; the custom cursor, Connect photo frame, media shadows, form placeholders/errors/focus/selected states and browser chrome also follow the chosen theme. Legacy dock settings resolve to glass. Turnstile recreates its widget and clears its token when the theme changes; Cal.com follows the same theme and form input is preserved.
+
+Verified all eight rendered routes (home, Connect, project collection, all four project details and 404) in light/dark on desktop/mobile with zero detectable axe violations, including form validation states. Contrast checks cover floating navigation over an opposite-color backdrop; reduced-transparency and forced-colors fallbacks pass. Desktop/mobile project and Connect screenshots were reviewed in both themes. Original project screenshots and credential artwork are unchanged.
+
+Validation: lint, TypeScript/static production build and formatting pass; 77 unit/component tests pass. Full Playwright suites pass with third-party configuration enabled (99 passed, 7 expected breakpoint skips) and unset (95 passed, 11 expected breakpoint/configuration skips). Third-party services are stubbed; no real bookings or messages were sent. Decision D-81 records the shared material and fallback rules.
+
+## Lightweight personality and interactions (2026-10-26)
+
+Added a short hero introduction and reusable static `offset-frame`, keeping the square portrait and its preload unchanged. Skills now show monochrome technology icons with native disclosures for verified project references (up to two per skill, drawn from documented stacks/published client work; working-knowledge labels preserved). Project filters live only on `/projects/`, with live counts that include client work, keyboard/touch access, hidden empty categories, and server-rendered cards. All content and skill disclosures remain usable without JavaScript. No runtime package was added; original photos/screenshots remain unchanged. D-82 and the design system record these choices, and Simple Icons artwork/license is recorded in `docs/third-party-notices.md`.
+
+Validation: production build/TypeScript, lint and formatting pass; 80 unit/component tests pass; full desktop/mobile Playwright suite passes with 109 passed and 7 expected breakpoint skips. Axe scans cover all eight routes in both themes and the opened skill/filter states, with no detected violations. Keyboard, touch, no-JavaScript behavior, original project navigation and 320–1920 px overflow checks pass. Hero, skill disclosures and filtered project screenshots were reviewed across desktop/mobile and both themes.
+
+Local performance comparison against commit `401716f` (three fresh-context runs per viewport, same static server and Chromium; mobile emulation uses 4× CPU throttling): median home LCP desktop 64 → 68 ms, mobile 136 → 140 ms, CLS 0 in every before/after run. These fast local timings are a smoke check, not a Lighthouse score or field estimate. Initial script gzip totals: home 222,198 → 222,265 bytes (+67); project index 212,662 → 213,446 bytes (+784). SVGs/reference content add server-rendered HTML (home document is 60,816 bytes gzip), with no client icon/disclosure bundle. Production output uses the normal local configuration.
+
+## Design critique fixes (2026-10-26)
+
+Installed the Impeccable skill (personal skills folder, launcher binary not run) and ran its critique over every UI file (source review plus desktop/mobile screenshots of all routes in both themes): 22/32 before. Fixes, per the owner's choice of all five issues: architecture-flow cards fill their window (vertical spine, alternating steps, nodes in the card's frame color); project names in Instrument Serif on cards and project pages; framed 404 page; the 11 px case-panel label raised to `type-overline`; 40 px+ hit areas for case-panel names and the footer link; 56 px between case studies on phones; skill groups after the first fold behind “Show N more” below `lg` (JS only). `CLAUDE.md` and the design system now state the aurora exception to “no gradient text”. Mobile home height 11,460 → 10,634 px (Skills 2,257 → 1,525 px). D-83 records the choices.
+
+Validation: lint, typecheck, format, 80 unit tests and the static build pass; Playwright passes with contact/booking variables set (112 passed, 8 skipped) and unset (108 passed, 12 skipped), including new checks for the flow window, skill folding (phones, desktop, no JS) and the 56 px phone gap. Home initial script gzip 222,265 → 222,701 bytes (+436). Pending: a fresh Website Portfolio screenshot from the owner (the current one shows an older version of the site).
+
+## Stronger main actions and a shorter phone page (2026-10-26)
+
+From the second critique (`/impeccable bolder` and `distill`): the hero's “View My Work” and the home Connect strip's “Send a message” are solid buttons (`buttonStyles.solid`, `ActionStrip prominent`), checked at 320, 390, 768, 1024 and 1440 px in both themes with no horizontal overflow. Phones keep two highlights per case study and show only the header and “Show details” for roles after the two most recent. Pixel 7 home height 10,574 → 9,760 px (Case Studies 3,867 → 3,518 px, Experience 2,338 → 1,873 px). D-84 records the choices.
+
+Validation: lint, typecheck, format, 80 unit tests and the static build pass; Playwright passes with contact/booking variables set (116 passed, 8 skipped) and unset (112 passed, 12 skipped), including new checks for the solid actions and the phone cuts.
+
+Connect's direct channels are now labeled buttons (LinkedIn, GitHub, CV) instead of icon-only ones, so first-time visitors don't have to guess which icon is the CV; accessible names are unchanged.
+
+The portrait is now in color: it develops from black and white into color once (hero on load, the Connect instant photo as it reveals), replacing a short-lived mouse-only spotlight and lens cursor; reduced motion and no-JavaScript visitors see color immediately. The Connect email wraps after the “@” at 320 px instead of mid-word. New E2E checks cover both. D-85 records the choices.

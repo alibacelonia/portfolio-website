@@ -6,7 +6,8 @@ import { useTheme } from "@/hooks/useTheme";
 const icon =
   "absolute size-[18px] transition-[opacity,transform] duration-200 ease-out-soft motion-reduce:transition-none";
 
-export function ThemeToggle() {
+/** `className` sets the size and display (e.g. hidden on phones), which the button leaves to its caller. */
+export function ThemeToggle({ className = "inline-flex size-10" }: { className?: string }) {
   const { theme, toggle } = useTheme();
   const label = theme ? `Switch to ${theme === "dark" ? "light" : "dark"} theme` : "Toggle theme";
 
@@ -17,7 +18,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="relative inline-flex size-10 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-fg"
+      className={`relative shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-fg/5 hover:text-fg ${className}`}
     >
       <Moon
         aria-hidden="true"

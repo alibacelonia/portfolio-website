@@ -3,7 +3,10 @@ import { experience, formatDuration, formatYearMonth, overlapsNext } from "@/dat
 import type { Role } from "@/types/content";
 import { Section } from "@/components/ui/Section";
 
-function RoleItem({ role, next }: { role: Role; next?: Role }) {
+/** Roles after the two most recent show only their header and "Show details" on phones. */
+const RECENT_ROLES = 2;
+
+function RoleItem({ role, next, earlier }: { role: Role; next?: Role; earlier: boolean }) {
   const current = role.end === null;
   const duration = formatDuration(role);
   const concurrent = overlapsNext(role, next);
@@ -11,6 +14,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
     <li
       id={`role-${role.id}`}
       data-reveal="slide"
+      data-earlier={earlier || undefined}
       className="relative grid grid-cols-[2.75rem_minmax(0,1fr)] gap-y-2 md:grid-cols-[11rem_3.5rem_minmax(0,1fr)] md:gap-y-0"
     >
       {/* Dates stay pinned beside the card while it scrolls past (tablet and up). */}
@@ -26,7 +30,8 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
             "Present"
           )}
         </p>
-        <p className="type-label text-muted md:mt-1.5">{duration ?? "Current role"}</p>
+        {/* "Present" already marks the current role, so it gets no duration line. */}
+        {duration ? <p className="type-label text-muted md:mt-1.5">{duration}</p> : null}
         {role.employment ? (
           <p className="type-label text-muted md:mt-1">{role.employment}</p>
         ) : null}
@@ -53,13 +58,14 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
         </p>
 
         {role.note ? (
-          <p className="mt-3 flex max-w-[72ch] gap-2.5 rounded-lg border border-border bg-surface-2 px-3 py-2 type-small text-fg-soft">
+          <p className="mt-3 flex max-w-[72ch] gap-2.5 rounded-lg glass-chip px-3 py-2 type-small text-fg-soft">
             <span aria-hidden="true" className="mt-[7px] size-1.5 shrink-0 rounded-full bg-sage" />
             {role.note}
           </p>
         ) : null}
 
-        <ul className="mt-4 grid gap-x-6 gap-y-1.5 type-body text-fg-soft lg:grid-cols-2">
+        {/* The details below repeat these points in full, so earlier roles drop them on phones. */}
+        <ul className="exp-summary mt-4 grid gap-x-6 gap-y-1.5 type-body text-fg-soft lg:grid-cols-2">
           {role.summary.map((item) => (
             <li key={item} className="flex gap-2.5">
               <span aria-hidden="true" className="mt-[11px] h-px w-2.5 shrink-0 bg-border-strong" />
@@ -78,7 +84,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
             <span className="hidden group-open:inline">Hide details</span>{" "}
             <span className="sr-only">for {role.title}</span>
           </summary>
-          <ul className="mt-3 max-w-[72ch] space-y-2 type-body text-muted">
+          <ul className="mt-3 max-w-[72ch] space-y-2 text-justify type-body hyphens-auto text-muted">
             {role.details.map((detail) => (
               <li key={detail}>{detail}</li>
             ))}
@@ -91,15 +97,15 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
 
 export function Experience() {
   return (
-    <Section
-      id="experience"
-      index="03"
-      title="Experience"
-      lead="More than seven years across enterprise applications, government systems and cloud engineering, moving steadily from building software to automating how it is delivered and run."
-    >
+    <Section id="experience" label="Experience" title="Where I've worked">
       <ol className="exp-timeline relative grid grid-cols-1">
         {experience.map((role, index) => (
-          <RoleItem key={role.id} role={role} next={experience[index + 1]} />
+          <RoleItem
+            key={role.id}
+            role={role}
+            next={experience[index + 1]}
+            earlier={index >= RECENT_ROLES}
+          />
         ))}
       </ol>
     </Section>

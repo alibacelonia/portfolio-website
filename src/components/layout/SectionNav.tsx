@@ -56,7 +56,7 @@ export function SectionNav({ active, className = "" }: { active: string; classNa
                 onNavigate={() => lenis?.scrollTo(lenis.actualScroll, { immediate: true })}
                 data-section={item.id}
                 aria-current={isActive ? "location" : undefined}
-                className={`flex h-10 items-center rounded-full px-3 text-[13px] transition-colors duration-200 md:px-4 ${
+                className={`flex h-10 items-center rounded-full px-3 text-[0.8125rem] transition-colors duration-200 md:px-4 ${
                   isActive ? "font-medium text-fg" : "text-fg-soft hover:bg-fg/5 hover:text-fg"
                 }`}
               >

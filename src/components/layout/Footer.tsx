@@ -15,7 +15,7 @@ export function Footer() {
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <span>Static Next.js site on AWS</span>
           {portfolioRepo ? (
-            <ExternalLink href={portfolioRepo.href} className="text-fg-soft hover:text-fg">
+            <ExternalLink href={portfolioRepo.href} className="min-h-10 text-fg-soft hover:text-fg">
               Source
             </ExternalLink>
           ) : null}

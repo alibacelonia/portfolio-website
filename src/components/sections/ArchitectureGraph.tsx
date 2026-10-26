@@ -39,7 +39,7 @@ export function ArchitectureGraph({ lanes, label }: { lanes: ArchitectureLane[];
                       <ArrowRight className="hidden size-3.5 lg:block" />
                     </span>
                   ) : null}
-                  <div className="min-w-0 flex-1 rounded-md border border-border bg-bg px-3 py-2.5 lg:self-stretch">
+                  <div className="min-w-0 flex-1 rounded-md glass-chip px-3 py-2.5 lg:self-stretch">
                     <p className="type-small font-medium text-fg">{node.name}</p>
                     {node.note ? <p className="mt-0.5 type-label text-muted">{node.note}</p> : null}
                   </div>

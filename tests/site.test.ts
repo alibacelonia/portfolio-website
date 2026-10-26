@@ -77,18 +77,19 @@ describe("contact settings", () => {
 });
 
 describe("dock style", () => {
-  it("accepts clay, glass and neo, case-insensitively, and falls back to clay", () => {
+  it("uses glass for explicit, legacy and invalid dock settings", () => {
     expect(normalizeDockStyle("glass")).toBe("glass");
-    expect(normalizeDockStyle(" NEO ")).toBe("neo");
-    expect(normalizeDockStyle("clay")).toBe("clay");
-    expect(normalizeDockStyle("frosted")).toBe("clay");
-    expect(normalizeDockStyle(undefined)).toBe("clay");
+    expect(normalizeDockStyle(" GLASS ")).toBe("glass");
+    expect(normalizeDockStyle("neo")).toBe("glass");
+    expect(normalizeDockStyle("clay")).toBe("glass");
+    expect(normalizeDockStyle("frosted")).toBe("glass");
+    expect(normalizeDockStyle(undefined)).toBe("glass");
   });
 
   it("gives the dock class, the chosen style and the caller's classes", () => {
-    expect(dockProps("rounded-full", "neo")).toEqual({
-      "data-dock": "neo",
-      className: "dock rounded-full",
+    expect(dockProps("rounded-full", "glass")).toEqual({
+      "data-dock": "glass",
+      className: "dock glass rounded-full",
     });
   });
 });

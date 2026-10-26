@@ -1,13 +1,20 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { openMessageTab, stubThirdParty } from "./fixtures";
+import { projects } from "../src/data/projects";
 import { THEME_STORAGE_KEY } from "../src/lib/theme";
 
-const paths = ["/", "/connect/", "/projects/", "/projects/website-portfolio/"];
+const paths = [
+  "/",
+  "/connect/",
+  "/projects/",
+  ...projects.map(({ id }) => `/projects/${id}/`),
+  "/404.html",
+];
 
 for (const path of paths) {
   for (const colorScheme of ["light", "dark"] as const) {
-    test(`has no detectable accessibility violations: ${path} (dark, ${colorScheme} system)`, async ({
+    test(`has no detectable accessibility violations: ${path} (${colorScheme} theme)`, async ({
       browser,
     }, testInfo) => {
       const context = await browser.newContext({
@@ -22,7 +29,7 @@ for (const path of paths) {
         theme: colorScheme,
       });
       await page.goto(path);
-      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      await expect(page.locator("html")).toHaveAttribute("data-theme", colorScheme);
       if (testInfo.project.name === "mobile" && path === "/") {
         await page.getByRole("button", { name: /Open menu$/ }).click();
         await expect(page.getByRole("navigation", { name: "Sections" })).toBeVisible();
@@ -51,6 +58,11 @@ for (const path of paths) {
       // With a booking tab the form starts hidden; check it too.
       if (path === "/connect/" && (await page.getByRole("tab").count())) {
         await openMessageTab(page);
+        summary.push(...(await scan()));
+      }
+      if (path === "/connect/") {
+        await openMessageTab(page);
+        await page.getByRole("button", { name: "Send message", exact: true }).click();
         summary.push(...(await scan()));
       }
       expect(summary).toEqual([]);
