@@ -39,7 +39,9 @@ export function Hero() {
               ))}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm font-medium lg:justify-start">
+            <p className="mx-auto mt-6 max-w-[47ch] type-lead text-pretty lg:mx-0">{site.intro}</p>
+
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm font-medium lg:justify-start">
               <a
                 href="#projects"
                 className="group inline-flex min-h-11 items-center gap-2 text-fg hover:underline"
@@ -69,15 +71,17 @@ export function Hero() {
           </div>
 
           <div className="row-start-1 flex justify-center lg:col-start-1 lg:justify-start">
-            <div className="hero-portrait relative aspect-square w-56 max-w-full overflow-hidden sm:w-72 lg:w-[19rem] xl:w-[22rem] 2xl:w-96">
-              <Image
-                src="/images/mohammed-ali-abdullah.webp"
-                alt={`Portrait of ${site.name}`}
-                width={800}
-                height={800}
-                preload
-                className="size-full object-cover contrast-[1.08] grayscale"
-              />
+            <div className="offset-frame w-56 max-w-full sm:w-72 lg:w-[19rem] xl:w-[22rem] 2xl:w-96">
+              <div className="hero-portrait relative aspect-square overflow-hidden">
+                <Image
+                  src="/images/mohammed-ali-abdullah.webp"
+                  alt={`Portrait of ${site.name}`}
+                  width={800}
+                  height={800}
+                  preload
+                  className="size-full object-cover contrast-[1.08] grayscale"
+                />
+              </div>
             </div>
           </div>
         </div>

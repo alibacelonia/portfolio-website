@@ -37,6 +37,7 @@ export function ProjectCard({
   return (
     <article
       aria-labelledby={headingId}
+      data-project-discipline={project.discipline}
       style={stagger(index)}
       className="flex h-full min-w-0 flex-col card transition-[border-color,box-shadow,transform] duration-300 ease-out-soft hover:-translate-y-0.5 hover:border-border-strong hover:shadow-raised"
     >
@@ -189,6 +190,7 @@ export function ClientWorkCard({
     return (
       <article
         aria-labelledby={headingId}
+        data-project-discipline={work.discipline}
         data-reveal
         className="grid grid-cols-1 gap-6 card lg:grid-cols-12 lg:gap-8"
       >
@@ -216,6 +218,7 @@ export function ClientWorkCard({
   return (
     <article
       aria-labelledby={headingId}
+      data-project-discipline={work.discipline}
       data-reveal
       className="grid grid-cols-1 gap-6 card lg:grid-cols-12 lg:gap-10"
     >
@@ -257,7 +260,10 @@ export function ProjectCollection({
   const cardLevel = (level + 1) as 3 | 4;
   return (
     <div className="space-y-10 sm:space-y-12">
-      <div>
+      <div
+        data-project-group
+        data-project-disciplines={[...new Set(work.map((item) => item.discipline))].join(" ")}
+      >
         <GroupHeading level={level}>Professional work</GroupHeading>
         <div className="space-y-4 lg:space-y-5">
           {work.map((item) => (
@@ -265,7 +271,10 @@ export function ProjectCollection({
           ))}
         </div>
       </div>
-      <div>
+      <div
+        data-project-group
+        data-project-disciplines={[...new Set(projects.map((item) => item.discipline))].join(" ")}
+      >
         <GroupHeading level={level}>Open source</GroupHeading>
         <ProjectGrid headingLevel={cardLevel} />
       </div>

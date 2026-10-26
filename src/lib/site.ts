@@ -51,6 +51,7 @@ export const site = {
   brand: "A/B",
   name: "Mohammed Ali B. Abdullah",
   roles: ["Full-Stack Developer", "DevOps Engineer", "AI Engineer"],
+  intro: "I build software with care for the people using it — and the systems keeping it running.",
   description:
     "Mohammed Ali B. Abdullah — Full-Stack Developer, DevOps Engineer and AI Engineer in Baguio City, Philippines. AWS-certified, with 7+ years building applications, CI/CD pipelines and cloud infrastructure.",
   /** Single source of truth for the canonical origin (NEXT_PUBLIC_SITE_URL). */

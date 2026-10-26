@@ -782,6 +782,9 @@
 .hero-sequence > :nth-child(6) {
   --i: 5;
 }
+.hero-sequence > :nth-child(7) {
+  --i: 6;
+}
 
 @media (min-width: 640px) {
   :root {
@@ -1535,5 +1538,101 @@ html:not(.js) .case-panel-item {
 
   .dock [aria-current="location"] {
     color: LinkText;
+  }
+}
+
+/* Static accent layers add depth without animating a blur or changing the portrait's LCP. */
+@utility offset-frame {
+  position: relative;
+  isolation: isolate;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: 2px;
+  }
+
+  &::before {
+    z-index: -2;
+    inset: -0.625rem;
+    border: 1px solid var(--frame-line);
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--blue) 18%, var(--bg)),
+      color-mix(in srgb, var(--lavender) 12%, var(--bg))
+    );
+    transform: rotate(-3deg);
+  }
+
+  &::after {
+    z-index: -1;
+    inset: -0.25rem;
+    border: 1px solid color-mix(in srgb, var(--blue-fg) 25%, transparent);
+    transform: rotate(1.5deg);
+  }
+
+  @media (forced-colors: active) {
+    &::before,
+    &::after {
+      background: Canvas;
+      border-color: CanvasText;
+    }
+  }
+}
+
+/* Native skill disclosures grow into a full row; no absolute tooltip can escape the viewport. */
+.skill-item:has(> .skill-disclosure[open]) {
+  flex-basis: 100%;
+}
+
+.skill-disclosure[open] > summary {
+  border-color: var(--blue-fg);
+  color: var(--fg);
+}
+
+.skill-chevron {
+  transition: transform 180ms var(--ease);
+}
+
+.skill-disclosure[open] .skill-chevron {
+  transform: rotate(180deg);
+}
+
+/* Progressive enhancement: without JS the entire collection remains visible. */
+.project-filter-controls {
+  display: none;
+}
+.js .project-filter-controls {
+  display: flex;
+}
+
+.project-collection[data-project-filter="full-stack"]
+  :is(
+    [data-project-discipline]:not([data-project-discipline="full-stack"]),
+    [data-project-group]:not([data-project-disciplines~="full-stack"])
+  ),
+.project-collection[data-project-filter="devops"]
+  :is(
+    [data-project-discipline]:not([data-project-discipline="devops"]),
+    [data-project-group]:not([data-project-disciplines~="devops"])
+  ),
+.project-collection[data-project-filter="ai"]
+  :is(
+    [data-project-discipline]:not([data-project-discipline="ai"]),
+    [data-project-group]:not([data-project-disciplines~="ai"])
+  ) {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .project-collection:not([data-project-filter="all"]) [data-project-discipline] {
+    animation: reveal-rise 240ms var(--ease) backwards;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skill-chevron {
+    transition: none;
   }
 }

@@ -1,7 +1,8 @@
 import { skills } from "@/data/skills";
 import { disciplineDot } from "@/lib/disciplines";
 import { Section } from "@/components/ui/Section";
-import { Tag } from "@/components/ui/Tag";
+import { SkillTag } from "@/components/ui/SkillTag";
+import { findSkillProjects } from "@/lib/skill-evidence";
 import { stagger } from "@/lib/motion";
 
 function Legend() {
@@ -51,9 +52,13 @@ export function Skills() {
                   <h4 className="type-label text-muted">{group.label}</h4>
                   <ul data-reveal-group="ripple" className="mt-2 flex flex-wrap gap-1.5">
                     {group.skills.map((skill, tagIndex) => (
-                      <Tag key={skill.name} level={skill.level} index={tagIndex}>
-                        {skill.name}
-                      </Tag>
+                      <SkillTag
+                        key={skill.name}
+                        skill={skill}
+                        evidence={findSkillProjects(skill.name)}
+                        index={tagIndex}
+                        group={`skill-evidence-${discipline.id}`}
+                      />
                     ))}
                   </ul>
                 </div>

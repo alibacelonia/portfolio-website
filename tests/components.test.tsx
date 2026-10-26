@@ -277,7 +277,9 @@ describe("All projects page", () => {
     expect(screen.getAllByRole("article")).toHaveLength(
       projects.length + publishedClientWork.length,
     );
-    expect(screen.getByText("4 projects")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      `${projects.length + publishedClientWork.length} projects to explore`,
+    );
     expect(
       screen.getByRole("link", { name: /^Browse every repository on GitHub/ }),
     ).toHaveAttribute("href", "https://github.com/alibacelonia");

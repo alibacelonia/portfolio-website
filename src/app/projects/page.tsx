@@ -5,6 +5,10 @@ import { ProjectCollection } from "@/components/sections/Projects";
 import { Section } from "@/components/ui/Section";
 import { ActionStrip } from "@/components/ui/ActionStrip";
 import { projects } from "@/data/projects";
+import { publishedClientWork } from "@/data/clientWork";
+import { disciplineLabel } from "@/lib/disciplines";
+import type { Discipline } from "@/types/content";
+import { ProjectFilters, type ProjectFilterOption } from "@/components/sections/ProjectFilters";
 import { site, siteHost } from "@/lib/site";
 
 const description =
@@ -26,6 +30,17 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsPage() {
+  const entries = [...publishedClientWork, ...projects];
+  const filters: ProjectFilterOption[] = [
+    { id: "all", label: "All", count: entries.length },
+    ...(["full-stack", "devops", "ai"] as Discipline[])
+      .map((id) => ({
+        id,
+        label: disciplineLabel[id],
+        count: entries.filter((entry) => entry.discipline === id).length,
+      }))
+      .filter(({ count }) => count > 0),
+  ];
   return (
     <Section
       id="all-projects"
@@ -33,7 +48,6 @@ export default function ProjectsPage() {
       headingLevel={1}
       label="Case Studies"
       title="All projects"
-      aside={<p className="type-mono text-muted">{projects.length} projects</p>}
       before={
         <Link
           href="/#projects"
@@ -49,7 +63,9 @@ export default function ProjectsPage() {
         </ActionStrip>
       }
     >
-      <ProjectCollection level={2} />
+      <ProjectFilters options={filters}>
+        <ProjectCollection level={2} />
+      </ProjectFilters>
     </Section>
   );
 }
