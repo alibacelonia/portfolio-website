@@ -9,6 +9,9 @@ const buttonBase =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-[background-color,border-color,color,transform] duration-200 ease-out-soft active:translate-y-px";
 
 export const buttonStyles = {
+  /** The page's one main action: solid foreground on the background (hero, Connect strip). */
+  solid:
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-fg px-5 text-sm font-medium text-bg transition-[background-color,transform] duration-200 ease-out-soft hover:bg-fg-soft active:translate-y-px forced-colors:border forced-colors:border-[LinkText]",
   primary: `${buttonBase} glass-control text-fg hover:border-blue-fg`,
   secondary: `${buttonBase} glass-control text-fg-soft hover:border-border-strong hover:text-fg`,
 };

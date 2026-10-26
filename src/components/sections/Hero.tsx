@@ -1,7 +1,7 @@
 import { ArrowRight, Download, MapPin } from "lucide-react";
 import Image from "next/image";
 import { site } from "@/lib/site";
-import { ExternalLink } from "@/components/ui/Links";
+import { buttonStyles, ExternalLink } from "@/components/ui/Links";
 import { EmailLink } from "@/components/ui/EmailLink";
 import { SectionFrame } from "@/components/ui/SectionFrame";
 import { HeroOverview } from "./HeroOverview";
@@ -41,13 +41,13 @@ export function Hero() {
 
             <p className="mx-auto mt-6 max-w-[47ch] type-lead text-pretty lg:mx-0">{site.intro}</p>
 
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm font-medium lg:justify-start">
-              <a
-                href="#projects"
-                className="group inline-flex min-h-11 items-center gap-2 text-fg hover:underline"
-              >
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-sm font-medium lg:justify-start">
+              <a href="#projects" className={`group ${buttonStyles.solid}`}>
                 View My Work
-                <ArrowRight aria-hidden="true" className="size-4" />
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none"
+                />
               </a>
               <a
                 href={site.resume.href}
@@ -79,7 +79,7 @@ export function Hero() {
                   width={800}
                   height={800}
                   preload
-                  className="size-full object-cover contrast-[1.08] grayscale"
+                  className="portrait-photo size-full object-cover"
                 />
               </div>
             </div>

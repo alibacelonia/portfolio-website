@@ -52,6 +52,8 @@ function useLocalTime(): string {
   );
 }
 
+const [emailLocal, emailDomain] = site.email.split("@");
+
 function CopyEmail() {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -78,9 +80,14 @@ function CopyEmail() {
           <p className="type-label tracking-wide text-muted uppercase">Email</p>
           <a
             href={`mailto:${site.email}`}
-            className="mt-0.5 inline-flex min-h-8 items-center type-body break-all text-fg hover:underline"
+            className="mt-0.5 inline-flex min-h-8 items-center type-body text-fg hover:underline"
           >
-            {site.email}
+            {/* Breaks after the "@" on narrow screens, never inside the name or domain. */}
+            <span className="min-w-0 wrap-break-word">
+              {`${emailLocal}@`}
+              <wbr />
+              {emailDomain}
+            </span>
           </a>
         </div>
         <button
@@ -111,8 +118,9 @@ function CopyEmail() {
   );
 }
 
-const iconLink =
-  "inline-flex size-10 items-center justify-center rounded-lg glass-control text-fg-soft transition-colors hover:border-border-strong hover:text-fg";
+/** Labeled channel buttons: the icon helps scanning, the word says what it is. */
+const channelLink =
+  "inline-flex min-h-10 items-center gap-2 rounded-lg glass-control px-3 type-action text-fg-soft transition-colors hover:border-border-strong hover:text-fg";
 
 /** LinkedIn and GitHub marks (lucide dropped brand icons). */
 function BrandIcon({ name }: { name: "linkedin" | "github" }) {
@@ -255,7 +263,7 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
               alt=""
               width={160}
               height={160}
-              className="size-20 object-cover contrast-[1.08] grayscale sm:size-[5.5rem]"
+              className="portrait-photo size-20 object-cover sm:size-[5.5rem]"
             />
           </div>
           <div className="min-w-0">
@@ -299,16 +307,16 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
           <div className="mt-3">
             <CopyEmail />
           </div>
-          <ul className="mt-3 flex gap-2">
+          <ul className="mt-3 flex flex-wrap gap-2">
             <li>
               <a
                 href={site.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={iconLink}
-                aria-label="LinkedIn (opens in a new tab)"
+                className={channelLink}
               >
                 <BrandIcon name="linkedin" />
+                LinkedIn<span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
@@ -316,20 +324,17 @@ export function ConnectPanel({ withForm = false }: { withForm?: boolean }) {
                 href={site.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={iconLink}
-                aria-label="GitHub (opens in a new tab)"
+                className={channelLink}
               >
                 <BrandIcon name="github" />
+                GitHub<span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
-              <a
-                href={site.resume.href}
-                download={site.resume.fileName}
-                className={iconLink}
-                aria-label="Download CV (PDF)"
-              >
+              <a href={site.resume.href} download={site.resume.fileName} className={channelLink}>
                 <FileText aria-hidden="true" className="size-4" />
+                <span className="sr-only">Download </span>CV
+                <span className="sr-only"> (PDF)</span>
               </a>
             </li>
           </ul>

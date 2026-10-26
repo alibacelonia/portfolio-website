@@ -3,7 +3,10 @@ import { experience, formatDuration, formatYearMonth, overlapsNext } from "@/dat
 import type { Role } from "@/types/content";
 import { Section } from "@/components/ui/Section";
 
-function RoleItem({ role, next }: { role: Role; next?: Role }) {
+/** Roles after the two most recent show only their header and "Show details" on phones. */
+const RECENT_ROLES = 2;
+
+function RoleItem({ role, next, earlier }: { role: Role; next?: Role; earlier: boolean }) {
   const current = role.end === null;
   const duration = formatDuration(role);
   const concurrent = overlapsNext(role, next);
@@ -11,6 +14,7 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
     <li
       id={`role-${role.id}`}
       data-reveal="slide"
+      data-earlier={earlier || undefined}
       className="relative grid grid-cols-[2.75rem_minmax(0,1fr)] gap-y-2 md:grid-cols-[11rem_3.5rem_minmax(0,1fr)] md:gap-y-0"
     >
       {/* Dates stay pinned beside the card while it scrolls past (tablet and up). */}
@@ -60,7 +64,8 @@ function RoleItem({ role, next }: { role: Role; next?: Role }) {
           </p>
         ) : null}
 
-        <ul className="mt-4 grid gap-x-6 gap-y-1.5 type-body text-fg-soft lg:grid-cols-2">
+        {/* The details below repeat these points in full, so earlier roles drop them on phones. */}
+        <ul className="exp-summary mt-4 grid gap-x-6 gap-y-1.5 type-body text-fg-soft lg:grid-cols-2">
           {role.summary.map((item) => (
             <li key={item} className="flex gap-2.5">
               <span aria-hidden="true" className="mt-[11px] h-px w-2.5 shrink-0 bg-border-strong" />
@@ -95,7 +100,12 @@ export function Experience() {
     <Section id="experience" label="Experience" title="Where I've worked">
       <ol className="exp-timeline relative grid grid-cols-1">
         {experience.map((role, index) => (
-          <RoleItem key={role.id} role={role} next={experience[index + 1]} />
+          <RoleItem
+            key={role.id}
+            role={role}
+            next={experience[index + 1]}
+            earlier={index >= RECENT_ROLES}
+          />
         ))}
       </ol>
     </Section>

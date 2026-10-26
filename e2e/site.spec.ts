@@ -540,20 +540,21 @@ test("all-projects client work card shows its screenshot left of the details, st
   await expect(card.getByRole("img")).toHaveJSProperty("complete", true);
 });
 
-test("case studies: preview cards 100px apart, with a pinned panel that switches at 25%", async ({
+test("case studies: preview cards 100px apart (56px on phones), with a pinned panel that switches at 25%", async ({
   page,
 }, testInfo) => {
   await page.goto("/");
   const items = page.locator(".case-item");
   await expect(items).toHaveCount(projects.length + publishedClientWork.length);
-  // 100px (6.25rem) between projects at every breakpoint.
+  // 100px (6.25rem) between projects from sm; 56px (3.5rem) on phones.
+  const expectedGap = testInfo.project.name === "mobile" ? 56 : 100;
   const gaps = await page.evaluate(() => {
     const boxes = [...document.querySelectorAll(".case-item")].map((e) =>
       e.getBoundingClientRect(),
     );
     return boxes.slice(1).map((box, i) => Math.round(box.top - boxes[i]!.bottom));
   });
-  for (const gap of gaps) expect(gap).toBe(100);
+  for (const gap of gaps) expect(gap).toBe(expectedGap);
 
   if (testInfo.project.name !== "desktop") {
     // Phones: no pinned panel; each image is followed by its own details.
@@ -840,4 +841,144 @@ test("project cards show the custom cursor for a mouse only", async ({ page }, t
   // Leaving the card restores the native cursor.
   await page.mouse.move(box.x + box.width + 120, target.y, { steps: 3 });
   await expect(cursor).not.toHaveAttribute("data-visible", "");
+});
+
+test("cards without a screenshot fill their window with the architecture flow", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Phones show a compact row instead");
+  await page.goto("/");
+  const windows = page.locator(".case-stage .flow-window");
+  expect(await windows.count()).toBeGreaterThan(0);
+  for (const window of await windows.all()) {
+    const [windowBox, stepsBox, firstStep, lastStep] = await window.evaluate((el) => {
+      const steps = el.querySelector(".flow-steps")!;
+      return [
+        el.getBoundingClientRect().toJSON(),
+        steps.getBoundingClientRect().toJSON(),
+        steps.firstElementChild!.getBoundingClientRect().toJSON(),
+        steps.lastElementChild!.getBoundingClientRect().toJSON(),
+      ];
+    });
+    // The steps fill the window below its title bar, top to bottom.
+    expect(stepsBox.height / windowBox.height).toBeGreaterThan(0.75);
+    expect(lastStep.bottom - firstStep.top).toBeGreaterThan(stepsBox.height * 0.75);
+  }
+});
+
+test("skill groups after the first fold behind one button on phones only", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const card = page.locator("#skills article").first();
+  const extra = card.locator(".skill-group-extra").first();
+  const more = card.getByRole("button", { name: /^Show \d+ more/ });
+  if (testInfo.project.name !== "mobile") {
+    await expect(extra).toBeVisible();
+    await expect(more).toBeHidden();
+    return;
+  }
+  await expect(extra).toBeHidden();
+  await expect(more).toHaveAttribute("aria-expanded", "false");
+  await more.click();
+  await expect(extra).toBeVisible();
+  await expect(card.getByRole("button", { name: /^Show fewer/ })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+});
+
+test("the hero and Connect lead with one solid main action", async ({ page }) => {
+  await page.goto("/");
+  for (const action of [
+    page.locator("#home").getByRole("link", { name: "View My Work" }),
+    page.locator("#connect").getByRole("link", { name: "Send a message" }),
+  ]) {
+    await expect(action).toBeVisible();
+    const [background, color, height] = await action.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return [style.backgroundColor, style.color, el.getBoundingClientRect().height];
+    });
+    // Solid: the theme's foreground as the fill, the background as the text.
+    expect(background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(background).not.toBe(color);
+    expect(height).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test("phones keep two highlights per case study and fold earlier roles", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const highlights = page.locator(".case-item .case-highlights").first().locator("li:visible");
+  const earlier = page.locator(".exp-timeline [data-earlier] .exp-summary").first();
+  const recent = page.locator(".exp-timeline > li:not([data-earlier]) .exp-summary").first();
+  await expect(recent).toBeVisible();
+  if (testInfo.project.name === "mobile") {
+    await expect(highlights).toHaveCount(2);
+    await expect(earlier).toBeHidden();
+    // The full points are still one tap away.
+    await earlier.locator("xpath=ancestor::article").locator("summary").click();
+    await expect(
+      earlier.locator("xpath=ancestor::article").locator("details li").first(),
+    ).toBeVisible();
+  } else {
+    await expect(earlier).toBeVisible();
+    await expect(page.locator(".case-panel-item[data-active] .case-highlights li")).not.toHaveCount(
+      0,
+    );
+  }
+});
+
+test("Connect's direct channels are labeled, not icon-only", async ({ page }) => {
+  await page.goto("/");
+  const connect = page.locator("#connect");
+  for (const [name, text] of [
+    ["LinkedIn (opens in a new tab)", "LinkedIn"],
+    ["GitHub (opens in a new tab)", "GitHub"],
+    ["Download CV (PDF)", "CV"],
+  ] as const) {
+    const link = connect.getByRole("link", { name, exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toContainText(text);
+    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(40);
+  }
+});
+
+test("the portrait develops from black and white into color once, then stays in color", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const photo = page.locator("#home .portrait-photo");
+  // Mid-load it is still monochrome (the develop animation fills backwards from grayscale).
+  const name = await photo.evaluate(
+    (el) => (el.getAnimations()[0] as CSSAnimation | undefined)?.animationName,
+  );
+  expect(name).toBe("photo-develop");
+  await photo.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
+  await expect(photo).toHaveCSS("filter", "none");
+
+  // Reduced motion: in color from the start, no animation.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(photo).toHaveCSS("filter", "none");
+  expect(await photo.evaluate((el) => el.getAnimations().length)).toBe(0);
+});
+
+test("the Connect email breaks after the @, never inside a word", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/");
+  const lines = await page.locator('#connect a[href^="mailto:"] span').evaluate((span) => {
+    const [local, , domain] = [...span.childNodes];
+    const rects = (node: ChildNode) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return [...range.getClientRects()].map((rect) => Math.round(rect.top));
+    };
+    return { local: rects(local!), domain: rects(domain!) };
+  });
+  // Each part sits on one line; at 320px the domain wraps below the name.
+  expect(new Set(lines.local).size).toBe(1);
+  expect(new Set(lines.domain).size).toBe(1);
+  expect(lines.domain[0]).toBeGreaterThanOrEqual(lines.local[0]!);
 });

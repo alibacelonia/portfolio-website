@@ -92,6 +92,9 @@ test("project content and skill disclosures remain usable without JavaScript", a
   ).not.toBeVisible();
   await expect(page.locator("#all-projects article:visible")).toHaveCount(entries.length);
   await page.goto("/");
+  // Without JavaScript nothing is folded, on phones either.
+  await expect(page.locator("#skills .skill-group-extra").first()).toBeVisible();
+  await expect(page.locator("#skills .skill-more").first()).toBeHidden();
   const python = page.locator("#skills summary").filter({ hasText: /^Python$/ });
   await python.click();
   await expect(python.locator("..")).toHaveAttribute("open", "");

@@ -2,6 +2,7 @@ import { skills } from "@/data/skills";
 import { disciplineDot } from "@/lib/disciplines";
 import { Section } from "@/components/ui/Section";
 import { SkillTag } from "@/components/ui/SkillTag";
+import { SkillGroups } from "@/components/ui/SkillGroups";
 import { findSkillProjects } from "@/lib/skill-evidence";
 import { stagger } from "@/lib/motion";
 
@@ -46,9 +47,14 @@ export function Skills() {
             </h3>
             <p className="mt-2 type-body text-muted">{discipline.description}</p>
 
-            <div className="mt-5 space-y-5">
-              {discipline.groups.map((group) => (
-                <div key={group.label}>
+            <SkillGroups
+              discipline={discipline.title}
+              hiddenCount={discipline.groups
+                .slice(1)
+                .reduce((sum, group) => sum + group.skills.length, 0)}
+            >
+              {discipline.groups.map((group, groupIndex) => (
+                <div key={group.label} className={groupIndex > 0 ? "skill-group-extra" : undefined}>
                   <h4 className="type-label text-muted">{group.label}</h4>
                   <ul data-reveal-group="ripple" className="mt-2 flex flex-wrap gap-1.5">
                     {group.skills.map((skill, tagIndex) => (
@@ -63,7 +69,7 @@ export function Skills() {
                   </ul>
                 </div>
               ))}
-            </div>
+            </SkillGroups>
           </article>
         ))}
       </div>

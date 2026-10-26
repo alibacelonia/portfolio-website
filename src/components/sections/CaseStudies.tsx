@@ -62,21 +62,28 @@ function Ruler({ studies, active }: { studies: CaseStudy[]; active: number }) {
   );
 }
 
-/** Stand-in for a screenshot: the project's real architecture flow inside a window frame. */
+/**
+ * Stand-in for a screenshot: the project's real architecture flow inside a window frame. Phones
+ * show a compact wrapped row; from `sm` the steps alternate along a vertical spine that fills the
+ * window, so the card never shows an empty box.
+ */
 function FlowWindow({ steps, name }: { steps: string[]; name: string }) {
   return (
-    <div className="case-media-inner flex aspect-[16/10] flex-col overflow-hidden border-b-0 glass">
-      <div className="flex h-9 items-center gap-1.5 border-b border-border px-3.5">
+    <div className="case-media-inner flow-window flex flex-col overflow-hidden border-b-0 glass">
+      <div className="flex h-9 shrink-0 items-center gap-1.5 border-b border-border px-3.5">
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="size-2 rounded-full bg-border-strong" />
         <span className="ml-2 truncate type-mono text-muted">{name} · architecture</span>
       </div>
-      <ol className="flex flex-wrap items-center gap-x-2 gap-y-2.5 p-4 type-mono text-fg-soft sm:p-6">
+      <ol className="flow-steps type-mono text-fg-soft">
         {steps.map((step, index) => (
-          <li key={step} className="flex items-center gap-2">
-            {index > 0 ? <span className="text-muted">→</span> : null}
-            <span className="rounded-md glass-chip px-2 py-1 whitespace-nowrap">{step}</span>
+          <li key={step}>
+            {index > 0 ? <span className="flow-arrow text-muted">→</span> : null}
+            <span className="flow-node" />
+            <span className="flow-chip rounded-md glass-chip px-2.5 py-1 whitespace-nowrap">
+              {step}
+            </span>
           </li>
         ))}
       </ol>
@@ -163,6 +170,10 @@ function Sparkle({ color }: { color: string }) {
   );
 }
 
+/** The name link gets a taller hit area (40px+) without moving the layout. */
+const nameLinkClass =
+  "relative hover:underline before:absolute before:inset-x-0 before:-inset-y-1.5";
+
 /** Up to this many key technologies show as pills in the panel, as on the reference. */
 const KEY_TECH = 4;
 
@@ -193,18 +204,16 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
             target="_blank"
             rel="noopener noreferrer"
             tabIndex={-1}
-            className="hover:underline"
+            className={nameLinkClass}
           >
             {name}
           </a>
         ) : (
-          <Link href={study.primary.href} tabIndex={-1} className="hover:underline">
+          <Link href={study.primary.href} tabIndex={-1} className={nameLinkClass}>
             {name}
           </Link>
         )}
-        <span className="text-[0.6875rem] leading-none tracking-[0.1em] text-muted uppercase">
-          {study.kind}
-        </span>
+        <span className="type-overline text-muted">{study.kind}</span>
       </div>
       <ul aria-label="Key technologies" className="mt-4 flex flex-wrap gap-1.5">
         {study.tech.slice(0, KEY_TECH).map((tech) => (
@@ -214,7 +223,10 @@ function Details({ study, headingLevel }: { study: CaseStudy; headingLevel: 3 | 
         ))}
       </ul>
       {study.role ? <p className="mt-4 type-mono text-muted">{study.role}</p> : null}
-      <ul aria-label="Highlights" className="mt-6 space-y-3 text-sm leading-5 text-muted">
+      <ul
+        aria-label="Highlights"
+        className="case-highlights mt-6 space-y-3 text-sm leading-5 text-muted"
+      >
         {study.highlights.map((item) => (
           <li key={item} className="flex gap-3">
             <Sparkle color={accent} />

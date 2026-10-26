@@ -52,7 +52,7 @@ export function ProjectCard({
         <p className="type-label text-muted">{project.status}</p>
       </div>
 
-      <Heading id={headingId} className="mt-4 type-card-title">
+      <Heading id={headingId} className="mt-3 type-project-title">
         {project.name}
       </Heading>
       <p className="mt-2 type-body text-muted">{project.summary}</p>
@@ -129,7 +129,7 @@ export function ClientWorkCard({
         />
         {work.category}
       </p>
-      <Heading id={headingId} className="mt-4 type-card-title">
+      <Heading id={headingId} className="mt-3 type-project-title">
         {work.name}
       </Heading>
       <p className="mt-2 type-body text-muted">{work.summary}</p>

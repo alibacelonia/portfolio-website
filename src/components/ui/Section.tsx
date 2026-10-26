@@ -7,8 +7,8 @@ interface SectionProps {
   /** Section name in the overline above the title ("Case Studies"). */
   label?: string;
   /**
-   * Custom eyebrow, e.g. a project category. Gives the boxed page-header layout (project pages)
-   * instead of the centered display title used by numbered sections.
+   * Custom eyebrow, e.g. a project category. Gives the boxed page-header layout (project pages,
+   * whose h1 is the project name in the project serif) instead of the centered display title.
    */
   eyebrow?: ReactNode;
   /** Display title ("Curated work"); its last word is set in italic. */
@@ -77,7 +77,7 @@ export function Section({
               <p className="mb-3 type-eyebrow">{eyebrow}</p>
               <Heading
                 id={headingId}
-                className={headingLevel === 1 ? "type-page-title" : "type-section-title"}
+                className={headingLevel === 1 ? "type-project-page-title" : "type-section-title"}
               >
                 {title}
               </Heading>

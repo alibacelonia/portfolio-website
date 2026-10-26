@@ -9,7 +9,11 @@ export function Connect() {
       id="connect"
       label="Connect"
       title="Tell me what you're building"
-      footer={<ActionStrip href="/connect/">Send a message</ActionStrip>}
+      footer={
+        <ActionStrip href="/connect/" prominent>
+          Send a message
+        </ActionStrip>
+      }
     >
       <ConnectPanel />
     </Section>
